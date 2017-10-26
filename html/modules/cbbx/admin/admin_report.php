@@ -37,7 +37,7 @@ $op = !empty($_GET['op'])? $_GET['op'] : (!empty($_POST['op'])?$_POST['op']:"def
 $item = !empty($_GET['op'])? $_GET['item'] : (!empty($_POST['item'])?$_POST['item']:"process");
 
 $start = (isset($_GET['start']))?$_GET['start']:0;
-$report_handler =& xoops_getmodulehandler('report', 'newbb');
+$report_handler =& xoops_getmodulehandler('report', basename(dirname(__DIR__)));
 
 xoops_cp_header();
 switch($op){
@@ -68,25 +68,25 @@ switch($op){
 		if($item == 'process'){
 			$process_result = 0;
 			$item_other = 'processed';
-			$title_other = _AM_NEWBB_PROCESSEDREPORT;
-			$extra = _AM_NEWBB_REPORTEXTRA;
+			$title_other = _AM_CBBX_PROCESSEDREPORT;
+			$extra = _AM_CBBX_REPORTEXTRA;
 		}else{
 			$process_result = 1;
 			$item_other = 'process';
-			$title_other = _AM_NEWBB_PROCESSREPORT;
+			$title_other = _AM_CBBX_PROCESSREPORT;
 			$extra = _DELETE;
 		}
 
 		$limit = 10;
-		loadModuleAdminMenu(8,_AM_NEWBB_REPORTADMIN);
-		echo "<fieldset><legend style='font-weight: bold; color: #900;'>" .  _AM_NEWBB_REPORTADMIN . "</legend>";
+		loadModuleAdminMenu(8,_AM_CBBX_REPORTADMIN);
+		echo "<fieldset><legend style='font-weight: bold; color: #900;'>" .  _AM_CBBX_REPORTADMIN . "</legend>";
 		echo"<br />";
 		echo "<a style='border: 1px solid #5E5D63; color: #000000; font-family: verdana, tahoma, arial, helvetica, sans-serif; font-size: 1em; padding: 4px 8px; text-align:center;' href=\"admin_report.php?item=$item_other\">".$title_other."</a><br /><br />";
 
 		echo '<form action="'.xoops_getenv('PHP_SELF').'" method="post">';
 		echo "<table border='0' cellpadding='4' cellspacing='1' width='100%' class='outer'>";
 		echo "<tr align='center'>";
-		echo "<td class='bg3' width='80%'>"._AM_NEWBB_REPORTTITLE."</td>";
+		echo "<td class='bg3' width='80%'>"._AM_CBBX_REPORTTITLE."</td>";
 		echo "<td class='bg3' width='10%'>".$extra."</td>";
 		echo "</tr>";
 
@@ -101,28 +101,28 @@ switch($op){
 			}
 
 			echo "<tr class='odd' align='left'>";
-			echo "<td>"._AM_NEWBB_REPORTPOST.': '. $post_link . "</td>";
+			echo "<td>"._AM_CBBX_REPORTPOST.': '. $post_link . "</td>";
 			echo "<td align='center'>" . $report['report_id'] . "</td>";
 			echo "</tr>";
 			echo "<tr class='odd' align='left'>";
-			echo "<td>"._AM_NEWBB_REPORTTEXT.': '. $myts->htmlSpecialChars($report['report_text']) . "</td>";
+			echo "<td>"._AM_CBBX_REPORTTEXT.': '. $myts->htmlSpecialChars($report['report_text']) . "</td>";
 			$uid = intval($report['reporter_uid']);
-			$reporter_name = newbb_getUnameFromId( $uid, $xoopsModuleConfig['show_realname']);
+			$reporter_name = cbbx_getUnameFromId( $uid, $xoopsModuleConfig['show_realname']);
 			$reporter = (!empty($uid))? "<a href='" . XOOPS_URL . "/userinfo.php?uid=".$uid."'>".$reporter_name."</a><br />":"";
 
 			echo "<td align='center'>" . $reporter.long2ip($report['reporter_ip']) . "</td>";
 			echo "</tr>";
 			echo "<tr class='odd' align='left'>";
-			echo "<td>"._AM_NEWBB_REPORTMEMO.': '. $memo . "</td>";
+			echo "<td>"._AM_CBBX_REPORTMEMO.': '. $memo . "</td>";
 			echo "<td align='center' >" . $checkbox . "</td>";
 			echo "</tr>";
 			echo "<tr colspan='2'><td height='2'></td></tr>";
 		}
 		$submit = new XoopsFormButton('', 'submit', _SUBMIT, 'submit');
 		echo "<tr colspan='2'><td align='center'>".$submit->render()."</td></tr>";
-		$hidden =& new XoopsFormHidden('op', 'save');
+		$hidden = new XoopsFormHidden('op', 'save');
 		echo $hidden->render();
-		$hidden =& new XoopsFormHidden('item', $item);
+		$hidden = new XoopsFormHidden('item', $item);
 		echo $hidden->render()."</form>";
 
 		echo "</table>";

@@ -33,14 +33,14 @@ include 'header.php';
 $forum_id = isset($_POST['forum']) ? intval($_POST['forum']) : 0;
 $forum_id = isset($_GET['forum']) ? intval($_GET['forum']) : $forum_id;
 
-$isadmin = newbb_isAdmin($forum_id);
+$isadmin = cbbx_isAdmin($forum_id);
 if(!$isadmin){
-    redirect_header("index.php", 2, _MD_NORIGHTTOACCESS);
+    redirect_header("index.php", 2, _MD_CBBX_NORIGHTTOACCESS);
     exit();
 }
-$is_administrator = newbb_isAdmin();
+$is_administrator = cbbx_isAdmin();
 
-$moderate_handler =& xoops_getmodulehandler('moderate', 'newbb');
+$moderate_handler =& xoops_getmodulehandler('moderate', basename(__DIR__));
 
 if(!empty($_POST["submit"])&&!empty($_POST["expire"])){
 	if( !empty($_POST["ip"]) && !preg_match("/^([0-9]{1,3}\.){0,3}[0-9]{1,3}$/", $_POST["ip"])) $_POST["ip"]="";
@@ -61,13 +61,13 @@ if(!empty($_POST["submit"])&&!empty($_POST["expire"])){
 		$moderate_obj->setVar("mod_desc", @$_POST["desc"]);
 		if($res = $moderate_handler->insert($moderate_obj) && !empty($forum_id) && !empty($_POST["uid"]) ){
 			$uname = XoopsUser::getUnameFromID($_POST["uid"]);
-			$post_handler =& xoops_getmodulehandler("post", "newbb");
+			$post_handler =& xoops_getmodulehandler("post", basename(__DIR__));
 			$forumpost =& $post_handler->create();
-		    $forumpost->setVar("poster_ip", newbb_getIP());
+		    $forumpost->setVar("poster_ip", cbbx_getIP());
 		    $forumpost->setVar("uid", empty($GLOBALS["xoopsUser"])?0:$GLOBALS["xoopsUser"]->getVar("uid"));
 		    $forumpost->setVar("forum_id", $forum_id);
-			$forumpost->setVar("subject", sprintf(_MD_SUSPEND_SUBJECT, $uname, $_POST["expire"]));
-			$forumpost->setVar("post_text", sprintf(_MD_SUSPEND_TEXT, '<a href="' . XOOPS_URL . '/userinfo.php?uid='.$_POST["uid"].'">'.$uname.'</a>', $_POST["expire"], @$_POST["desc"], formatTimestamp(time()+$_POST["expire"]*3600*24) ));
+			$forumpost->setVar("subject", sprintf(_MD_CBBX_SUSPEND_SUBJECT, $uname, $_POST["expire"]));
+			$forumpost->setVar("post_text", sprintf(_MD_CBBX_SUSPEND_TEXT, '<a href="' . XOOPS_URL . '/userinfo.php?uid='.$_POST["uid"].'">'.$uname.'</a>', $_POST["expire"], @$_POST["desc"], formatTimestamp(time()+$_POST["expire"]*3600*24) ));
 		    $forumpost->setVar("dohtml", 1);
 		    $forumpost->setVar("dosmiley", 1);
 		    $forumpost->setVar("doxcode", 1);
@@ -90,14 +90,14 @@ if(!empty($_POST["submit"])&&!empty($_POST["expire"])){
 	        if ( !$result = $xoopsDB->queryF($sql) ) {
 	        }
 		}
-		redirect_header("moderate.php?forum=$forum_id", 2, _MD_DBUPDATED);
+		redirect_header("moderate.php?forum=$forum_id", 2, _MD_CBBX_DBUPDATED);
 		exit();
 	}
 }elseif(!empty($_GET["del"])){
 	$moderate_obj =& $moderate_handler->get($_GET["del"]);
 	if($is_administrator || $moderate_obj->getVar("forum_id")==$forum_id){
 		$moderate_handler->delete($moderate_obj, true);
-		redirect_header("moderate.php?forum=$forum_id", 2, _MD_DBUPDATED);
+		redirect_header("moderate.php?forum=$forum_id", 2, _MD_CBBX_DBUPDATED);
 		exit();
 	}
 }
@@ -139,32 +139,32 @@ if($forum_id){
 }else{
 	$url = 'index.php';
 }
-echo '<div style="padding: 10px; margin-left:auto; margin-right:auto; text-align:center;"><a href="'.$url.'"><h2>'._MD_SUSPEND_MANAGEMENT.'</h2></a></div>';
+echo '<div style="padding: 10px; margin-left:auto; margin-right:auto; text-align:center;"><a href="'.$url.'"><h2>'._MD_CBBX_SUSPEND_MANAGEMENT.'</h2></a></div>';
 
 if(!empty($moderate_count)){
 	$_users = array();
 	foreach(array_keys($moderate_objs) as $id){
 		$_users[$moderate_objs[$id]->getVar("uid")] = 1;
 	}
-	$users =& newbb_getUnameFromIds(array_keys($_users), $xoopsModuleConfig['show_realname'], true);
+	$users =& cbbx_getUnameFromIds(array_keys($_users), $xoopsModuleConfig['show_realname'], true);
 	
 	echo '
 	<table class="outer" cellpadding="6" cellspacing="1" border="0" width="100%" align="center">
 		<tr class="head" align="left">
 			<td width="5%" align="center" nowrap="nowrap">
-				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=uid" title="Sort by uid">'._MD_SUSPEND_UID.'</a></strong>
+				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=uid" title="Sort by uid">'._MD_CBBX_SUSPEND_UID.'</a></strong>
 				</td>
 			<td width="10%" align="center" nowrap="nowrap">
-				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=start" title="Sort by start">'._MD_SUSPEND_START.'</a></strong>
+				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=start" title="Sort by start">'._MD_CBBX_SUSPEND_START.'</a></strong>
 				</td>
 			<td width="10%" align="center" nowrap="nowrap">
-				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=expire" title="Sort by expire">'._MD_SUSPEND_EXPIRE.'</a></strong>
+				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=expire" title="Sort by expire">'._MD_CBBX_SUSPEND_EXPIRE.'</a></strong>
 				</td>
 			<td width="10%" align="center" nowrap="nowrap">
-				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=forum" title="Sort by expire">'._MD_SUSPEND_SCOPE.'</a></strong>
+				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=forum" title="Sort by expire">'._MD_CBBX_SUSPEND_SCOPE.'</a></strong>
 				</td>
 			<td align="left">
-				<strong>'._MD_SUSPEND_DESC.'</strong>
+				<strong>'._MD_CBBX_SUSPEND_DESC.'</strong>
 				</td>
 			<td width="5%" align="center" nowrap="nowrap">
 				<strong>'._DELETE.'</strong>
@@ -189,7 +189,7 @@ if(!empty($moderate_count)){
 					'.(formatTimestamp($moderate_objs[$id]->getVar("mod_end"))).'
 					</td>
 				<td width="10%" align="center">
-					'.($moderate_objs[$id]->getVar("forum_id")?_MD_FORUM:_ALL).'
+					'.($moderate_objs[$id]->getVar("forum_id")?_MD_CBBX_FORUM:_ALL).'
 					</td>
 				<td align="left">
 					'.($moderate_objs[$id]->getVar("mod_desc")?$moderate_objs[$id]->getVar("mod_desc"):_NONE).'
@@ -204,19 +204,19 @@ if(!empty($moderate_count)){
 	echo '
 		<tr class="head" align="left">
 			<td width="5%" align="center" nowrap="nowrap">
-				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=uid" title="Sort by uid">'._MD_SUSPEND_UID.'</a></strong>
+				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=uid" title="Sort by uid">'._MD_CBBX_SUSPEND_UID.'</a></strong>
 				</td>
 			<td width="10%" align="center" nowrap="nowrap">
-				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=start" title="Sort by start">'._MD_SUSPEND_START.'</a></strong>
+				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=start" title="Sort by start">'._MD_CBBX_SUSPEND_START.'</a></strong>
 				</td>
 			<td width="10%" align="center" nowrap="nowrap">
-				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=expire" title="Sort by expire">'._MD_SUSPEND_EXPIRE.'</a></strong>
+				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=expire" title="Sort by expire">'._MD_CBBX_SUSPEND_EXPIRE.'</a></strong>
 				</td>
 			<td width="10%" align="center" nowrap="nowrap">
-				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=forum" title="Sort by expire">'._MD_SUSPEND_SCOPE.'</a></strong>
+				<strong><a href="moderate.php?forum='.$forum_id.'&amp;start='.$start.'&amp;sort=forum" title="Sort by expire">'._MD_CBBX_SUSPEND_SCOPE.'</a></strong>
 				</td>
 			<td align="left">
-				<strong>'._MD_SUSPEND_DESC.'</strong>
+				<strong>'._MD_CBBX_SUSPEND_DESC.'</strong>
 				</td>
 			<td width="5%" align="center" nowrap="nowrap">
 				<strong>'._DELETE.'</strong>
@@ -234,10 +234,10 @@ if(!empty($moderate_count)){
 
 include_once XOOPS_ROOT_PATH."/class/xoopsformloader.php";
 $forum_form = new XoopsThemeForm(_ADD, 'suspend', "moderate.php", 'post');
-$forum_form->addElement(new XoopsFormText(_MD_SUSPEND_UID, 'uid', 20, 25));
-$forum_form->addElement(new XoopsFormText(_MD_SUSPEND_IP, 'ip', 20, 25));
-$forum_form->addElement(new XoopsFormText(_MD_SUSPEND_DURATION, 'expire', 20, 25, ''), true);
-$forum_form->addElement(new XoopsFormText(_MD_SUSPEND_DESC, 'desc', 50, 255));
+$forum_form->addElement(new XoopsFormText(_MD_CBBX_SUSPEND_UID, 'uid', 20, 25));
+$forum_form->addElement(new XoopsFormText(_MD_CBBX_SUSPEND_IP, 'ip', 20, 25));
+$forum_form->addElement(new XoopsFormText(_MD_CBBX_SUSPEND_DURATION, 'expire', 20, 25, ''), true);
+$forum_form->addElement(new XoopsFormText(_MD_CBBX_SUSPEND_DESC, 'desc', 50, 255));
 $forum_form->addElement(new XoopsFormHidden('forum', $forum_id));
 $forum_form->addElement(new XoopsFormButton('', 'submit', _SUBMIT, "submit"));
 $forum_form->display();

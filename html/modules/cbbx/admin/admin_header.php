@@ -29,16 +29,14 @@
 // Project: The XOOPS Project                                                //
 // ------------------------------------------------------------------------- //
 include "../../../include/cp_header.php";
-include_once XOOPS_ROOT_PATH."/modules/".$xoopsModule->getVar("dirname")."/include/vars.php";
-include_once XOOPS_ROOT_PATH."/Frameworks/art/functions.php";
-include_once XOOPS_ROOT_PATH."/Frameworks/art/functions.admin.php";
-
+include_once XOOPS_ROOT_PATH."/modules/".basename(dirname(__DIR__))."/include/vars.php";
+include_once XOOPS_ROOT_PATH."/modules/".basename(dirname(__DIR__))."/plugins/Frameworks/art/functions.php";
+include_once XOOPS_ROOT_PATH."/modules/".basename(dirname(__DIR__))."/plugins/Frameworks/art/functions.admin.php";
 
 // include the default language file for the admin interface
-if ( !@include_once(XOOPS_ROOT_PATH."/modules/".$xoopsModule->getVar("dirname")."/language/" . $xoopsConfig['language'] . "/main.php")){
-    include_once(XOOPS_ROOT_PATH."/modules/".$xoopsModule->getVar("dirname")."/language/english/main.php");
+if ( !@include_once(XOOPS_ROOT_PATH."/modules/".basename(dirname(__DIR__))."/language/" . $xoopsConfig['language'] . "/main.php")){
+    include_once(XOOPS_ROOT_PATH."/modules/".basename(dirname(__DIR__))."/language/english/main.php");
 }
-
 
 $myts = &MyTextSanitizer::getInstance();
 

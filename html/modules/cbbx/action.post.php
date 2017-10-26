@@ -39,13 +39,13 @@ $op = in_array($op, array("approve", "delete", "restore", "split"))? $op : "";
 $mode = !empty($_GET['mode']) ? intval($_GET['mode']) : 1;
 
 if ( empty($post_id) || empty($op)) {
-	redirect_header("javascript:history.go(-1);", 2, _MD_NORIGHTTOACCESS);
+	redirect_header("javascript:history.go(-1);", 2, _MD_CBBX_NORIGHTTOACCESS);
     exit();
 }
 
-$post_handler =& xoops_getmodulehandler('post', 'newbb');
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$post_handler =& xoops_getmodulehandler('post', $xoopsModule->getVar('dirname'));
+$topic_handler =& xoops_getmodulehandler('topic', $xoopsModule->getVar('dirname'));
+$forum_handler =& xoops_getmodulehandler('forum', $xoopsModule->getVar('dirname'));
 if(empty($topic_id)){
 	$viewtopic_forum = null;
 }else{
@@ -53,10 +53,10 @@ if(empty($topic_id)){
 	$forum_id = $forumtopic->getVar('forum_id');
 	$viewtopic_forum =& $forum_handler->get($forum_id);
 }
-$isadmin = newbb_isAdmin($viewtopic_forum);
+$isadmin = cbbx_isAdmin($viewtopic_forum);
 
 if(!$isadmin){
-    redirect_header("index.php", 2, _MD_NORIGHTTOACCESS);
+    redirect_header("index.php", 2, _MD_CBBX_NORIGHTTOACCESS);
     exit();
 }
 
@@ -179,7 +179,7 @@ switch($op){
 		/* split a post and its children posts */
 		}elseif($mode==2){
 	        include_once(XOOPS_ROOT_PATH . "/class/xoopstree.php");
-	        $mytree = new XoopsTree($xoopsDB->prefix("bb_posts"), "post_id", "pid");
+	        $mytree = new XoopsTree($xoopsDB->prefix("cbbx_posts"), "post_id", "pid");
             $posts = $mytree->getAllChildId($post_id);
             if(count($posts)>0){
 	        	$criteria = new Criteria('post_id', "(".implode(",", $posts).")", "IN");
@@ -213,17 +213,17 @@ switch($op){
         $forum_id = $post_obj->getVar("forum_id");
 		$topic_handler->synchronization($topic_id);
 		$topic_handler->synchronization($new_topic_id);
-        $sql = sprintf("UPDATE %s SET forum_topics = forum_topics+1 WHERE forum_id = %u", $xoopsDB->prefix("bb_forums"), $forum_id);
+        $sql = sprintf("UPDATE %s SET forum_topics = forum_topics+1 WHERE forum_id = %u", $xoopsDB->prefix("cbbx_forums"), $forum_id);
         $result = $xoopsDB->queryF($sql);
         
 		break;
 }
 if(!empty($topic_id)){
-	redirect_header("viewtopic.php?topic_id=$topic_id", 2, _MD_DBUPDATED);
+	redirect_header("viewtopic.php?topic_id=$topic_id", 2, _MD_CBBX_DBUPDATED);
 }elseif(!empty($forum_id)){
-	redirect_header("viewforum.php?forum=$forum_id", 2, _MD_DBUPDATED);
+	redirect_header("viewforum.php?forum=$forum_id", 2, _MD_CBBX_DBUPDATED);
 }else{
-	redirect_header("viewpost.php?uid=$uid", 2, _MD_DBUPDATED);
+	redirect_header("viewpost.php?uid=$uid", 2, _MD_CBBX_DBUPDATED);
 }
 
 include XOOPS_ROOT_PATH.'/footer.php';

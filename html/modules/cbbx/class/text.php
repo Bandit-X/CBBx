@@ -33,23 +33,23 @@ if (!defined("XOOPS_ROOT_PATH")) {
 	exit();
 }
 
-defined("NEWBB_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/newbb/include/functions.ini.php';
-newbb_load_object();
+defined("CBBX_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/include/functions.ini.php';
+cbbx_load_object();
 
 class Ntext extends ArtObject {
-    function Ntext()
+    function __construct()
     {
-	    $this->ArtObject("bb_posts_text");
+	    $this->ArtObject('cbbx_posts_text');
         $this->initVar('post_id', XOBJ_DTYPE_INT);
         $this->initVar('post_text', XOBJ_DTYPE_TXTAREA);
         $this->initVar('post_edit', XOBJ_DTYPE_TXTAREA);
     }
 }
 
-class NewbbTextHandler extends ArtObjectHandler 
+class CbbxTextHandler extends ArtObjectHandler 
 {
-    function NewbbTextHandler(&$db) {
-        $this->ArtObjectHandler($db, 'bb_posts_text', 'Ntext', 'post_id');
+    function __construct(&$db) {
+        parent::__construct($db, 'cbbx_posts_text', 'Ntext', 'post_id');
     }
     
     /**
@@ -59,8 +59,9 @@ class NewbbTextHandler extends ArtObjectHandler
      */
     function cleanOrphan()
     {
-	    return parent::cleanOrphan($this->db->prefix("bb_posts"), "post_id");
+	    return parent::cleanOrphan($this->db->prefix('cbbx_posts'), 'post_id');
     }
 }
 
+class_alias('CbbxTextHandler', basename(dirname(__DIR__)).'TextHandler');
 ?>

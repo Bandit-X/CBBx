@@ -31,7 +31,7 @@
 
 error_reporting(0);
 include 'header.php';
-require XOOPS_ROOT_PATH.'/modules/newbb/fpdf/fpdf.inc.php';
+require XOOPS_ROOT_PATH.'/modules/cbbx/fpdf/fpdf.inc.php';
 error_reporting(0);
 
 if(empty($_POST["pdf_data"])){
@@ -40,25 +40,25 @@ $forum = isset($_GET['forum']) ? intval($_GET['forum']) : 0;
 $topic_id = isset($_GET['topic_id']) ? intval($_GET['topic_id']) : 0;
 $post_id = !empty($_GET['post_id']) ? intval($_GET['post_id']) : 0;
 
-if ( empty($post_id) )  die(_MD_ERRORTOPIC);
+if ( empty($post_id) )  die(_MD_CBBX_ERRORTOPIC);
 
-$post_handler =& xoops_getmodulehandler('post', 'newbb');
+$post_handler =& xoops_getmodulehandler('post', basename(__DIR__));
 $post = & $post_handler->get($post_id);
-if(!$approved = $post->getVar('approved'))    die(_MD_NORIGHTTOVIEW);
+if(!$approved = $post->getVar('approved'))    die(_MD_CBBX_NORIGHTTOVIEW);
 
 $post_data = $post_handler->getPostForPDF($post);
 
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
 $forumtopic =& $topic_handler->getByPost($post_id);
 $topic_id = $forumtopic->getVar('topic_id');
-if(!$approved = $forumtopic->getVar('approved'))    die(_MD_NORIGHTTOVIEW);
+if(!$approved = $forumtopic->getVar('approved'))    die(_MD_CBBX_NORIGHTTOVIEW);
 
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 $forum = ($forum)?$forum:$forumtopic->getVar('forum_id');
 $viewtopic_forum =& $forum_handler->get($forum);
-if (!$forum_handler->getPermission($viewtopic_forum))    die(_MD_NORIGHTTOACCESS);
-if (!$topic_handler->getPermission($viewtopic_forum, $forumtopic->getVar('topic_status'), "view"))   die(_MD_NORIGHTTOVIEW);
-//if ( !$forumdata =  $topic_handler->getViewData($topic_id, $forum) )die(_MD_FORUMNOEXIST);
+if (!$forum_handler->getPermission($viewtopic_forum))    die(_MD_CBBX_NORIGHTTOACCESS);
+if (!$topic_handler->getPermission($viewtopic_forum, $forumtopic->getVar('topic_status'), "view"))   die(_MD_CBBX_NORIGHTTOVIEW);
+//if ( !$forumdata =  $topic_handler->getViewData($topic_id, $forum) )die(_MD_CBBX_FORUMNOEXIST);
 
 $pdf_data['title'] = $viewtopic_forum->getVar("forum_name");
 $pdf_data['subtitle'] = $forumtopic->getVar('topic_title');
@@ -72,12 +72,12 @@ $pdf_data['author'] = $post_data['author'];
 }
 
 $pdf_data['filename'] = preg_replace("/[^0-9a-z\-_\.]/i",'', $pdf_data["title"]);
-$pdf_data['title'] = NEWBB_PDF_SUBJECT.': '.$pdf_data["title"];
+$pdf_data['title'] = CBBX_PDF_SUBJECT.': '.$pdf_data["title"];
 if (!empty($pdf_data['subtitle'])){
-	$pdf_data['subtitle'] = NEWBB_PDF_TOPIC.': '.$pdf_data['subtitle'];
+	$pdf_data['subtitle'] = CBBX_PDF_TOPIC.': '.$pdf_data['subtitle'];
 }
-$pdf_data['author'] = NEWBB_PDF_AUTHOR.': '.$pdf_data['author'];
-$pdf_data['date'] = NEWBB_PDF_DATE. ': '.$pdf_data['date'];
+$pdf_data['author'] = CBBX_PDF_AUTHOR.': '.$pdf_data['author'];
+$pdf_data['date'] = CBBX_PDF_DATE. ': '.$pdf_data['date'];
 $pdf_data['url'] = URL. ': '.$pdf_data['url'];
 
 //Other stuff

@@ -39,7 +39,7 @@ function transfer_bookmark(&$data)
 	 * 365key
 	 */
 	echo "<div class=\"centered\" style=\"padding:20px;\"><span class=\"head\">".$_config["title"]."</span><br clear=\"all\"><br clear=\"all\"><div>";
-	printf(_MD_TRANSFER_BOOKMARK_ITEMS, $data["title"], $data["url"]);
+	printf(_MD_CBBX_TRANSFER_BOOKMARK_ITEMS, $data["title"], $data["url"]);
 	echo "</div></div>";
 	$GLOBALS["xoopsOption"]['output_type'] = "plain";
 	include XOOPS_ROOT_PATH."/footer.php";

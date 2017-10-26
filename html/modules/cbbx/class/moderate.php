@@ -33,13 +33,13 @@ if (!defined("XOOPS_ROOT_PATH")) {
 	exit();
 }
 
-defined("NEWBB_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/newbb/include/functions.ini.php';
-newbb_load_object();
+defined("CBBX_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/include/functions.ini.php';
+cbbx_load_object();
 
 /**
  * A handler for User moderation management
  * 
- * @package     newbb/cbb
+ * @package     cbbx/cbb
  * 
  * @author	    D.J. (phppp, http://xoopsforge.com)
  * @copyright	copyright (c) 2005 XOOPS.org
@@ -47,9 +47,9 @@ newbb_load_object();
 
 class Moderate extends ArtObject {
 
-    function Moderate()
+    function __construct()
     {
-	    $this->ArtObject("bb_moderates");
+	    parent::__construct("cbbx_moderates");
         $this->initVar('mod_id', XOBJ_DTYPE_INT);
         $this->initVar('mod_start', XOBJ_DTYPE_INT);
         $this->initVar('mod_end', XOBJ_DTYPE_INT);
@@ -60,10 +60,10 @@ class Moderate extends ArtObject {
     }
 }
 
-class NewbbModerateHandler extends ArtObjectHandler
+class CbbxModerateHandler extends ArtObjectHandler
 {
-    function NewbbModerateHandler(&$db) {
-        $this->ArtObjectHandler($db, 'bb_moderates', 'Moderate', 'mod_id', 'uid');
+    function __construct(&$db) {
+        parent::__construct($db, 'cbbx_moderates', 'Moderate', 'mod_id', 'uid');
     }
 
     /**
@@ -75,7 +75,7 @@ class NewbbModerateHandler extends ArtObjectHandler
      */
     function clearGarbage($expire=0){
 	    $expire = time() - intval($expire);
-		$sql = sprintf("DELETE FROM %s WHERE mod_end < %u", $this->db->prefix('bb_moderates'), $expire);
+		$sql = sprintf("DELETE FROM %s WHERE mod_end < %u", $this->db->prefix('cbbx_moderates'), $expire);
         $this->db->queryF($sql);
     }
     
@@ -93,7 +93,7 @@ class NewbbModerateHandler extends ArtObjectHandler
 		}
 	    $uid = ($uid<0)?(is_object($GLOBALS["xoopsUser"])?$GLOBALS["xoopsUser"]->getVar("uid"):0):$uid;
 	    $uid_criteria = empty($uid)?"1=1":"uid=".intval($uid);
-	    $ip = empty($ip)?newbb_getIP(true):$ip;
+	    $ip = empty($ip)?cbbx_getIP(true):$ip;
 	    if(!empty($ip)){
 		    $ip_segs = explode(".", $ip);
 		    for($i=1; $i<=4; $i++){
@@ -105,7 +105,7 @@ class NewbbModerateHandler extends ArtObjectHandler
     	}
 	    $forum_criteria = empty($forum)?"forum_id=0":"forum_id=0 OR forum_id=".intval($forum);
 	    $expire_criteria = "mod_end > ".time();
-		$sql = sprintf("SELECT COUNT(*) AS count FROM %s WHERE (%s OR %s) AND (%s) AND (%s)", $this->db->prefix('bb_moderates'), $uid_criteria, $ip_criteria, $forum_criteria, $expire_criteria);
+		$sql = sprintf("SELECT COUNT(*) AS count FROM %s WHERE (%s OR %s) AND (%s) AND (%s)", $this->db->prefix('cbbx_moderates'), $uid_criteria, $ip_criteria, $forum_criteria, $expire_criteria);
         if (!$result = $this->db->query($sql)) {
             return false;
         }
@@ -124,12 +124,12 @@ class NewbbModerateHandler extends ArtObjectHandler
     function forumList($uid=-1, $ip=""){
 	    static $forums = array();
 	    $uid = ($uid<0)?(is_object($GLOBALS["xoopsUser"])?$GLOBALS["xoopsUser"]->getVar("uid"):0):$uid;
-	    $ip = empty($ip)?newbb_getIP(true):$ip;
+	    $ip = empty($ip)?cbbx_getIP(true):$ip;
 	    if(isset($forums[$uid][$ip])){
 		    return $forums[$uid][$ip];
 	    }
 		if(!empty($GLOBALS["xoopsModuleConfig"]['cache_enabled'])){
-			$forums[$uid][$ip] = newbb_getsession("sf".$uid."_".ip2long($ip), true);
+			$forums[$uid][$ip] = cbbx_getsession("sf".$uid."_".ip2long($ip), true);
 			if(is_array($forums[$uid][$ip]) && count($forums[$uid][$ip])){
 		    	return $forums[$uid][$ip];
 			}
@@ -145,7 +145,7 @@ class NewbbModerateHandler extends ArtObjectHandler
 	    	$ip_criteria = "1=1";
     	}
 	    $expire_criteria = "mod_end > ".time();
-		$sql = sprintf("SELECT forum_id, COUNT(*) AS count FROM %s WHERE (%s OR %s) AND (%s) GROUP BY forum_id", $this->db->prefix('bb_moderates'), $uid_criteria, $ip_criteria, $expire_criteria);
+		$sql = sprintf("SELECT forum_id, COUNT(*) AS count FROM %s WHERE (%s OR %s) AND (%s) GROUP BY forum_id", $this->db->prefix('cbbx_moderates'), $uid_criteria, $ip_criteria, $expire_criteria);
         if (!$result = $this->db->query($sql)) {
             return $forums[$uid][$ip] = array();
         }
@@ -157,7 +157,7 @@ class NewbbModerateHandler extends ArtObjectHandler
         }
         $forums[$uid][$ip] = count($_forums)?array_keys($_forums):array(-1);
 		if(!empty($GLOBALS["xoopsModuleConfig"]['cache_enabled'])){
-			newbb_setsession("sf".$uid."_".ip2long($ip), $forums[$uid][$ip]);
+			cbbx_setsession("sf".$uid."_".ip2long($ip), $forums[$uid][$ip]);
 		}
         
 		return $forums[$uid][$ip];
@@ -180,7 +180,7 @@ class NewbbModerateHandler extends ArtObjectHandler
 		    }
 	    	$criteria = "ip IN(".implode(",", $ips).")";
 	    }
-		$sql = "SELECT MAX(mod_end) AS expire FROM ".$this->db->prefix('bb_moderates')." WHERE ".$criteria;
+		$sql = "SELECT MAX(mod_end) AS expire FROM ".$this->db->prefix('cbbx_moderates')." WHERE ".$criteria;
         if (!$result = $this->db->query($sql)) {
             return -1;
         }
@@ -198,7 +198,7 @@ class NewbbModerateHandler extends ArtObjectHandler
     	/* for MySQL 4.1+ */
     	if($this->mysql_major_version() >= 4):
         $sql = "DELETE FROM ".$this->table.
-        		" WHERE (forum_id >0 AND forum_id NOT IN ( SELECT DISTINCT forum_id FROM ".$this->db->prefix("bb_forums").") )";
+        		" WHERE (forum_id >0 AND forum_id NOT IN ( SELECT DISTINCT forum_id FROM ".$this->db->prefix("cbbx_forums").") )";
         else:
         // for 4.0 +
         /* */
@@ -214,10 +214,12 @@ class NewbbModerateHandler extends ArtObjectHandler
         */
 		endif;
         if (!$result = $this->db->queryF($sql)) {
-	        newbb_message("cleanOrphan:". $sql);
+	        cbbx_message("cleanOrphan:". $sql);
             return false;
         }
         return true;
     }
 }
+
+class_alias('CbbxModerateHandler', basename(dirname(__DIR__)).'ModerateHandler');
 ?>

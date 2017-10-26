@@ -47,13 +47,13 @@ foreach (array(
 $op = isset($_POST['op']) ? $_POST['op'] : '';
 $viewmode = (isset($_POST['viewmode']) && $_POST['viewmode'] != 'flat') ? 'thread' : 'flat';
 if ( empty($forum) ) {
-    redirect_header("index.php", 2, _MD_ERRORFORUM);
+    redirect_header("index.php", 2, _MD_CBBX_ERRORFORUM);
     exit();
 }
 
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
-$post_handler =& xoops_getmodulehandler('post', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
+$post_handler =& xoops_getmodulehandler('post', basename(__DIR__));
 
 if ( !empty($isedit) && $post_id>0 ) {
     $forumpost =& $post_handler->get($post_id);
@@ -65,19 +65,20 @@ $topic =& $topic_handler->get($topic_id);
 $forum_id = ($topic_id)?$topic->getVar("forum_id"):$forum;
 $forum_obj =& $forum_handler->get($forum_id);
 if (!$forum_handler->getPermission($forum_obj)){
-    redirect_header("index.php", 2, _MD_NORIGHTTOACCESS);
+    redirect_header("index.php", 2, _MD_CBBX_NORIGHTTOACCESS);
     exit();
 }
 
 if ($xoopsModuleConfig['wol_enabled']){
-	$online_handler =& xoops_getmodulehandler('online', 'newbb');
-	$online_handler->init($forum_obj);
+    $online_handler =& xoops_getmodulehandler('online', basename(__DIR__));
+    $online_handler->init($forum_obj);
 }
 
 include XOOPS_ROOT_PATH."/header.php";
 
 if ( !empty($_POST['contents_submit']) ) {
-	$token_valid = false;
+    $token_valid = false;
+    
 	if(class_exists("XoopsSecurity")){
 		$token_valid = $GLOBALS['xoopsSecurity']->check();
 	}else{ // backward compatible
@@ -109,12 +110,11 @@ if ( !empty($_POST['contents_submit']) ) {
 			$xoopsUser =& $user;
 		}
 	}
-
-	$isadmin = newbb_isAdmin($forum_obj);
+	$isadmin = cbbx_isAdmin($forum_obj);
 
 	$time_valid = true;
 	if( !$isadmin && !empty($xoopsModuleConfig['post_timelimit']) ){
-    	$last_post = newbb_getsession('LP'); // using session might be more secure ...
+    	$last_post = cbbx_getsession('LP'); // using session might be more secure ...
 		if(time()-$last_post < $xoopsModuleConfig['post_timelimit']){
 			$time_valid = false;
 		}
@@ -124,8 +124,8 @@ if ( !empty($_POST['contents_submit']) ) {
 		$_POST['contents_preview'] = 1;
 		$_POST['contents_submit'] = null;
 		$_POST['contents_upload'] = null;
-		if(!$token_valid) echo "<div class=\"errorMsg\">"._MD_INVALID_SUBMIT."</div>";
-		if(!$time_valid) echo "<div class=\"errorMsg\">".sprintf(_MD_POSTING_LIMITED,$xoopsModuleConfig['post_timelimit'])."</div>";
+		if(!$token_valid) echo "<div class=\"errorMsg\">"._MD_CBBX_INVALID_SUBMIT."</div>";
+		if(!$time_valid) echo "<div class=\"errorMsg\">".sprintf(_MD_CBBX_POSTING_LIMITED,$xoopsModuleConfig['post_timelimit'])."</div>";
 		echo "<br clear=\"both\" />";
 	}
 }
@@ -145,7 +145,7 @@ if ( !empty($_POST['contents_submit']) ) {
 			&& ( $isadmin || ( $forumpost->checkTimelimit('edit_timelimit') && $forumpost->checkIdentity() ))
 			) {}
 		else{
-		    redirect_header("viewtopic.php?forum=$forum_id&amp;topic_id=$topic_id&amp;post_id=$post_id&amp;order=$order&amp;viewmode=$viewmode&amp;pid=$pid",2,_MD_NORIGHTTOEDIT);
+		    redirect_header("viewtopic.php?forum=$forum_id&amp;topic_id=$topic_id&amp;post_id=$post_id&amp;order=$order&amp;viewmode=$viewmode&amp;pid=$pid",2,_MD_CBBX_NORIGHTTOEDIT);
 		    exit();
 		}
 
@@ -156,13 +156,13 @@ if ( !empty($_POST['contents_submit']) ) {
 		if($topic_id){
 			$topic_status = $topic_handler->get($topic_id,'topic_status');
 			if (!$topic_handler->getPermission($forum_obj, $topic_status, 'reply')) {
-			    redirect_header("viewtopic.php?forum=$forum_id&amp;topic_id=$topic_id&amp;post_id=$post_id&amp;order=$order&amp;viewmode=$viewmode&amp;pid=$pid",2,_MD_NORIGHTTOREPLY);
+			    redirect_header("viewtopic.php?forum=$forum_id&amp;topic_id=$topic_id&amp;post_id=$post_id&amp;order=$order&amp;viewmode=$viewmode&amp;pid=$pid",2,_MD_CBBX_NORIGHTTOREPLY);
 			    exit();
 			}
 		}else{
 			$topic_status = 0;
 			if (!$topic_handler->getPermission($forum_obj, $topic_status, 'post')) {
-			    redirect_header("viewtopic.php?forum=$forum_id",2,_MD_NORIGHTTOPOST);
+			    redirect_header("viewtopic.php?forum=$forum_id",2,_MD_CBBX_NORIGHTTOPOST);
 			    exit();
 			}
 		}
@@ -182,7 +182,7 @@ if ( !empty($_POST['contents_submit']) ) {
             $forumpost->setVar('topic_id', $topic_id);
             $isreply = 1;
         }
-        $forumpost->setVar('poster_ip', newbb_getIP());
+        $forumpost->setVar('poster_ip', cbbx_getIP());
         $forumpost->setVar('uid', $uid);
         $forumpost->setVar('post_time', time());
     }
@@ -209,8 +209,8 @@ if ( !empty($_POST['contents_submit']) ) {
 
     // The text filter is far from complete
     // Let's look for some comprehensive handlers
-	if($dohtml && !newbb_isAdmin($forum_obj) ) {
-		//$message=newbb_textFilter($message);
+	if($dohtml && !cbbx_isAdmin($forum_obj) ) {
+		//$message=cbbx_textFilter($message);
 	}
     $forumpost->setVar('post_text', $message);
     $forumpost->setVar('post_karma', $post_karma);
@@ -254,7 +254,9 @@ if ( !empty($_POST['contents_submit']) ) {
         $maxfilesize = $forum_obj->getVar('attach_maxkb')*1024;
         $uploaddir = XOOPS_ROOT_PATH . "/".$xoopsModuleConfig['dir_attachments'];
 
-        $uploader = new newbb_uploader(
+        //$uploader = new cbbx_uploader(
+        $cbbx_uploader = $xoopsModule->dirname() . '_uploader';
+        $uploader = new $cbbx_uploader(
         	$uploaddir,
         	$forum_obj->getVar('attach_ext'),
         	$maxfilesize
@@ -264,7 +266,7 @@ if ( !empty($_POST['contents_submit']) ) {
 
         if ( $uploader->fetchMedia( $_POST['xoops_upload_file'][0]) )
         {
-	        $prefix = is_object($xoopsUser)?strval($xoopsUser->uid()).'_':'newbb_';
+	        $prefix = is_object($xoopsUser)?strval($xoopsUser->uid()).'_':'cbbx_';
 	        $uploader->setPrefix($prefix);
             if ( !$uploader->upload() )
                 $error_upload = $uploader->getErrors();
@@ -288,10 +290,10 @@ if ( !empty($_POST['contents_submit']) ) {
         include_once(XOOPS_ROOT_PATH.'/footer.php');
         exit();
     }
-	newbb_setsession("LP", time()); // Recording last post time
+	cbbx_setsession("LP", time()); // Recording last post time
 
 
-    if(newbb_checkSubjectPrefixPermission($forum_obj) && !empty($_POST['subject_pre'])){
+    if(cbbx_checkSubjectPrefixPermission($forum_obj) && !empty($_POST['subject_pre'])){
 		$subject_pre = intval($_POST['subject_pre']);
 		$sbj_res = $post_handler->insertnewsubject($forumpost->getVar('topic_id'), $subject_pre);
     }
@@ -304,7 +306,7 @@ if ( !empty($_POST['contents_submit']) ) {
 	    $tags['THREAD_URL'] = XOOPS_URL . '/modules/' . $xoopsModule->dirname() . '/viewtopic.php?post_id='.$postid.'&amp;topic_id=' . $forumpost->getVar('topic_id').'&amp;forum=' . $forumpost->getVar('forum_id');
 	    $tags['POST_URL'] = $tags['THREAD_URL'] . '#forumpost' . $postid;
 	    include_once 'include/notification.inc.php';
-	    $forum_info = newbb_notify_iteminfo ('forum', $forum_obj->getVar('forum_id'));
+	    $forum_info = cbbx_notify_iteminfo ('forum', $forum_obj->getVar('forum_id'));
 	    $tags['FORUM_NAME'] = $forum_info['name'];
 	    $tags['FORUM_URL'] = $forum_info['url'];
 	    $notification_handler =& xoops_gethandler('notification');
@@ -338,23 +340,22 @@ if ( !empty($_POST['contents_submit']) ) {
 
     if($approved){
 		if(!empty($xoopsModuleConfig['cache_enabled'])){
-			newbb_setsession("t".$forumpost->getVar("topic_id"), null);
+			cbbx_setsession("t".$forumpost->getVar("topic_id"), null);
 		}
     	$redirect = "viewtopic.php?topic_id=".$forumpost->getVar('topic_id')."&amp;post_id=".$postid."#forumpost".$postid."";
-	    $message = _MD_THANKSSUBMIT."<br />".$error_upload;
+	    $message = _MD_CBBX_THANKSSUBMIT."<br />".$error_upload;
     }else{
 	    $redirect = "viewforum.php?forum=".$forumpost->getVar('forum_id');
-	    $message = _MD_THANKSSUBMIT."<br />"._MD_WAITFORAPPROVAL."<br />".$error_upload;
+	    $message = _MD_CBBX_THANKSSUBMIT."<br />"._MD_CBBX_WAITFORAPPROVAL."<br />".$error_upload;
 	}
 	if ( $op == "add" ) {
-		redirect_header("polls.php?op=add&amp;forum=".$forumpost->getVar('forum_id')."&amp;topic_id=".$forumpost->getVar('topic_id')."",1,_MD_ADDPOLL);
+		redirect_header("polls.php?op=add&amp;forum=".$forumpost->getVar('forum_id')."&amp;topic_id=".$forumpost->getVar('topic_id')."",1,_MD_CBBX_ADDPOLL);
 		exit();
     }else{
 	    redirect_header($redirect,2,$message);
         exit();
     }
 }
-
 
 if ( !empty($_POST['contents_upload']) ) {
 	$attachments_tmp=array();
@@ -376,7 +377,8 @@ if ( !empty($_POST['contents_upload']) ) {
         $maxfilesize = $forum_obj->getVar('attach_maxkb')*1024;
         $uploaddir = XOOPS_CACHE_PATH;
 
-        $uploader = new newbb_uploader(
+        $cbbx_uploader = $xoopsModule->dirname() . '_uploader';
+        $uploader = new $cbbx_uploader(
         	$uploaddir,
         	$forum_obj->getVar('attach_ext'),
         	$maxfilesize
@@ -386,7 +388,7 @@ if ( !empty($_POST['contents_upload']) ) {
 
         if ( $uploader->fetchMedia( $_POST['xoops_upload_file'][0]) )
         {
-	        $prefix = is_object($xoopsUser)?strval($xoopsUser->uid()).'_':'newbb_';
+	        $prefix = is_object($xoopsUser)?strval($xoopsUser->uid()).'_':'cbbx_';
 	        $uploader->setPrefix($prefix);
             if ( !$uploader->upload() )
                 $error_upload = $uploader->getErrors();
@@ -420,8 +422,8 @@ if ( !empty($_POST['contents_preview']) || !empty($_GET['contents_preview']) ) {
     $dobr = empty($_POST['dobr']) ? 0 : 1;
     $p_message = $_POST['message'];
     $p_message = $myts->previewTarea($p_message, $dohtml, $dosmiley, $doxcode, 1, $dobr);
-	if($dohtml && !newbb_isAdmin($forum_obj) ) {
-		//$p_message = newbb_textFilter($p_message);
+	if($dohtml && !cbbx_isAdmin($forum_obj) ) {
+		//$p_message = cbbx_textFilter($p_message);
 	}
 
     echo "<table cellpadding='4' cellspacing='1' width='98%' class='outer'>";

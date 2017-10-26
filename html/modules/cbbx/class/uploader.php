@@ -1,5 +1,4 @@
 <?php
-// $Id: uploader.php,v 1.3 2005/10/19 17:20:32 phppp Exp $
 //  ------------------------------------------------------------------------ //
 //                XOOPS - PHP Content Management System                      //
 //                    Copyright (c) 2000 XOOPS.org                           //
@@ -33,7 +32,7 @@ if (!defined("XOOPS_ROOT_PATH")) {
 	exit();
 }
 include_once XOOPS_ROOT_PATH . "/class/uploader.php";
-class newbb_uploader extends XoopsMediaUploader {
+class cbbx_uploader extends XoopsMediaUploader {
     var $ext = "";
     var $ImageSizeCheck = false;
     var $FileSizeCheck = true;
@@ -51,7 +50,7 @@ class newbb_uploader extends XoopsMediaUploader {
      * @param int 		$maxWidth
      * @param int 		$maxHeight
      */
-    function newbb_uploader($uploadDir, $allowedMimeTypes = 0, $maxFileSize = 0, $maxWidth = 0, $maxHeight = 0)
+    function __construct($uploadDir, $allowedMimeTypes = 0, $maxFileSize = 0, $maxWidth = 0, $maxHeight = 0)
     {
         if (!is_array($allowedMimeTypes)) {
 	        if(empty($allowedMimeTypes) || $allowedMimeTypes == "*"){
@@ -61,7 +60,7 @@ class newbb_uploader extends XoopsMediaUploader {
             }
         }
 	    $allowedMimeTypes = array_filter(array_map("trim", $allowedMimeTypes));
-        $this->XoopsMediaUploader($uploadDir, $allowedMimeTypes, $maxFileSize, $maxWidth, $maxHeight);
+        parent::__construct($uploadDir, $allowedMimeTypes, $maxFileSize, $maxWidth, $maxHeight);
     }
 
     /**
@@ -179,4 +178,5 @@ class newbb_uploader extends XoopsMediaUploader {
     }
 }
 
+class_alias('cbbx_uploader', basename(dirname(__DIR__)).'_uploader');
 ?>

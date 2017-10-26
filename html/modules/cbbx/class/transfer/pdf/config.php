@@ -25,7 +25,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA //
 //  ------------------------------------------------------------------------ //
 /**
- * Transfer::newbb config
+ * Transfer::cbbx config
  *
  * @author	    phppp, http://xoops.org.cn
  * @copyright	copyright (c) 2005 XOOPSForge.com
@@ -44,7 +44,7 @@ if(!@include_once($root_path."/language/".$xoopsConfig['language'].".php")){
 }
 
 return $config = array(
-		"title"	=>	_MD_TRANSFER_PDF,
+		"title"	=>	_MD_CBBX_TRANSFER_PDF,
 		"level"	=>	1
 	);
 ?>

@@ -48,43 +48,43 @@ $topic_id = isset($_GET['topic_id']) ? intval($_GET['topic_id']) : 0;
 $post_id = !empty($_GET['post_id']) ? intval($_GET['post_id']) : 0;
 
 if ( empty($post_id) && empty($topic_id) ){
-	die(_MD_ERRORTOPIC);
+	die(_MD_CBBX_ERRORTOPIC);
 }
 
 if(!empty($post_id)){
-	$post_handler =& xoops_getmodulehandler('post', 'newbb');
+	$post_handler =& xoops_getmodulehandler('post', basename(__DIR__));
 	$post = & $post_handler->get($post_id);
 	if(!$approved = $post->getVar('approved')){
-		die(_MD_NORIGHTTOVIEW);
+		die(_MD_CBBX_NORIGHTTOVIEW);
 	}
 	$topic_id = $post->getVar("topic_id");
 	$post_data = $post_handler->getPostForPrint($post);
 	$isPost = 1;
-	$post_data["url"] = XOOPS_URL."/newbb/viewtopic.php?topic_id=".$post->getVar("topic_id")."&amp;post_id=".$post_id;
+	$post_data["url"] = XOOPS_URL."/cbbx/viewtopic.php?topic_id=".$post->getVar("topic_id")."&amp;post_id=".$post_id;
 }
 
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
 $forumtopic =& $topic_handler->get($topic_id);
 $topic_id = $forumtopic->getVar('topic_id');
 $forum = $forumtopic->getVar('forum_id');
 if(!$approved = $forumtopic->getVar('approved'))    {
-	die(_MD_NORIGHTTOVIEW);
+	die(_MD_CBBX_NORIGHTTOVIEW);
 }
 
-$isadmin = newbb_isAdmin($viewtopic_forum);
+$isadmin = cbbx_isAdmin($viewtopic_forum);
 if(!$isadmin && $forumtopic->getVar('approved')<0 ){
-    die(_MD_NORIGHTTOVIEW);
+    die(_MD_CBBX_NORIGHTTOVIEW);
 }
 
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 $forum = $forumtopic->getVar('forum_id');
 $viewtopic_forum =& $forum_handler->get($forum);
 if (!$forum_handler->getPermission($viewtopic_forum)){
-    die(_MD_NORIGHTTOVIEW);
+    die(_MD_CBBX_NORIGHTTOVIEW);
 }
 
 if (!$topic_handler->getPermission($viewtopic_forum, $forumtopic->getVar('topic_status'), "view")){
-	die(_MD_NORIGHTTOVIEW);
+	die(_MD_CBBX_NORIGHTTOVIEW);
 }
 
 }else{
@@ -107,7 +107,7 @@ if(empty($isPost)){
     echo "<body bgcolor='#ffffff' text='#000000' onload='window.print()'>
 	 	  <div style='width: 750px; border: 1px solid #000; padding: 20px;'>
 	 	  <div style='text-align: center; display: block; margin: 0 0 6px 0;'>
-		  <img src='" . XOOPS_URL . "/modules/newbb/images/xoopsbb_slogo.png' border='0' alt='' />
+		  <img src='" . XOOPS_URL . "/modules/cbbx/images/xoopsbb_slogo.png' border='0' alt='' />
 		  <br />
 		  <br />
 		  ";
@@ -122,7 +122,7 @@ if(empty($isPost)){
 		      <div style='text-align: left'>".$post_data['text']."</div>
 		      <div style='padding-top: 12px; border-top: 2px solid #ccc;'></div><br />";
     }
-	echo "<p>"._MD_COMEFROM . "&nbsp;".XOOPS_URL."/newbb/viewtopic.php?forum=".$forum_id."&amp;topic_id=".$topic_id."</p>";
+	echo "<p>"._MD_CBBX_COMEFROM . "&nbsp;".XOOPS_URL."/cbbx/viewtopic.php?forum=".$forum_id."&amp;topic_id=".$topic_id."</p>";
 	echo "</div></div>";
 	echo "</body></html>";
 	
@@ -140,13 +140,13 @@ if(empty($isPost)){
     echo "<body bgcolor='#ffffff' text='#000000' onload='window.print()'>
  		  <div style='width: 750px; border: 1px solid #000; padding: 20px;'>
  		  <div style='text-align: center; display: block; margin: 0 0 6px 0;'>
-	      <img src='" . XOOPS_URL . "/modules/newbb/images/xoopsbb_slogo.png' border='0' alt='' />
+	      <img src='" . XOOPS_URL . "/modules/cbbx/images/xoopsbb_slogo.png' border='0' alt='' />
 	      <h2 style='margin: 0;'>".$post_data['subject']."</h2></div>
  	      <div align='center'>" ._POSTEDBY. "&nbsp;".$post_data['author']."&nbsp;"._ON."&nbsp;".$post_data['date']."</div>
 		  <div style='text-align: center; display: block; padding-bottom: 12px; margin: 0 0 6px 0; border-bottom: 2px solid #ccc;'></div>
 		   	<div style='text-align: left'>".$post_data['text']."</div>
 			<div style='padding-top: 12px; border-top: 2px solid #ccc;'></div>
-			<p>"._MD_COMEFROM . "&nbsp;".$post_data["url"]."</p>
+			<p>"._MD_CBBX_COMEFROM . "&nbsp;".$post_data["url"]."</p>
 		    </div>
             <br />";
 	echo "<br /></body></html>";

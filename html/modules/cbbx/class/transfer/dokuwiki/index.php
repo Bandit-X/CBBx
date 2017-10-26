@@ -40,7 +40,7 @@ function transfer_dokuwiki(&$data)
 	$content = str_replace("<br>", "\\\\ ", $content);
 	$content = preg_replace_callback("/<a[\s]+href=(['\"]?)([^\"'<>]*)\\1[^>]*>([^<]*)<\/a>/imu", "transfer_parse_html_to_wiki", $content);
 	$content = preg_replace_callback("/<img[\s]+src=(['\"]?)([^\"'<>]*)\\1[\s]+(alt=(['\"]?)([^\"'<>]*)\\3)?[^>]*>/imu", "transfer_parse_img_to_wiki", $content);
-	$content  = newbb_html2text($content);
+	$content  = cbbx_html2text($content);
 	// Comment close;
 	
 	$hiddens["wikitext"] = "=====".$data["title"]."===== \n".
@@ -51,12 +51,12 @@ function transfer_dokuwiki(&$data)
 	include XOOPS_ROOT_PATH."/header.php";
 	
 	require_once(XOOPS_ROOT_PATH . "/class/xoopsformloader.php");
-	$form_dokuwiki = new XoopsThemeForm(_MD_TRANSFER_DOKUWIKI, "formdokuwiki", XOOPS_URL."/modules/".$_config["module"]."/doku.php");
+	$form_dokuwiki = new XoopsThemeForm(_MD_CBBX_TRANSFER_DOKUWIKI, "formdokuwiki", XOOPS_URL."/modules/".$_config["module"]."/doku.php");
 	foreach(array_keys($hiddens) as $key){
 		$form_dokuwiki->addElement(new XoopsFormHidden($key, str_replace("'", "&#039;",$hiddens[$key])));
 	}
 	
-	$namespace_option_tray = new XoopsFormElementTray(_MD_TRANSFER_DOKUWIKI_NAMESPACE, "<br />");
+	$namespace_option_tray = new XoopsFormElementTray(_MD_CBBX_TRANSFER_DOKUWIKI_NAMESPACE, "<br />");
 	require XOOPS_ROOT_PATH."/modules/".$_config["module"]."/inc/init.php";
 	$dir_array =& transfer_getDirListAsArray($conf["datadir"], $_config["namespace_skip"]);
 	
@@ -68,7 +68,7 @@ function transfer_dokuwiki(&$data)
 	$namespace_option_tray->addElement(new XoopsFormText(_ADD, "namespace_new", 50, 100));
 	
 	$form_dokuwiki->addElement($namespace_option_tray);
-	$form_dokuwiki->addElement(new XoopsFormText(_MD_TRANSFER_DOKUWIKI_NAME, "name", 50, 255, $_config["prefix"].$data["id"]));
+	$form_dokuwiki->addElement(new XoopsFormText(_MD_CBBX_TRANSFER_DOKUWIKI_NAME, "name", 50, 255, $_config["prefix"].$data["id"]));
 	
 	$submit_button = new XoopsFormButton("", "ok", _SUBMIT, "button");
 	$submit_button->setExtra('onclick="

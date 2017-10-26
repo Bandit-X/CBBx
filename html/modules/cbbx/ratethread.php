@@ -33,12 +33,12 @@ include 'header.php';
 
 $ratinguser = is_object($xoopsUser)?$xoopsUser -> getVar('uid'):0;
 $anonwaitdays = 1;
-$ip = newbb_getIP(true);
+$ip = cbbx_getIP(true);
 foreach(array("topic_id", "rate", "forum") as $var){
 	${$var} = isset($_POST[$var]) ? intval($_POST[$var]) : (isset($_GET[$var])?intval($_GET[$var]):0);
 }
 
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
 $topic_obj =& $topic_handler->get($topic_id);
 if (!$topic_handler->getPermission($topic_obj->getVar("forum_id"), $topic_obj->getVar('topic_status'), "post")
 	&&
@@ -48,34 +48,34 @@ if (!$topic_handler->getPermission($topic_obj->getVar("forum_id"), $topic_obj->g
 }
 
 if (empty($rate)){
-	redirect_header("viewtopic.php?topic_id=".$topic_id."&amp;forum=".$forum."", 4, _MD_NOVOTERATE);
+	redirect_header("viewtopic.php?topic_id=".$topic_id."&amp;forum=".$forum."", 4, _MD_CBBX_NOVOTERATE);
     exit();
 }
 $rate_handler =& xoops_getmodulehandler("rate", $xoopsModule->getVar("dirname"));
 if ($ratinguser != 0) {
 	// Check if Topic POSTER is voting (UNLESS Anonymous users allowed to post)
-    $crit_post =& New CriteriaCompo(new Criteria("topic_id", $topic_id));
+    $crit_post = new CriteriaCompo(new Criteria("topic_id", $topic_id));
     $crit_post->add(new Criteria("post_uid", $ratinguser));
     $post_handler =& xoops_getmodulehandler("post", $xoopsModule->getVar("dirname"));
     if($post_handler->getCount($crit_post)){
-        redirect_header("viewtopic.php?topic_id=".$topic_id."&amp;forum=".$forum."", 4, _MD_CANTVOTEOWN);
+        redirect_header("viewtopic.php?topic_id=".$topic_id."&amp;forum=".$forum."", 4, _MD_CBBX_CANTVOTEOWN);
         exit();
     }
     // Check if REG user is trying to vote twice.
-    $crit_rate =& New CriteriaCompo(new Criteria("topic_id", $topic_id));
+    $crit_rate = new CriteriaCompo(new Criteria("topic_id", $topic_id));
     $crit_rate->add(new Criteria("ratinguser", $ratinguser));
     if($rate_handler->getCount($crit_rate)){
-        redirect_header("viewtopic.php?topic_id=".$topic_id."&amp;forum=".$forum."", 4, _MD_VOTEONCE);
+        redirect_header("viewtopic.php?topic_id=".$topic_id."&amp;forum=".$forum."", 4, _MD_CBBX_VOTEONCE);
         exit();
     }
 }else{
     // Check if ANONYMOUS user is trying to vote more than once per day.
-    $crit_rate =& New CriteriaCompo(new Criteria("topic_id", $topic_id));
+    $crit_rate = new CriteriaCompo(new Criteria("topic_id", $topic_id));
     $crit_rate->add(new Criteria("ratinguser", $ratinguser));
     $crit_rate->add(new Criteria("ratinghostname", $ip));
     $crit_rate->add(new Criteria("ratingtimestamp", time() - (86400 * $anonwaitdays), ">"));
     if($rate_handler->getCount($crit_rate)){
-        redirect_header("viewtopic.php?topic_id=".$topic_id."&amp;forum=".$forum."", 4, _MD_VOTEONCE);
+        redirect_header("viewtopic.php?topic_id=".$topic_id."&amp;forum=".$forum."", 4, _MD_CBBX_VOTEONCE);
         exit();
     }
 }
@@ -88,8 +88,8 @@ $rate_obj->setVar("ratingtimestamp", time());
 
 $ratingid = $rate_handler->insert($rate_obj);;
 
-newbb_updaterating($topic_id);
-$ratemessage = _MD_VOTEAPPRE . "<br />" . sprintf(_MD_THANKYOU, $xoopsConfig['sitename']);
+cbbx_updaterating($topic_id);
+$ratemessage = _MD_CBBX_VOTEAPPRE . "<br />" . sprintf(_MD_CBBX_THANKYOU, $xoopsConfig['sitename']);
 redirect_header("viewtopic.php?topic_id=".$topic_id."&amp;forum=".$forum."", 2, $ratemessage);
 exit();
 

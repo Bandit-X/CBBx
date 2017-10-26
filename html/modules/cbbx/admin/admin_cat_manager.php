@@ -34,7 +34,7 @@ xoops_cp_header();
 $op = !empty($_GET['op'])? $_GET['op'] : (!empty($_POST['op'])?$_POST['op']:"");
 $cat_id = intval( !empty($_GET['cat_id'])? $_GET['cat_id'] : (!empty($_POST['cat_id'])?$_POST['cat_id']:0) );
 
-$category_handler =& xoops_getmodulehandler('category', 'newbb');
+$category_handler =& xoops_getmodulehandler('category', basename(dirname(__DIR__)));
 
 /**
  * newCategory()
@@ -54,7 +54,7 @@ function newCategory()
  */
 function editCategory($cat_id = 0)
 {
-    $category_handler = &xoops_getmodulehandler('category', 'newbb');
+    $category_handler = &xoops_getmodulehandler('category', basename(dirname(__DIR__)));
     if ($cat_id > 0) {
         $fc =& $category_handler->get($cat_id);
     } else {
@@ -62,12 +62,12 @@ function editCategory($cat_id = 0)
     }
     $groups_cat_access = null;
     global $xoopsModule;
-	include_once XOOPS_ROOT_PATH."/modules/".$xoopsModule->getVar("dirname")."/class/xoopsformloader.php";
+	include_once FRAMEWORKS_ROOT_PATH ."/compat/class/xoopsformloader.php";//ADD
 
     if ($cat_id) {
-        $sform = new XoopsThemeForm(_AM_NEWBB_EDITCATEGORY . " " . $fc->getVar('cat_title'), "op", xoops_getenv('PHP_SELF'));
+        $sform = new XoopsThemeForm(_AM_CBBX_EDITCATEGORY . " " . $fc->getVar('cat_title'), "op", xoops_getenv('PHP_SELF'));
     } else {
-        $sform = new XoopsThemeForm(_AM_NEWBB_CREATENEWCATEGORY, "op", xoops_getenv('PHP_SELF'));
+        $sform = new XoopsThemeForm(_AM_CBBX_CREATENEWCATEGORY, "op", xoops_getenv('PHP_SELF'));
         $fc->setVar('cat_title', '');
         $fc->setVar('cat_image', 'blank.gif');
         $fc->setVar('cat_description', '');
@@ -77,16 +77,16 @@ function editCategory($cat_id = 0)
         $fc->setVar('cat_url', 'http://www.xoops.org XOOPS');
     }
 
-    $sform->addElement(new XoopsFormText(_AM_NEWBB_SETCATEGORYORDER, 'cat_order', 5, 10, $fc->getVar('cat_order')), false);
-    $sform->addElement(new XoopsFormText(_AM_NEWBB_CATEGORY, 'title', 50, 80, $fc->getVar('cat_title', 'E')), true);
-    $sform->addElement(new XoopsFormDhtmlTextArea(_AM_NEWBB_CATEGORYDESC, 'catdescript', $fc->getVar('cat_description', 'E'), 10, 60), false);
+    $sform->addElement(new XoopsFormText(_AM_CBBX_SETCATEGORYORDER, 'cat_order', 5, 10, $fc->getVar('cat_order')), false);
+    $sform->addElement(new XoopsFormText(_AM_CBBX_CATEGORY, 'title', 50, 80, $fc->getVar('cat_title', 'E')), true);
+    $sform->addElement(new XoopsFormDhtmlTextArea(_AM_CBBX_CATEGORYDESC, 'catdescript', $fc->getVar('cat_description', 'E'), 10, 60), false);
 
-    //$displaydescription_radio = new XoopsFormRadioYN(_AM_NEWBB_SHOWDESC, 'show', $fc->getVar('cat_showdescript'), '' . _YES . '', ' ' . _NO . '');
+    //$displaydescription_radio = new XoopsFormRadioYN(_AM_CBBX_SHOWDESC, 'show', $fc->getVar('cat_showdescript'), '' . _YES . '', ' ' . _NO . '');
     //$sform->addElement($displaydescription_radio);
 
     /*
-    $status_select = new XoopsFormSelect(_AM_NEWBB_STATE, "state", $fc->getVar('cat_state'));
-    $status_select->addOptionArray(array('0' => _AM_NEWBB_ACTIVE, '1' => _AM_NEWBB_INACTIVE));
+    $status_select = new XoopsFormSelect(_AM_CBBX_STATE, "state", $fc->getVar('cat_state'));
+    $status_select->addOptionArray(array('0' => _AM_CBBX_ACTIVE, '1' => _AM_CBBX_INACTIVE));
     $sform->addElement($status_select);
     */
 
@@ -97,12 +97,12 @@ function editCategory($cat_id = 0)
     $indeximage_select = new XoopsFormSelect('', 'indeximage', $fc->getVar('cat_image'));
     $indeximage_select->addOptionArray($graph_array);
 	$indeximage_select->setExtra("onchange=\"showImgSelected('img', 'indeximage', '/".$imgdir."/', '', '" . XOOPS_URL . "')\"");
-    $indeximage_tray = new XoopsFormElementTray(_AM_NEWBB_IMAGE, '&nbsp;');
+    $indeximage_tray = new XoopsFormElementTray(_AM_CBBX_IMAGE, '&nbsp;');
     $indeximage_tray->addElement($indeximage_select);
     $indeximage_tray->addElement(new XoopsFormLabel('', "<br /><img src='" . XOOPS_URL . $imgdir . "/" . $fc->getVar('cat_image') . " 'name='img' id='img' alt='' />"));
     $sform->addElement($indeximage_tray);
 
-    $sform->addElement(new XoopsFormText(_AM_NEWBB_SPONSORLINK, 'sponurl', 50, 80, $fc->getVar('cat_url', 'E')), false);
+    $sform->addElement(new XoopsFormText(_AM_CBBX_SPONSORLINK, 'sponurl', 50, 80, $fc->getVar('cat_url', 'E')), false);
     $sform->addElement(new XoopsFormHidden('cat_id', $cat_id));
 
     $button_tray = new XoopsFormElementTray('', '');
@@ -124,8 +124,8 @@ switch ($op) {
     case "manage":
         $categories =& $category_handler->getAllCats();
         if (count($categories)==0) {
-            loadModuleAdminMenu(1, _AM_NEWBB_CREATENEWCATEGORY);
-            echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_NEWBB_CREATENEWCATEGORY . "</legend>";
+            loadModuleAdminMenu(1, _AM_CBBX_CREATENEWCATEGORY);
+            echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_CBBX_CREATENEWCATEGORY . "</legend>";
             echo "<br />";
             newCategory();
             echo "</fieldset>";
@@ -133,22 +133,22 @@ switch ($op) {
             break;
         }
 
-        loadModuleAdminMenu(1, _AM_NEWBB_CATADMIN);
-        echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_NEWBB_CATADMIN . "</legend>";
+        loadModuleAdminMenu(1, _AM_CBBX_CATADMIN);
+        echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_CBBX_CATADMIN . "</legend>";
         echo"<br />";
-        echo "<a style='border: 1px solid #5E5D63; color: #000000; font-family: verdana, tahoma, arial, helvetica, sans-serif; font-size: 1em; padding: 4px 8px; text-align:center;' href='admin_cat_manager.php'>" . _AM_NEWBB_CREATENEWCATEGORY . "</a><br /><br />";
+        echo "<a style='border: 1px solid #5E5D63; color: #000000; font-family: verdana, tahoma, arial, helvetica, sans-serif; font-size: 1em; padding: 4px 8px; text-align:center;' href='admin_cat_manager.php'>" . _AM_CBBX_CREATENEWCATEGORY . "</a><br /><br />";
 
         echo "<table border='0' cellpadding='4' cellspacing='1' width='100%' class='outer'>";
         echo "<tr align='center'>";
-        echo "<td class='bg3'>" . _AM_NEWBB_CATEGORY1 . "</td>";
-        //echo "<td class='bg3' width='10%'>" . _AM_NEWBB_STATE . "</td>";
-        echo "<td class='bg3' width='10%'>" . _AM_NEWBB_EDIT . "</td>";
-        echo "<td class='bg3' width='10%'>" . _AM_NEWBB_DELETE . "</td>";
+        echo "<td class='bg3'>" . _AM_CBBX_CATEGORY1 . "</td>";
+        //echo "<td class='bg3' width='10%'>" . _AM_CBBX_STATE . "</td>";
+        echo "<td class='bg3' width='10%'>" . _AM_CBBX_EDIT . "</td>";
+        echo "<td class='bg3' width='10%'>" . _AM_CBBX_DELETE . "</td>";
         echo "</tr>";
 
         foreach($categories as $key => $onecat) {
-            $cat_edit_link = "<a href=\"admin_cat_manager.php?op=mod&cat_id=" . $onecat->getVar('cat_id') . "\">".newbb_displayImage($forumImage['edit'], _EDIT)."</a>";
-            $cat_del_link = "<a href=\"admin_cat_manager.php?op=del&cat_id=" . $onecat->getVar('cat_id') . "\">".newbb_displayImage($forumImage['delete'], _DELETE)."</a>";
+            $cat_edit_link = "<a href=\"admin_cat_manager.php?op=mod&cat_id=" . $onecat->getVar('cat_id') . "\">".cbbx_displayImage($forumImage['edit'], _EDIT)."</a>";
+            $cat_del_link = "<a href=\"admin_cat_manager.php?op=del&cat_id=" . $onecat->getVar('cat_id') . "\">".cbbx_displayImage($forumImage['delete'], _DELETE)."</a>";
             $cat_title_link = "<a href=\"".XOOPS_URL."/modules/".$xoopsModule->getVar("dirname")."/index.php?cat=" . $onecat->getVar('cat_id') . "\">".$onecat->getVar('cat_title')."</a>";
 
             echo "<tr class='odd' align='left'>";
@@ -163,8 +163,8 @@ switch ($op) {
 
     case "mod":
         $fc = &$category_handler->get($cat_id);
-        loadModuleAdminMenu(1, _AM_NEWBB_EDITCATEGORY . $fc->getVar('cat_title'));
-        echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_NEWBB_EDITCATEGORY . "</legend>";
+        loadModuleAdminMenu(1, _AM_CBBX_EDITCATEGORY . $fc->getVar('cat_title'));
+        echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_CBBX_EDITCATEGORY . "</legend>";
         echo"<br />";
 
         editCategory($cat_id);
@@ -174,14 +174,14 @@ switch ($op) {
 
     case "del":
         if (empty($_POST['confirm'])) {
-            xoops_confirm(array('op' => 'del', 'cat_id' => intval($_GET['cat_id']), 'confirm' => 1), 'admin_cat_manager.php', _AM_NEWBB_WAYSYWTDTTAL);
+            xoops_confirm(array('op' => 'del', 'cat_id' => intval($_GET['cat_id']), 'confirm' => 1), 'admin_cat_manager.php', _AM_CBBX_WAYSYWTDTTAL);
             break;
         } else {
             $fc = &$category_handler->create(false);
             $fc->setVar('cat_id', $_POST['cat_id']);
             $category_handler->delete($fc);
 
-            redirect_header("admin_cat_manager.php", 2, _AM_NEWBB_CATEGORYDELETED);
+            redirect_header("admin_cat_manager.php", 2, _AM_CBBX_CATEGORYDELETED);
         }
         break;
 
@@ -189,10 +189,10 @@ switch ($op) {
 
         if ($cat_id) {
             $fc = &$category_handler->get($cat_id);
-            $message = _AM_NEWBB_CATEGORYUPDATED;
+            $message = _AM_CBBX_CATEGORYUPDATED;
         } else {
             $fc = &$category_handler->create();
-            $message = _AM_NEWBB_CATEGORYCREATED;
+            $message = _AM_CBBX_CATEGORYCREATED;
         }
 
         $fc->setVar('cat_title', @$_POST['title']);
@@ -204,7 +204,7 @@ switch ($op) {
         //$fc->setVar('cat_showdescript', @$_POST['show']);
 
         if (!$category_handler->insert($fc)) {
-            $message = _AM_NEWBB_DATABASEERROR;
+            $message = _AM_CBBX_DATABASEERROR;
         }
         if($cat_id=$fc->getVar("cat_id") && $fc->isNew()){
 		    $gperm_handler =& xoops_gethandler("groupperm");
@@ -218,8 +218,8 @@ switch ($op) {
 
     case "default":
     default:
-        loadModuleAdminMenu(1, _AM_NEWBB_CREATENEWCATEGORY);
-        echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_NEWBB_CREATENEWCATEGORY . "</legend>";
+        loadModuleAdminMenu(1, _AM_CBBX_CREATENEWCATEGORY);
+        echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_CBBX_CREATENEWCATEGORY . "</legend>";
         echo "<br />";
         newCategory();
         echo "</fieldset>";

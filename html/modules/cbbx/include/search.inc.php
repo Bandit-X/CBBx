@@ -31,17 +31,18 @@
 if (!defined('XOOPS_ROOT_PATH')) {
 	exit();
 }
-require_once(XOOPS_ROOT_PATH.'/modules/newbb/include/functions.php');
+require_once(XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/include/functions.php');
 
-function &newbb_search($queryarray, $andor, $limit, $offset, $userid, $forums = 0, $sortby = 0, $searchin = "both", $subquery = "")
+function &cbbx_search($queryarray, $andor, $limit, $offset, $userid, $forums = 0, $sortby = 0, $searchin = "both", $subquery = "")
 {
-	global $xoopsDB, $xoopsConfig, $myts, $xoopsUser;
-	static $allowedForums, $newbbConfig;
+	global $xoopsDB, $xoopsConfig, $xoopsUser;
+	static $allowedForums, $cbbxConfig;
+	$myts =& MyTextSanitizer::getInstance();
 
 	$uid = (is_object($xoopsUser)&&$xoopsUser->isactive())?$xoopsUser->getVar('uid'):0;
 
 	if(!isset($allowedForums[$uid])){
-		$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+		$forum_handler =& xoops_getmodulehandler('forum', basename(dirname(__DIR__)));
 		if (is_array($forums) && count($forums) > 0) {
 			$forums = array_map('intval', $forums);
 			foreach($forums as $forumid){
@@ -75,9 +76,9 @@ function &newbb_search($queryarray, $andor, $limit, $offset, $userid, $forums = 
 
  	$sql = 'SELECT p.uid,f.forum_id, p.topic_id, p.poster_name, p.post_time,';
     $sql .= ' f.forum_name, p.post_id, p.subject
-            FROM '.$xoopsDB->prefix('bb_posts').' p,
-            '.$xoopsDB->prefix('bb_posts_text').' pt,
-    		'.$xoopsDB->prefix('bb_forums').' f';
+            FROM '.$xoopsDB->prefix('cbbx_posts').' p,
+            '.$xoopsDB->prefix('cbbx_posts_text').' pt,
+    		'.$xoopsDB->prefix('cbbx_forums').' f';
     $sql .= ' WHERE p.post_id = pt.post_id';
     $sql .= ' AND p.approved = 1';
     $sql .= ' AND p.forum_id = f.forum_id';
@@ -139,6 +140,7 @@ function &newbb_search($queryarray, $andor, $limit, $offset, $userid, $forums = 
 	$users = array();
 	$i = 0;
  	while($myrow = $xoopsDB->fetchArray($result)){
+		 var_dump($myrow);
         $ret[$i]['link'] = "viewtopic.php?topic_id=".$myrow['topic_id']."&amp;forum=".$myrow['forum_id']."&amp;post_id=".$myrow['post_id']."#forumpost".$myrow['post_id'];
 		$ret[$i]['title'] = $myrow['subject'];
 		$ret[$i]['time'] = $myrow['post_time'];
@@ -160,18 +162,18 @@ function &newbb_search($queryarray, $andor, $limit, $offset, $userid, $forums = 
 	}
 
 	$module_handler = &xoops_gethandler('module');
-	$newbb = &$module_handler->getByDirname('newbb');
+	$cbbx = &$module_handler->getByDirname(basename(dirname(__DIR__)));
 
-	if(!isset($newbbConfig)){
+	if(!isset($cbbxConfig)){
 		$config_handler =& xoops_gethandler('config');
-		$newbbConfig = $config_handler->getConfigsByCat(0, $newbb->getVar('mid'));
+		$cbbxConfig = $config_handler->getConfigsByCat(0, $cbbx->getVar('mid'));
 	}
 
 	$count = count($ret);
 	for($i =0; $i < $count; $i ++ ){
 		if($ret[$i]['uid'] >0){
 			if ( isset($users[$ret[$i]['uid']]) && (is_object($users[$ret[$i]['uid']])) && ($users[$ret[$i]['uid']]->isActive()) ){
-				$poster = ($newbbConfig['show_realname']&&$users[$ret[$i]['uid']]->getVar('name'))?$users[$ret[$i]['uid']]->getVar('name'):$users[$ret[$i]['uid']]->getVar('uname');
+				$poster = ($cbbxConfig['show_realname']&&$users[$ret[$i]['uid']]->getVar('name'))?$users[$ret[$i]['uid']]->getVar('name'):$users[$ret[$i]['uid']]->getVar('uname');
 				$poster = $myts->htmlSpecialChars($poster);
 				$ret[$i]['poster'] = '<a href="'.XOOPS_URL.'/userinfo.php?uid='.$ret[$i]['uid'].'">'.$poster.'</a>';
 		    	$title = $myts->htmlSpecialChars($ret[$i]['title']);
@@ -188,4 +190,5 @@ function &newbb_search($queryarray, $andor, $limit, $offset, $userid, $forums = 
 
 	return $ret;
 }
+
 ?>

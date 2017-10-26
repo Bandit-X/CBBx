@@ -31,18 +31,17 @@
 if (!defined('XOOPS_ROOT_PATH')) {
 	exit();
 }
-if(defined("XOOPS_MODULE_NEWBB_FUCTIONS")) exit();
-define("XOOPS_MODULE_NEWBB_FUCTIONS", 1);
+if(defined("XOOPS_MODULE_CBBX_FUCTIONS")) exit();
+define("XOOPS_MODULE_CBBX_FUCTIONS", 1);
 
-@include_once XOOPS_ROOT_PATH.'/modules/newbb/include/plugin.php';
-include_once XOOPS_ROOT_PATH.'/modules/newbb/include/functions.php';
+@include_once XOOPS_ROOT_PATH.'/modules/'.$basename(dirname(__DIR__)).'/include/plugin.php';
+include_once XOOPS_ROOT_PATH.'/modules/'.$basename(dirname(__DIR__)).'/include/functions.php';
 
-newbb_load_object();
+cbbx_load_object();
 
-
-function xoops_module_update_newbb(&$module, $oldversion = null) 
+function xoops_module_update_cbbx(&$module, $oldversion = null) 
 {
-	$newbbConfig = newbb_load_config();
+	$cbbxConfig = cbbx_load_config();
 	
     //$oldversion = $module->getVar('version');
     //$oldconfig = $module->getVar('hasconfig');
@@ -50,7 +49,7 @@ function xoops_module_update_newbb(&$module, $oldversion = null)
     //if (empty($oldconfig)) {
     if ($oldversion == 100) {
 	    include_once dirname(__FILE__)."/module.v100.php";
-	    xoops_module_update_newbb_v100($module);
+	    xoops_module_update_cbbx_v100($module);
     }
     
     // NewBB 2.* and CBB 1.*
@@ -58,58 +57,60 @@ function xoops_module_update_newbb(&$module, $oldversion = null)
     // change forum moderators
     if ($oldversion < 220) {
 	    include_once dirname(__FILE__)."/module.v220.php";
-	    xoops_module_update_newbb_v220($module);
+	    xoops_module_update_cbbx_v220($module);
     }
     
     if ($oldversion < 230) {
-        $GLOBALS['xoopsDB']->queryFromFile(XOOPS_ROOT_PATH."/modules/newbb/sql/upgrade_230.sql");
-		//$module->setErrors("bb_moderates table inserted");
+        $GLOBALS['xoopsDB']->queryFromFile(XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/sql/upgrade_230.sql'); //missing?
+		//$module->setErrors("cbbx_moderates table inserted");
     }
 
     if ($oldversion < 304) {
-        $GLOBALS['xoopsDB']->queryFromFile(XOOPS_ROOT_PATH."/modules/newbb/sql/mysql.304.sql");
+        $GLOBALS['xoopsDB']->queryFromFile(XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/sql/mysql.304.sql'); //missing?
     }
     
-	if(!empty($newbbConfig["syncOnUpdate"])){
-		newbb_synchronization();
+	if(!empty($cbbxConfig["syncOnUpdate"])){
+		cbbx_synchronization();
 	}
 	
 	return true;
 }
 
-function xoops_module_pre_update_newbb(&$module) 
+function xoops_module_pre_update_cbbx(&$module) 
 {
-	return newbb_setModuleConfig($module, true);
+	return cbbx_setModuleConfig($module, true);
 }
 
-function xoops_module_pre_install_newbb(&$module)
+//TODO: check if i need alias for this and the pre_update, install
+function xoops_module_pre_install_cbbx(&$module)
 {
 	$mod_tables = $module->getInfo("tables");
 	foreach($mod_tables as $table){
 		$GLOBALS["xoopsDB"]->queryF("DROP TABLE IF EXISTS ".$GLOBALS["xoopsDB"]->prefix($table).";");
 	}
-	return newbb_setModuleConfig($module);
+	return cbbx_setModuleConfig($module);
 }
 
-function xoops_module_install_newbb(&$module)
+function xoops_module_install_cbbx(&$module)
 {
+    $moddirname = $module->dirname();
 	/* Create a test category */
-	$category_handler =& xoops_getmodulehandler('category', 'newbb');
+	$category_handler =& xoops_getmodulehandler('category', $moddirname);
 	$category =& $category_handler->create();
-    $category->setVar('cat_title', _MI_NEWBB_INSTALL_CAT_TITLE, true);
+    $category->setVar('cat_title', _MI_CBBX_INSTALL_CAT_TITLE, true);
     $category->setVar('cat_image', "", true);
     $category->setVar('cat_order', 1);
-    $category->setVar('cat_description', _MI_NEWBB_INSTALL_CAT_DESC, true);
+    $category->setVar('cat_description', _MI_CBBX_INSTALL_CAT_DESC, true);
     $category->setVar('cat_url', "http://xoops.org XOOPS", true);
     if (!$cat_id = $category_handler->insert($category)) {
         return true;
     }
 
     /* Create a forum for test */
-	$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+	$forum_handler =& xoops_getmodulehandler('forum', $moddirname);
     $forum =& $forum_handler->create();
-    $forum->setVar('forum_name', _MI_NEWBB_INSTALL_FORUM_NAME, true);
-    $forum->setVar('forum_desc', _MI_NEWBB_INSTALL_FORUM_DESC, true);
+    $forum->setVar('forum_name', _MI_CBBX_INSTALL_FORUM_NAME, true);
+    $forum->setVar('forum_desc', _MI_CBBX_INSTALL_FORUM_DESC, true);
     $forum->setVar('forum_order', 1);
     $forum->setVar('forum_moderator', array());
     $forum->setVar('parent_forum', 0);
@@ -143,13 +144,13 @@ function xoops_module_install_newbb(&$module)
     }
     
     /* Create a test post */
-	$post_handler =& xoops_getmodulehandler('post', 'newbb');
+	$post_handler =& xoops_getmodulehandler('post', $moddirname);
 	$forumpost =& $post_handler->create();
-    $forumpost->setVar('poster_ip', newbb_getIP());
+    $forumpost->setVar('poster_ip', cbbx_getIP());
     $forumpost->setVar('uid', $GLOBALS["xoopsUser"]->getVar("uid"));
 	$forumpost->setVar('approved', 1);
     $forumpost->setVar('forum_id', $forum_id);
-    $forumpost->setVar('subject', _MI_NEWBB_INSTALL_POST_SUBJECT, true);
+    $forumpost->setVar('subject', _MI_CBBX_INSTALL_POST_SUBJECT, true);
     $forumpost->setVar('dohtml', 0);
     $forumpost->setVar('dosmiley', 1);
     $forumpost->setVar('doxcode', 1);
@@ -157,13 +158,13 @@ function xoops_module_install_newbb(&$module)
     $forumpost->setVar('icon', "", true);
     $forumpost->setVar('attachsig', 1);
     $forumpost->setVar('post_time', time());
-    $forumpost->setVar('post_text', _MI_NEWBB_INSTALL_POST_TEXT, true);
+    $forumpost->setVar('post_text', _MI_CBBX_INSTALL_POST_TEXT, true);
     $postid = $post_handler->insert($forumpost);
         
     return true;
 }
  
-function newbb_setModuleConfig(&$module, $isUpdate = false) 
+function cbbx_setModuleConfig(&$module, $isUpdate = false) 
 {
 	return true;
 }

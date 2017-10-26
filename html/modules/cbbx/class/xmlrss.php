@@ -1,5 +1,4 @@
 <?php
-// $Id: xmlrss.php,v 1.3 2005/10/19 17:20:32 phppp Exp $
 // ------------------------------------------------------------------------ //
 // XOOPS - PHP Content Management System                      //
 // Copyright (c) 2000 XOOPS.org                           //
@@ -115,7 +114,7 @@ class Xmlrss {
     }
 }
 
-class NewbbXmlrssHandler
+class CbbxXmlrssHandler
 {
     function &create()
     {
@@ -150,4 +149,5 @@ class NewbbXmlrssHandler
 
 }
 
+class_alias('CbbxXmlrssHandler', basename(dirname(__DIR__)).'XmlrssHandler');
 ?>

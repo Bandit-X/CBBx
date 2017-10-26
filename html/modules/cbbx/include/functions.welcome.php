@@ -29,10 +29,10 @@
 //  Project: Article Project                                                 //
 //  ------------------------------------------------------------------------ //
 
-if(!defined("NEWBB_FUNCTIONS_WELCOME")):
-define("NEWBB_FUNCTIONS_WELCOME", true);
+if(!defined("CBBX_FUNCTIONS_WELCOME")):
+define("CBBX_FUNCTIONS_WELCOME", true);
 
-function newbb_welcome_create( &$user, $forum_id )
+function cbbx_welcome_create( &$user, $forum_id )
 {
 	global $xoopsModule, $xoopsModuleConfig, $myts;
 
@@ -40,14 +40,14 @@ function newbb_welcome_create( &$user, $forum_id )
 		return false;
 	}
 	
-	$post_handler =& xoops_getmodulehandler('post', 'newbb');
+	$post_handler =& xoops_getmodulehandler('post', basename(dirname(__DIR__)));
 	$forumpost =& $post_handler->create();
-    $forumpost->setVar('poster_ip', newbb_getIP());
+    $forumpost->setVar('poster_ip', cbbx_getIP());
     $forumpost->setVar('uid', $user->getVar("uid"));
 	$forumpost->setVar('approved', 1);
     $forumpost->setVar('forum_id', $forum_id);
 
-    $subject = sprintf(_MD_WELCOME_SUBJECT, $user->getVar('uname'));
+    $subject = sprintf(_MD_CBBX_WELCOME_SUBJECT, $user->getVar('uname'));
     $forumpost->setVar('subject', $subject);
     $forumpost->setVar('dohtml', 1);
     $forumpost->setVar('dosmiley', 1);
@@ -67,7 +67,7 @@ function newbb_welcome_create( &$user, $forum_id )
 	if(!defined("_PROFILE_MA_ALLABOUT")) {
 		$mod->loadLanguage();
 	}
-	$groupperm_handler =& xoops_getmodulehandler('permission', 'newbb');
+	$groupperm_handler =& xoops_getmodulehandler('permission', basename(dirname(__DIR__)));
 	$show_ids = $groupperm_handler->getItemIds('profile_show', $groups, $mod->getVar('mid'));
 	$visible_ids = $groupperm_handler->getItemIds('profile_visible', $groups, $mod->getVar('mid'));
 	unset($mod);
@@ -115,9 +115,9 @@ function newbb_welcome_create( &$user, $forum_id )
 	ksort($categories);
     endif;
     
-	$message = sprintf(_MD_WELCOME_MESSAGE, $user->getVar('uname'))."\n\n";
+	$message = sprintf(_MD_CBBX_WELCOME_MESSAGE, $user->getVar('uname'))."\n\n";
 	$message .= _PROFILE.": <a href='".XOOPS_URL . "/userinfo.php?uid=" . $user->getVar('uid')."'><strong>".$user->getVar('uname')."</strong></a> ";
-	$message .= " | <a href='".XOOPS_URL . "/pmlite.php?send2=1&amp;to_userid=" . $user->getVar('uid')."'>"._MD_PM."</a>\n";
+	$message .= " | <a href='".XOOPS_URL . "/pmlite.php?send2=1&amp;to_userid=" . $user->getVar('uid')."'>"._MD_CBBX_PM."</a>\n";
 	foreach($categories as $category){
 		if(isset($category["fields"])){
 			$message .= "\n\n".$category["cat_title"].":\n\n";
@@ -136,7 +136,7 @@ function newbb_welcome_create( &$user, $forum_id )
 	    $tags['THREAD_URL'] = XOOPS_URL . '/modules/' . $xoopsModule->getVar("dirname") . '/viewtopic.php?post_id='.$postid.'&amp;topic_id=' . $forumpost->getVar('topic_id').'&amp;forum=' . $forum_id;
 	    $tags['POST_URL'] = $tags['THREAD_URL'] . '#forumpost' . $postid;
 	    include_once 'include/notification.inc.php';
-	    $forum_info = newbb_notify_iteminfo ('forum', $forum_id);
+	    $forum_info = cbbx_notify_iteminfo ('forum', $forum_id);
 	    $tags['FORUM_NAME'] = $forum_info['name'];
 	    $tags['FORUM_URL'] = $forum_info['url'];
 	    $notification_handler =& xoops_gethandler('notification');

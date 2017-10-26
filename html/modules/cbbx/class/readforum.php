@@ -33,7 +33,7 @@ include_once dirname(__FILE__).'/read.php';
 /**
  * A handler for read/unread handling
  * 
- * @package     newbb/cbb
+ * @package     cbbx/cbb
  * 
  * @author	    D.J. (phppp, http://xoopsforge.com)
  * @copyright	copyright (c) 2005 XOOPS.org
@@ -41,16 +41,16 @@ include_once dirname(__FILE__).'/read.php';
 
 class Readforum extends Read 
 {
-    function Readforum()
+    function __construct()
     {
-        $this->Read("forum");
+        parent::__construct("forum");
     }
 }
 
-class NewbbReadforumHandler extends NewbbReadHandler
+class CbbxReadforumHandler extends CbbxReadHandler
 {
-    function NewbbReadforumHandler(&$db) {
-        $this->NewbbReadHandler($db, "forum");
+    function __construct(&$db) {
+        parent::__construct($db, "forum");
     }
     
     /**
@@ -60,8 +60,8 @@ class NewbbReadforumHandler extends NewbbReadHandler
      */
     function cleanOrphan()
     {
-	    parent::cleanOrphan($this->db->prefix("bb_posts"), "post_id");
-		return parent::cleanOrphan($this->db->prefix("bb_forums"), "forum_id", "read_item");
+	    parent::cleanOrphan($this->db->prefix("cbbx_posts"), "post_id");
+		return parent::cleanOrphan($this->db->prefix("cbbx_forums"), "forum_id", "read_item");
     }    
     
     function setRead_items($status = 0, $uid = null)
@@ -77,13 +77,13 @@ class NewbbReadforumHandler extends NewbbReadHandler
 	    $cookie_name = "LF";
 		$items = array();
 		if(!empty($status)):
-		$item_handler =& xoops_getmodulehandler('forum', 'newbb');
+		$item_handler =& xoops_getmodulehandler('forum', basename(dirname(__DIR__)));
 		$items_id = $item_handler->getIds();
 		foreach($items_id as $key){
 			$items[$key] = time();
 		}
 		endif;
-		newbb_setcookie($cookie_name, $items);
+		cbbx_setcookie($cookie_name, $items);
 		return true;
     }
     
@@ -101,7 +101,7 @@ class NewbbReadforumHandler extends NewbbReadHandler
 		    return true;
 	    }
 
-		$item_handler =& xoops_getmodulehandler('forum', 'newbb');
+		$item_handler =& xoops_getmodulehandler('forum', basename(dirname(__DIR__)));
 		$items_obj =& $item_handler->getAll(null, array("forum_last_post_id"));
 		foreach(array_keys($items_obj) as $key){
 			$this->setRead_db($key, $items_obj[$key]->getVar("forum_last_post_id"), $uid);
@@ -111,4 +111,6 @@ class NewbbReadforumHandler extends NewbbReadHandler
 		return true;
     }
 }
+
+class_alias('CbbxReadforumHandler', basename(dirname(__DIR__)).'ReadforumHandler');
 ?>

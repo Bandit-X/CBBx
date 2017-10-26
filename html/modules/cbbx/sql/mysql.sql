@@ -1,25 +1,8 @@
--- phpMyAdmin SQL Dump
--- version 2.6.4-pl4
--- http://www.phpmyadmin.net
 -- 
--- Host: localhost
--- Generation Time: May 07, 2006 at 01:26 PM
--- Server version: 5.0.16
--- PHP Version: 5.1.0
--- 
--- CBB 3.04
--- 
--- 
--- Database: `cbb`
+-- Table structure for table `cbbx_archive`
 -- 
 
--- --------------------------------------------------------
-
--- 
--- Table structure for table `bb_archive`
--- 
-
-CREATE TABLE `bb_archive` (
+CREATE TABLE `cbbx_archive` (
   `topic_id` int(8) unsigned NOT NULL default '0',
   `post_id` int(10) unsigned NOT NULL default '0',
   `post_text` text NOT NULL
@@ -28,10 +11,10 @@ CREATE TABLE `bb_archive` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_attachments`
+-- Table structure for table `cbbx_attachments`
 -- 
 
-CREATE TABLE `bb_attachments` (
+CREATE TABLE `cbbx_attachments` (
   `attach_id` int(8) unsigned NOT NULL auto_increment,
   `post_id` int(10) unsigned NOT NULL default '0',
   `name_saved` varchar(255) NOT NULL default '',
@@ -47,10 +30,10 @@ CREATE TABLE `bb_attachments` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_categories`
+-- Table structure for table `cbbx_categories`
 -- 
 
-CREATE TABLE `bb_categories` (
+CREATE TABLE `cbbx_categories` (
   `cat_id` smallint(3) unsigned NOT NULL auto_increment,
   `cat_image` varchar(50) NOT NULL default '',
   `cat_title` varchar(100) NOT NULL default '',
@@ -64,10 +47,10 @@ CREATE TABLE `bb_categories` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_digest`
+-- Table structure for table `cbbx_digest`
 -- 
 
-CREATE TABLE `bb_digest` (
+CREATE TABLE `cbbx_digest` (
   `digest_id` int(8) unsigned NOT NULL auto_increment,
   `digest_time` int(10) unsigned NOT NULL default '0',
   `digest_content` text,
@@ -78,10 +61,10 @@ CREATE TABLE `bb_digest` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_forums`
+-- Table structure for table `cbbx_forums`
 -- 
 
-CREATE TABLE `bb_forums` (
+CREATE TABLE `cbbx_forums` (
   `forum_id` smallint(4) unsigned NOT NULL auto_increment,
   `forum_name` varchar(150) NOT NULL default '',
   `forum_desc` text,
@@ -111,10 +94,10 @@ CREATE TABLE `bb_forums` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_moderates`
+-- Table structure for table `cbbx_moderates`
 -- 
 
-CREATE TABLE `bb_moderates` (
+CREATE TABLE `cbbx_moderates` (
   `mod_id` int(10) unsigned NOT NULL auto_increment,
   `mod_start` int(10) unsigned NOT NULL default '0',
   `mod_end` int(10) unsigned NOT NULL default '0',
@@ -131,10 +114,10 @@ CREATE TABLE `bb_moderates` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_online`
+-- Table structure for table `cbbx_online`
 -- 
 
-CREATE TABLE `bb_online` (
+CREATE TABLE `cbbx_online` (
   `online_forum` int(10) unsigned NOT NULL default '0',
   `online_topic` int(8) unsigned NOT NULL default '0',
   `online_uid` int(10) unsigned NOT NULL default '0',
@@ -149,10 +132,10 @@ CREATE TABLE `bb_online` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_posts`
+-- Table structure for table `cbbx_posts`
 -- 
 
-CREATE TABLE `bb_posts` (
+CREATE TABLE `cbbx_posts` (
   `post_id` int(10) unsigned NOT NULL auto_increment,
   `pid` int(10) unsigned NOT NULL default '0',
   `topic_id` int(8) unsigned NOT NULL default '0',
@@ -189,10 +172,10 @@ CREATE TABLE `bb_posts` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_posts_text`
+-- Table structure for table `cbbx_posts_text`
 -- 
 
-CREATE TABLE `bb_posts_text` (
+CREATE TABLE `cbbx_posts_text` (
   `post_id` int(10) unsigned NOT NULL default '0',
   `post_text` text,
   `post_edit` text,
@@ -203,10 +186,10 @@ CREATE TABLE `bb_posts_text` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_reads_forum`
+-- Table structure for table `cbbx_reads_forum`
 -- 
 
-CREATE TABLE `bb_reads_forum` (
+CREATE TABLE `cbbx_reads_forum` (
   `read_id` int(10) unsigned NOT NULL auto_increment,
   `uid` int(10) unsigned NOT NULL default '0',
   `read_time` int(10) unsigned NOT NULL default '0',
@@ -221,10 +204,10 @@ CREATE TABLE `bb_reads_forum` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_reads_topic`
+-- Table structure for table `cbbx_reads_topic`
 -- 
 
-CREATE TABLE `bb_reads_topic` (
+CREATE TABLE `cbbx_reads_topic` (
   `read_id` int(10) unsigned NOT NULL auto_increment,
   `uid` int(10) unsigned NOT NULL default '0',
   `read_time` int(10) unsigned NOT NULL default '0',
@@ -239,10 +222,10 @@ CREATE TABLE `bb_reads_topic` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_report`
+-- Table structure for table `cbbx_report`
 -- 
 
-CREATE TABLE `bb_report` (
+CREATE TABLE `cbbx_report` (
   `report_id` int(8) unsigned NOT NULL auto_increment,
   `post_id` int(10) unsigned NOT NULL default '0',
   `reporter_uid` int(10) unsigned NOT NULL default '0',
@@ -258,10 +241,10 @@ CREATE TABLE `bb_report` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_topics`
+-- Table structure for table `cbbx_topics`
 -- 
 
-CREATE TABLE `bb_topics` (
+CREATE TABLE `cbbx_topics` (
   `topic_id` int(8) unsigned NOT NULL auto_increment,
   `topic_title` varchar(255) NOT NULL default '',
   `topic_poster` int(10) unsigned NOT NULL default '0',
@@ -294,10 +277,10 @@ CREATE TABLE `bb_topics` (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table `bb_votedata`
+-- Table structure for table `cbbx_votedata`
 -- 
 
-CREATE TABLE `bb_votedata` (
+CREATE TABLE `cbbx_votedata` (
   `ratingid` int(11) unsigned NOT NULL auto_increment,
   `topic_id` int(8) unsigned NOT NULL default '0',
   `ratinguser` int(10) unsigned NOT NULL default '0',

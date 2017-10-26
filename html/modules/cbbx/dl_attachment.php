@@ -36,25 +36,25 @@ include XOOPS_ROOT_PATH.'/header.php';
 $attach_id = isset($_GET['attachid']) ? strval($_GET['attachid']) : '';
 $post_id = isset($_GET['post_id']) ? intval($_GET['post_id']) : 0;
 
-if(!$post_id||!$attach_id) die(_MD_NO_SUCH_FILE.': post_id:'.$post_id.'; attachid'.$attachid);
+if(!$post_id||!$attach_id) die(_MD_CBBX_NO_SUCH_FILE.': post_id:'.$post_id.'; attachid'.$attachid);
 
-$post_handler =& xoops_getmodulehandler('post', 'newbb');
+$post_handler =& xoops_getmodulehandler('post', basename(__DIR__));
 $forumpost =& $post_handler->get($post_id);
-if(!$approved = $forumpost->getVar('approved'))    die(_MD_NORIGHTTOVIEW);
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+if(!$approved = $forumpost->getVar('approved'))    die(_MD_CBBX_NORIGHTTOVIEW);
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
 $forumtopic =& $topic_handler->getByPost($post_id);
 $topic_id = $forumtopic->getVar('topic_id');
-if(!$approved = $forumtopic->getVar('approved'))    die(_MD_NORIGHTTOVIEW);
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+if(!$approved = $forumtopic->getVar('approved'))    die(_MD_CBBX_NORIGHTTOVIEW);
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 $viewtopic_forum =& $forum_handler->get($forumtopic->getVar('forum_id'));
-if (!$forum_handler->getPermission($viewtopic_forum))    die(_MD_NORIGHTTOACCESS);
-if (!$topic_handler->getPermission($viewtopic_forum, $forumtopic->getVar('topic_status'), "view"))   die(_MD_NORIGHTTOVIEW);
+if (!$forum_handler->getPermission($viewtopic_forum))    die(_MD_CBBX_NORIGHTTOACCESS);
+if (!$topic_handler->getPermission($viewtopic_forum, $forumtopic->getVar('topic_status'), "view"))   die(_MD_CBBX_NORIGHTTOVIEW);
 
 $attachments = $forumpost->getAttachment();
 $attach = $attachments[$attach_id];
-if (!$attach) die(_MD_NO_SUCH_FILE);
+if (!$attach) die(_MD_CBBX_NO_SUCH_FILE);
 $file_saved = XOOPS_ROOT_PATH.'/'.$xoopsModuleConfig['dir_attachments'].'/'.$attach['name_saved'];
-if(!file_exists($file_saved)) die(_MD_NO_SUCH_FILE);
+if(!file_exists($file_saved)) die(_MD_CBBX_NO_SUCH_FILE);
 if($down = $forumpost->incrementDownload($attach_id)) {
 	$forumpost->saveAttachment();
 }

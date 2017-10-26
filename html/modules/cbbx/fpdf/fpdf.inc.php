@@ -29,18 +29,18 @@
 // Project: The XOOPS Project                                                //
 // ------------------------------------------------------------------------- //
 
-define('NEWBB_FPDF_PATH',XOOPS_ROOT_PATH.'/modules/'.$xoopsModule->getVar('dirname').'/fpdf');
-define('FPDF_FONTPATH',NEWBB_FPDF_PATH.'/font/');
+define('CBBX_FPDF_PATH',XOOPS_ROOT_PATH.'/modules/'.$xoopsModule->getVar('dirname').'/fpdf');
+define('FPDF_FONTPATH',CBBX_FPDF_PATH.'/font/');
 
-require NEWBB_FPDF_PATH.'/gif.php';
-require NEWBB_FPDF_PATH.'/fpdf.php';
+require CBBX_FPDF_PATH.'/gif.php';
+require CBBX_FPDF_PATH.'/fpdf.php';
 
-if(is_readable(NEWBB_FPDF_PATH.'/language/'.$xoopsConfig['language'].'.php')){
-	include_once(NEWBB_FPDF_PATH.'/language/'.$xoopsConfig['language'].'.php');
-}elseif(is_readable(NEWBB_FPDF_PATH.'/language/english.php')){
-	include_once(NEWBB_FPDF_PATH.'/language/english.php');
+if(is_readable(CBBX_FPDF_PATH.'/language/'.$xoopsConfig['language'].'.php')){
+	include_once(CBBX_FPDF_PATH.'/language/'.$xoopsConfig['language'].'.php');
+}elseif(is_readable(CBBX_FPDF_PATH.'/language/english.php')){
+	include_once(CBBX_FPDF_PATH.'/language/english.php');
 }else{
 	die('No Language File Readable!');
 }
-include NEWBB_FPDF_PATH.'/makepdf_class.php';
+include CBBX_FPDF_PATH.'/makepdf_class.php';
 ?>

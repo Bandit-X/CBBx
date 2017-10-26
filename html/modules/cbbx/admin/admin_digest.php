@@ -36,13 +36,13 @@ $op = !empty($_GET['op'])? $_GET['op'] : (!empty($_POST['op'])?$_POST['op']:"def
 $item = !empty($_GET['op'])? $_GET['item'] : (!empty($_POST['item'])?$_POST['item']:"process");
 
 $start = (isset($_GET['start']))?$_GET['start']:0;
-//$report_handler =& xoops_getmodulehandler('report', 'newbb');
+//$report_handler =& xoops_getmodulehandler('report', basename(dirname(__DIR__)));
 
 xoops_cp_header();
 switch($op){
 	case "delete":
 		$digest_ids = $_POST['digest_id'];
-		$digest_handler =& xoops_getmodulehandler('digest', 'newbb');
+		$digest_handler =& xoops_getmodulehandler('digest', basename(dirname(__DIR__)));
 		foreach($digest_ids as $did => $value){
 			$digest_handler->delete($did);
 		}
@@ -53,17 +53,17 @@ switch($op){
 		include_once XOOPS_ROOT_PATH."/modules/".$xoopsModule->getVar("dirname")."/class/xoopsformloader.php";
 
 		$limit = 5;
-		loadModuleAdminMenu(9,_AM_NEWBB_DIGESTADMIN);
-		echo "<fieldset><legend style='font-weight: bold; color: #900;'>" .  _AM_NEWBB_DIGESTADMIN . "</legend>";
+		loadModuleAdminMenu(9,_AM_CBBX_DIGESTADMIN);
+		echo "<fieldset><legend style='font-weight: bold; color: #900;'>" .  _AM_CBBX_DIGESTADMIN . "</legend>";
 		echo"<br />";
 		echo '<form action="'.xoops_getenv('PHP_SELF').'" method="post">';
 		echo "<table border='0' cellpadding='4' cellspacing='1' width='100%' class='outer'>";
 		echo "<tr align='center'>";
-		echo "<td class='bg3'>"._AM_NEWBB_DIGESTCONTENT."</td>";
+		echo "<td class='bg3'>"._AM_CBBX_DIGESTCONTENT."</td>";
 		echo "<td class='bg3' width='2%'>"._DELETE."</td>";
 		echo "</tr>";
 
-		$digest_handler =& xoops_getmodulehandler('digest', 'newbb');
+		$digest_handler =& xoops_getmodulehandler('digest', basename(dirname(__DIR__)));
 		$digests =& $digest_handler->getAllDigests($start, $limit);
 		foreach($digests as $digest){
 			echo "<tr class='odd' align='left'>";
@@ -74,9 +74,9 @@ switch($op){
 		}
 		$submit = new XoopsFormButton('', 'submit', _SUBMIT, 'submit');
 		echo "<tr colspan='2'><td align='center'>".$submit->render()."</td></tr>";
-		$hidden =& new XoopsFormHidden('op', 'delete');
+		$hidden = new XoopsFormHidden('op', 'delete');
 		echo $hidden->render();
-		$hidden =& new XoopsFormHidden('item', $item);
+		$hidden = new XoopsFormHidden('item', $item);
 		echo $hidden->render()."</form>";
 
 		echo "</table>";

@@ -29,23 +29,23 @@
 //  Project: Article Project                                                 //
 //  ------------------------------------------------------------------------ //
 
-if(!defined("NEWBB_FUNCTIONS")):
-define("NEWBB_FUNCTIONS", true);
+if(!defined("CBBX_FUNCTIONS")):
+define("CBBX_FUNCTIONS", true);
 
-include_once dirname(__FILE__)."/functions.ini.php";
+include_once __DIR__."/functions.ini.php";
 
-function &newbb_getUnameFromIds( $userid, $usereal = 0, $linked = false )
+function &cbbx_getUnameFromIds( $userid, $usereal = 0, $linked = false )
 {
 	$users = mod_getUnameFromIds( $userid, $usereal, $linked);
 	return $users;
 }
 
-function newbb_getUnameFromId( $userid, $usereal = 0, $linked = false)
+function cbbx_getUnameFromId( $userid, $usereal = 0, $linked = false)
 {
 	return mod_getUnameFromId( $userid, $usereal, $linked);
 }
 
-function newbb_is_dir($dir){
+function cbbx_is_dir($dir){
     $openBasedir = ini_get('open_basedir');
     if (empty($openBasedir)) {
 	    return @is_dir($dir);
@@ -57,18 +57,18 @@ function newbb_is_dir($dir){
 /*
  * Sorry, we have to use the stupid solution unless there is an option in MyTextSanitizer:: htmlspecialchars();
  */
-function newbb_htmlSpecialChars($text)
+function cbbx_htmlSpecialChars($text)
 {
 	return preg_replace(array("/&amp;/i", "/&nbsp;/i"), array('&', '&amp;nbsp;'), htmlspecialchars($text));
 }
 
-function &newbb_displayTarea(&$text, $html = 0, $smiley = 1, $xcode = 1, $image = 1, $br = 1)
+function &cbbx_displayTarea(&$text, $html = 0, $smiley = 1, $xcode = 1, $image = 1, $br = 1)
 {
 	global $myts;
 
 	if ($html != 1) {
 		// html not allowed
-		$text = newbb_htmlSpecialChars($text);
+		$text = cbbx_htmlSpecialChars($text);
 	}
 	$text = $myts->codePreConv($text, $xcode); // Ryuji_edit(2003-11-18)
 	$text = $myts->makeClickable($text);
@@ -103,7 +103,7 @@ function &newbb_displayTarea(&$text, $html = 0, $smiley = 1, $xcode = 1, $image 
  * @param bool		$force 	flag indicating to force filtering
  * @return string 	filtered text
  */
-function &newbb_textFilter($text, $force = false)
+function &cbbx_textFilter($text, $force = false)
 {
 	global $xoopsUser, $xoopsConfig;
 	
@@ -132,20 +132,20 @@ function &newbb_textFilter($text, $force = false)
 	return $text;
 }
 
-function newbb_html2text($document)
+function cbbx_html2text($document)
 {
 	$text = strip_tags($document);
 	return $text;
 }
 
 /*
- * Currently the newbb session/cookie handlers are limited to:
+ * Currently the cbbx session/cookie handlers are limited to:
  * -- one dimension
  * -- "," and "|" are preserved
  *
  */
 
-function newbb_setsession($name, $string = '')
+function cbbx_setsession($name, $string = '')
 {
 	if(is_array($string)) {
 		$value = array();
@@ -154,12 +154,12 @@ function newbb_setsession($name, $string = '')
 		}
 		$string = implode(",", $value);
 	}
-	$_SESSION['newbb_'.$name] = $string;
+	$_SESSION['cbbx_'.$name] = $string;
 }
 
-function newbb_getsession($name, $isArray = false)
+function cbbx_getsession($name, $isArray = false)
 {
-	$value = !empty($_SESSION['newbb_'.$name]) ? $_SESSION['newbb_'.$name] : false;
+	$value = !empty($_SESSION['cbbx_'.$name]) ? $_SESSION['cbbx_'.$name] : false;
 	if($isArray) {
 		$_value = ($value)?explode(",", $value):array();
 		$value = array();
@@ -173,7 +173,7 @@ function newbb_getsession($name, $isArray = false)
 	return $value;
 }
 
-function newbb_setcookie($name, $string = '', $expire = 0)
+function cbbx_setcookie($name, $string = '', $expire = 0)
 {
 	global $forumCookie;
 	if(is_array($string)) {
@@ -186,7 +186,7 @@ function newbb_setcookie($name, $string = '', $expire = 0)
 	setcookie($forumCookie['prefix'].$name, $string, intval($expire), $forumCookie['path'], $forumCookie['domain'], $forumCookie['secure']);
 }
 
-function newbb_getcookie($name, $isArray = false)
+function cbbx_getcookie($name, $isArray = false)
 {
 	global $forumCookie;
 	$value = !empty($_COOKIE[$forumCookie['prefix'].$name]) ? $_COOKIE[$forumCookie['prefix'].$name] : null;
@@ -208,7 +208,7 @@ function newbb_getcookie($name, $isArray = false)
 	return $value;
 }
 
-function newbb_checkTimelimit($action_last, $action_tag, $inMinute = true)
+function cbbx_checkTimelimit($action_last, $action_tag, $inMinute = true)
 {
 	global $xoopsModuleConfig;
 	if(!isset($xoopsModuleConfig[$action_tag]) or $xoopsModuleConfig[$action_tag]==0) return true;
@@ -239,7 +239,7 @@ function &getModuleAdministrators($mid=0)
 }
 
 /* use hardcoded DB query to save queries */
-function newbb_isModuleAdministrator($uid = 0, $mid = 0)
+function cbbx_isModuleAdministrator($uid = 0, $mid = 0)
 {
 	global $xoopsDB;
 	static $module_administrators=array();
@@ -259,7 +259,7 @@ function newbb_isModuleAdministrator($uid = 0, $mid = 0)
 }
 
 /* use hardcoded DB query to save queries */
-function newbb_isModuleAdministrators($uid = array(), $mid = 0)
+function cbbx_isModuleAdministrators($uid = array(), $mid = 0)
 {
 	global $xoopsDB;
 	$module_administrators=array();
@@ -278,7 +278,7 @@ function newbb_isModuleAdministrators($uid = array(), $mid = 0)
     return $module_administrators;
 }
 
-function newbb_isAdministrator($user=-1, $mid=0)
+function cbbx_isAdministrator($user=-1, $mid=0)
 {
 	global $xoopsUser, $xoopsModule;
 	static $administrators, $newBB_mid;
@@ -289,11 +289,11 @@ function newbb_isAdministrator($user=-1, $mid=0)
 
 	if(!$mid){
 		if (!isset($newBB_mid)) {
-		    if(is_object($xoopsModule)&& 'newbb' == $xoopsModule->dirname()){
+		    if(is_object($xoopsModule)&& basename(dirname(__DIR__)) == $xoopsModule->dirname()){
 		    	$newBB_mid = $xoopsModule->getVar('mid');
 		    }else{
 		        $modhandler =& xoops_gethandler('module');
-		        $newBB =& $modhandler->getByDirname('newbb');
+		        $newBB =& $modhandler->getByDirname(basename(dirname(__DIR__)));
 			    $newBB_mid = $newBB->getVar('mid');
 			    unset($newBB);
 		    }
@@ -301,10 +301,10 @@ function newbb_isAdministrator($user=-1, $mid=0)
 		$mid = $newBB_mid;
 	}
 	
-	return newbb_isModuleAdministrator($uid, $mid);
+	return cbbx_isModuleAdministrator($uid, $mid);
 }
 
-function newbb_isAdmin($forum = 0, $user=-1)
+function cbbx_isAdmin($forum = 0, $user=-1)
 {
 	global $xoopsUser;
 	static $_cachedModerators;
@@ -312,18 +312,18 @@ function newbb_isAdmin($forum = 0, $user=-1)
 	if(is_numeric($user) && $user == -1) $user =& $xoopsUser;
 	if(!is_object($user) && intval($user)<1) return false;
 	$uid = (is_object($user))?$user->getVar('uid'):intval($user);
-	if(newbb_isAdministrator($uid)) return true;
+	if(cbbx_isAdministrator($uid)) return true;
 
 	$cache_id = (is_object($forum))?$forum->getVar('forum_id'):intval($forum);
 	if(!isset($_cachedModerators[$cache_id])){
-		$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+		$forum_handler =& xoops_getmodulehandler('forum', basename(dirname(__DIR__)));
 		if(!is_object($forum)) $forum = $forum_handler->get(intval($forum));
 		$_cachedModerators[$cache_id] = $forum_handler->getModerators($forum);
 	}
 	return in_array($uid,$_cachedModerators[$cache_id]);
 }
 
-function newbb_isModerator($forum = 0, $user=-1)
+function cbbx_isModerator($forum = 0, $user=-1)
 {
 	global $xoopsUser;
 	static $_cachedModerators;
@@ -336,14 +336,14 @@ function newbb_isModerator($forum = 0, $user=-1)
 
 	$cache_id = (is_object($forum))?$forum->getVar('forum_id'):intval($forum);
 	if(!isset($_cachedModerators[$cache_id])){
-		$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+		$forum_handler =& xoops_getmodulehandler('forum', basename(dirname(__DIR__)));
 		if(!is_object($forum)) $forum = $forum_handler->get(intval($forum));
 		$_cachedModerators[$cache_id] = $forum_handler->getModerators($forum);
 	}
 	return in_array($uid,$_cachedModerators[$cache_id]);
 }
 
-function newbb_checkSubjectPrefixPermission($forum = 0, $user=-1)
+function cbbx_checkSubjectPrefixPermission($forum = 0, $user=-1)
 {
 	global $xoopsUser, $xoopsModuleConfig;
 
@@ -360,11 +360,11 @@ function newbb_checkSubjectPrefixPermission($forum = 0, $user=-1)
 		return true;
 	}
 	if($xoopsModuleConfig['subject_prefix_level']==3){
-		if(newbb_isAdmin($forum, $user)) return true;
+		if(cbbx_isAdmin($forum, $user)) return true;
 		else return false;
 	}
 	if($xoopsModuleConfig['subject_prefix_level']==4){
-		if(newbb_isAdministrator($user)) return true;
+		if(cbbx_isAdministrator($user)) return true;
 	}
 	return false;
 }
@@ -373,8 +373,8 @@ function newbb_checkSubjectPrefixPermission($forum = 0, $user=-1)
 */
 function get_total_topics($forum_id="")
 {
-	$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
-	$criteria =& new CriteriaCompo(new Criteria("approved", 0, ">"));
+	$topic_handler =& xoops_getmodulehandler('topic', basename(dirname(__DIR__)));
+	$criteria = new CriteriaCompo(new Criteria("approved", 0, ">"));
     if ( $forum_id ) {
 	    $criteria->add(new Criteria("forum_id", intval($forum_id)));
     }
@@ -387,8 +387,8 @@ function get_total_topics($forum_id="")
 */
 function get_total_posts($id = 0, $type = "all")
 {
-	$post_handler =& xoops_getmodulehandler('post', 'newbb');
-	$criteria =& new CriteriaCompo(new Criteria("approved", 0, ">"));
+	$post_handler =& xoops_getmodulehandler('post', basename(dirname(__DIR__)));
+	$criteria = new CriteriaCompo(new Criteria("approved", 0, ">"));
     switch ( $type ) {
     case 'forum':
         if($id>0) $criteria->add(new Criteria("forum_id", intval($id)));
@@ -406,28 +406,31 @@ function get_total_posts($id = 0, $type = "all")
 function get_total_views()
 {
     global $xoopsDB;
-    $sql = "SELECT sum(topic_views) FROM ".$xoopsDB->prefix("bb_topics")."";
+    $sql = "SELECT sum(topic_views) FROM ".$xoopsDB->prefix("cbbx_topics")."";
     if ( !$result = $xoopsDB->query($sql) ) {
         return null;
     }
-    list ($total) = $xoopsDB->fetchRow($result);
+	list ($total) = $xoopsDB->fetchRow($result);
+	if($total == null){
+		$total = 0;
+	}
     return $total;
 }
 
-function newbb_forumSelectBox($value = null, $permission = "access", $delimitor_category = true)
+function cbbx_forumSelectBox($value = null, $permission = "access", $delimitor_category = true)
 {
-	$category_handler =& xoops_getmodulehandler('category', 'newbb');
-	$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+	$category_handler =& xoops_getmodulehandler('category', basename(dirname(__DIR__)));
+	$forum_handler =& xoops_getmodulehandler('forum', basename(dirname(__DIR__)));
     $categories = $category_handler->getAllCats($permission, true);
     $forums = $forum_handler->getForumsByCategory(array_keys($categories), $permission, false);
 
-    if(!defined("_MD_SELFORUM")) {
-		if ( !( $ret = @include_once( XOOPS_ROOT_PATH."/modules/newbb/language/".$GLOBALS['xoopsConfig']['language']."/main.php" ) ) ) {
-			include_once( XOOPS_ROOT_PATH."/modules/newbb/language/english/main.php" );
+    if(!defined("_MD_CBBX_SELFORUM")) {
+		if ( !( $ret = @include_once( XOOPS_ROOT_PATH."/modules/".basename(dirname(__DIR__))."/language/".$GLOBALS['xoopsConfig']['language']."/main.php" ) ) ) {
+			include_once( XOOPS_ROOT_PATH."/modules/".basename(dirname(__DIR__))."/language/english/main.php" );
 		}
     }
     $value = is_array($value)?$value:array($value);
-    $box ='<option value="-1">-- '._MD_SELFORUM.' --</option>';
+    $box ='<option value="-1">-- '._MD_CBBX_SELFORUM.' --</option>';
 	if(count($categories)>0 && count($forums)>0){
 		foreach(array_keys($forums) as $key){
 			if($delimitor_category) {
@@ -443,24 +446,24 @@ function newbb_forumSelectBox($value = null, $permission = "access", $delimitor_
             }
 		}
     } else {
-        $box .= "<option value='-1'>"._MD_NOFORUMINDB."</option>";
+        $box .= "<option value='-1'>"._MD_CBBX_NOFORUMINDB."</option>";
     }
     unset($forums, $categories);
  
     return $box;   
 }
 	
-function newbb_make_jumpbox($forum_id = 0)
+function cbbx_make_jumpbox($forum_id = 0)
 {
 	$box = '<form name="forum_jumpbox" method="get" action="viewforum.php" onsubmit="javascript: if(document.forum_jumpbox.forum.value &lt; 1){return false;}">';
 	$box .= '<select class="select" name="forum" onchange="javascript: if(this.options[this.selectedIndex].value >0 ){ document.forms.forum_jumpbox.submit();}">';
-    $box .= newbb_forumSelectBox($forum_id);
+    $box .= cbbx_forumSelectBox($forum_id);
     $box .= "</select> <input type='submit' class='button' value='"._GO."' /></form>";
     unset($forums, $categories);
     return $box;
 }
 
-function newbb_isIE5()
+function cbbx_isIE5()
 {
 	static $user_agent_is_IE5;
 
@@ -476,12 +479,12 @@ function newbb_isIE5()
     return $user_agent_is_IE5;
 }
 
-function newbb_displayImage($image, $alt = "", $width = 0, $height =0, $style ="margin: 0px;", $sizeMeth='scale')
+function cbbx_displayImage($image, $alt = "", $width = 0, $height =0, $style ="margin: 0px;", $sizeMeth='scale')
 {
 	global $xoopsModuleConfig, $forumImage;
 	static $image_type;
 
-	$user_agent_is_IE5 = newbb_isIE5();
+	$user_agent_is_IE5 = cbbx_isIE5();
 	if(!isset($image_type)) $image_type = ($xoopsModuleConfig['image_type'] == 'auto')?(($user_agent_is_IE5)?'gif':'png'):$xoopsModuleConfig['image_type'];
 	$image .= '.'.$image_type;
 	$imageuri=preg_replace("/^".preg_quote(XOOPS_URL,"/")."/",XOOPS_ROOT_PATH,$image);
@@ -507,15 +510,15 @@ function newbb_displayImage($image, $alt = "", $width = 0, $height =0, $style ="
 }
 
 /**
- * newbb_updaterating()
+ * cbbx_updaterating()
  *
  * @param $sel_id
  * @return updates rating data in itemtable for a given item
  **/
-function newbb_updaterating($sel_id)
+function cbbx_updaterating($sel_id)
 {
     global $xoopsDB;
-    $query = "select rating FROM " . $xoopsDB -> prefix('bb_votedata') . " WHERE topic_id = " . $sel_id . "";
+    $query = "select rating FROM " . $xoopsDB -> prefix('cbbx_votedata') . " WHERE topic_id = " . $sel_id . "";
     $voteresult = $xoopsDB -> query($query);
     $votesDB = $xoopsDB -> getRowsNum($voteresult);
     $totalrating = 0;
@@ -525,11 +528,11 @@ function newbb_updaterating($sel_id)
     }
     $finalrating = $totalrating / $votesDB;
     $finalrating = number_format($finalrating, 4);
-    $sql = sprintf("UPDATE %s SET rating = %u, votes = %u WHERE topic_id = %u", $xoopsDB -> prefix('bb_topics'), $finalrating, $votesDB, $sel_id);
+    $sql = sprintf("UPDATE %s SET rating = %u, votes = %u WHERE topic_id = %u", $xoopsDB -> prefix('cbbx_topics'), $finalrating, $votesDB, $sel_id);
     $xoopsDB -> queryF($sql);
 }
 
-function newbb_sinceSelectBox($selected = 100)
+function cbbx_sinceSelectBox($selected = 100)
 {
 	global $xoopsModuleConfig;
 
@@ -540,27 +543,27 @@ function newbb_sinceSelectBox($selected = 100)
 	foreach ($select_array as $since) {
 		$forum_selection_since .= '<option value="'.$since.'"'.(($selected == $since) ? ' selected="selected"' : '').'>';
 		if($since>0){
-			$forum_selection_since .= sprintf(_MD_FROMLASTDAYS, $since);
+			$forum_selection_since .= sprintf(_MD_CBBX_FROMLASTDAYS, $since);
 		}else{
-			$forum_selection_since .= sprintf(_MD_FROMLASTHOURS, abs($since));
+			$forum_selection_since .= sprintf(_MD_CBBX_FROMLASTHOURS, abs($since));
 		}
 		$forum_selection_since .= '</option>';
 	}
-	$forum_selection_since .= '<option value="365"'.(($selected == 365) ? ' selected="selected"' : '').'>'._MD_THELASTYEAR.'</option>';
-	$forum_selection_since .= '<option value="0"'.(($selected == 0) ? ' selected="selected"' : '').'>'._MD_BEGINNING.'</option>';
+	$forum_selection_since .= '<option value="365"'.(($selected == 365) ? ' selected="selected"' : '').'>'._MD_CBBX_THELASTYEAR.'</option>';
+	$forum_selection_since .= '<option value="0"'.(($selected == 0) ? ' selected="selected"' : '').'>'._MD_CBBX_BEGINNING.'</option>';
 	$forum_selection_since .= '</select>';
 
 	return $forum_selection_since;
 }
 
-function newbb_getSinceTime($since = 100)
+function cbbx_getSinceTime($since = 100)
 {
 	if($since==1000) return 0;
 	if($since>0) return intval($since) * 24 * 3600;
 	else return intval(abs($since)) * 3600;
 }
 
-function newbb_welcome( $user = -1 )
+function cbbx_welcome( $user = -1 )
 {
 	global $xoopsModuleConfig, $xoopsUser;
 
@@ -570,18 +573,18 @@ function newbb_welcome( $user = -1 )
 		return false;
 	}
 
-	$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+	$forum_handler =& xoops_getmodulehandler('forum', basename(dirname(__DIR__)));
 	$forum =& $forum_handler->get($xoopsModuleConfig["welcome_forum"]);
 	if (!$forum_handler->getPermission($forum)){
 		unset($forum);
 		return false;
 	}
 	unset($forum);
-	include_once dirname(__FILE__)."/functions.welcome.php";
-	return newbb_welcome_create($user, $xoopsModuleConfig["welcome_forum"]);
+	include_once __DIR__."/functions.welcome.php";
+	return cbbx_welcome_create($user, $xoopsModuleConfig["welcome_forum"]);
 }
 
-function newbb_synchronization($type = "")
+function cbbx_synchronization($type = "")
 {
 	switch($type){
 	case "rate":
@@ -601,68 +604,68 @@ function newbb_synchronization($type = "")
 		break;
 	}
 	foreach($clean as $item){
-		$handler =& xoops_getmodulehandler($item, "newbb");
+		$handler =& xoops_getmodulehandler($item, basename(dirname(__DIR__)));
 		$handler->cleanOrphan();
 		unset($handler);
 	}
-    $newbbConfig = newbb_load_config();
+    $cbbxConfig = cbbx_load_config();
 	if(empty($type) || in_array("post", $type)):
-		$post_handler =& xoops_getmodulehandler("post", "newbb");
-        $expires = isset($newbbConfig["pending_expire"])?intval($newbbConfig["pending_expire"]):7;
+		$post_handler =& xoops_getmodulehandler("post", basename(dirname(__DIR__)));
+        $expires = isset($cbbxConfig["pending_expire"])?intval($cbbxConfig["pending_expire"]):7;
 		$post_handler->cleanExpires($expires*24*3600);
 	endif;
 	if(empty($type) || in_array("topic", $type)):
-		$topic_handler =& xoops_getmodulehandler("topic", "newbb");
-        $expires = isset($newbbConfig["pending_expire"])?intval($newbbConfig["pending_expire"]):7;
+		$topic_handler =& xoops_getmodulehandler("topic", basename(dirname(__DIR__)));
+        $expires = isset($cbbxConfig["pending_expire"])?intval($cbbxConfig["pending_expire"]):7;
 		$topic_handler->cleanExpires($expires*24*3600);
 		$topic_handler->synchronization();
 	endif;
 	if(empty($type) || in_array("forum", $type)):
-		$forum_handler =& xoops_getmodulehandler("forum", "newbb");
+		$forum_handler =& xoops_getmodulehandler("forum", basename(dirname(__DIR__)));
 		$forum_handler->synchronization();
 	endif;
 	if(empty($type) || in_array("moderate", $type)):
-		$moderate_handler =& xoops_getmodulehandler("moderate", "newbb");
+		$moderate_handler =& xoops_getmodulehandler("moderate", basename(dirname(__DIR__)));
 		$moderate_handler->clearGarbage();
 	endif;
 	if(empty($type) || in_array("read", $type)):
-		$read_handler =& xoops_getmodulehandler("readforum", "newbb");
+		$read_handler =& xoops_getmodulehandler("readforum", basename(dirname(__DIR__)));
 		$read_handler->clearGarbage();
 		$read_handler->synchronization();
-		$read_handler =& xoops_getmodulehandler("readtopic", "newbb");
+		$read_handler =& xoops_getmodulehandler("readtopic", basename(dirname(__DIR__)));
 		$read_handler->clearGarbage();
 		$read_handler->synchronization();
 	endif;
 	return true;
 }
 
-function newbb_setRead($type, $item_id, $post_id, $uid = null)
+function cbbx_setRead($type, $item_id, $post_id, $uid = null)
 {
-	$read_handler =& xoops_getmodulehandler("read".$type, "newbb");
+	$read_handler =& xoops_getmodulehandler("read".$type, basename(dirname(__DIR__)));
 	return $read_handler->setRead($item_id, $post_id, $uid);
 }
 
-function newbb_getRead($type, $item_id, $uid = null)
+function cbbx_getRead($type, $item_id, $uid = null)
 {
-	$read_handler =& xoops_getmodulehandler("read".$type, "newbb");
+	$read_handler =& xoops_getmodulehandler("read".$type, basename(dirname(__DIR__)));
 	return $read_handler->getRead($item_id, $uid);
 }
 
-function newbb_setRead_forum($status = 0, $uid = null)
+function cbbx_setRead_forum($status = 0, $uid = null)
 {
-	$read_handler =& xoops_getmodulehandler("readforum", "newbb");
+	$read_handler =& xoops_getmodulehandler("readforum", basename(dirname(__DIR__)));
 	return $read_handler->setRead_items($status, $uid);
 }
 
-function newbb_setRead_topic($status = 0, $forum_id = 0, $uid = null)
+function cbbx_setRead_topic($status = 0, $forum_id = 0, $uid = null)
 {
-	$read_handler =& xoops_getmodulehandler("readtopic", "newbb");
+	$read_handler =& xoops_getmodulehandler("readtopic", basename(dirname(__DIR__)));
 	return $read_handler->setRead_items($status, $forum_id, $uid);
 }
 
-function newbb_isRead($type, &$items, $uid = null)
+function cbbx_isRead($type, &$items, $uid = null)
 {
-	$read_handler =& xoops_getmodulehandler("read".$type, "newbb");
+	$read_handler =& xoops_getmodulehandler("read".$type, basename(dirname(__DIR__)));
 	return $read_handler->isRead_items($items, $uid);
 }
 

@@ -28,7 +28,7 @@
 //  URL: http://xoopsforge.com, http://xoops.org.cn                          //
 //  Project: Article Project                                                 //
 //  ------------------------------------------------------------------------ //
-class NewbbKarmaHandler {
+class CbbxKarmaHandler {
     var $user;
 
     function getUserKarma($user = false)
@@ -68,4 +68,5 @@ class NewbbKarmaHandler {
     } 
 } 
 
+class_alias('CbbxKarmaHandler', basename(dirname(__DIR__)).'KarmaHandler');
 ?>

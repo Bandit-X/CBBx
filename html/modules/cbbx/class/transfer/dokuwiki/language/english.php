@@ -25,7 +25,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA //
 //  ------------------------------------------------------------------------ //
 /**
- * Transfer::newbb language
+ * Transfer::cbbx language
  *
  * @author	    phppp, http://xoops.org.cn
  * @copyright	copyright (c) 2005 XOOPSForge.com
@@ -33,7 +33,7 @@
  *
  */
  
-define("_MD_TRANSFER_DOKUWIKI", "Send this post to DokuWiki");
-define("_MD_TRANSFER_DOKUWIKI_NAMESPACE", "Wiki namespace");
-define("_MD_TRANSFER_DOKUWIKI_NAME", "Item name");
+define("_MD_CBBX_TRANSFER_DOKUWIKI", "Send this post to DokuWiki");
+define("_MD_CBBX_TRANSFER_DOKUWIKI_NAMESPACE", "Wiki namespace");
+define("_MD_CBBX_TRANSFER_DOKUWIKI_NAME", "Item name");
 ?>

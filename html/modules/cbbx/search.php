@@ -29,19 +29,19 @@
 //  Project: Article Project                                                 //
 //  ------------------------------------------------------------------------ //
 include 'header.php';
-newbb_load_lang_file("search");
+cbbx_load_lang_file("search");
 $config_handler =& xoops_gethandler('config');
 $xoopsConfigSearch =& $config_handler->getConfigsByCat(XOOPS_CONF_SEARCH);
 if ($xoopsConfigSearch['enable_search'] != 1) {
-    header('Location: '.XOOPS_URL.'/modules/newbb/index.php');
+    header('Location: '.XOOPS_URL.'/modules/cbbx/index.php');
     exit();
 }
 
 $xoopsConfig['module_cache'][$xoopsModule->getVar('mid')] = 0;
-$xoopsOption['template_main']= 'newbb_search.html';
+$xoopsOption['template_main']= 'cbbx_search.tpl';
 include XOOPS_ROOT_PATH.'/header.php';
 
-include_once XOOPS_ROOT_PATH.'/modules/newbb/include/search.inc.php';
+include_once XOOPS_ROOT_PATH.'/modules/cbbx/include/search.inc.php';
 $limit = $xoopsModuleConfig['topics_per_page'];
 
 $queries = array();
@@ -59,12 +59,12 @@ $term = isset($_POST['term']) ? $_POST['term'] : (isset($_GET['term']) ? $_GET['
 $uname = isset($_POST['uname']) ? $_POST['uname'] : (isset($_GET['uname']) ? $_GET['uname'] : null);
 
 if ($xoopsModuleConfig['wol_enabled']){
-	$online_handler =& xoops_getmodulehandler('online', 'newbb');
+	$online_handler =& xoops_getmodulehandler('online', basename(__DIR__));
 	$online_handler->init(0);
 }
 
-$xoopsTpl->assign("forumindex", sprintf(_MD_FORUMINDEX, htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES)));
-$xoopsTpl->assign("img_folder", newbb_displayImage($forumImage['folder_topic']));
+$xoopsTpl->assign("forumindex", sprintf(_MD_CBBX_FORUMINDEX, htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES)));
+$xoopsTpl->assign("img_folder", cbbx_displayImage($forumImage['folder_topic']));
 
 if ( !empty($_POST['submit']) || !empty($_GET['submit']) || !empty($uname) || !empty($term)) {
     $start = isset($_GET['start']) ? $_GET['start'] : 0;
@@ -93,7 +93,7 @@ if ( !empty($_POST['submit']) || !empty($_GET['submit']) || !empty($uname) || !e
 	    $uname_required = true;
         $search_username = $myts->addSlashes($search_username);
         if ( !$result = $xoopsDB->query("SELECT uid FROM ".$xoopsDB->prefix("users")." WHERE uname LIKE '%$search_username%'") ) {
-            redirect_header('search.php',1,_MD_ERROROCCURED);
+            redirect_header('search.php',1,_MD_CBBX_ERROROCCURED);
             exit();
         }
         $uid = array();
@@ -141,11 +141,11 @@ if ( !empty($_POST['submit']) || !empty($_GET['submit']) || !empty($uname) || !e
     $searchin = isset($_POST['searchin']) ? $_POST['searchin'] : (isset($_GET['searchin']) ? $_GET['searchin'] : 'both');
     $next_search['searchin'] = $searchin;
 	if (!empty($since)) {
-		$subquery = ' AND p.post_time >= ' . (time() - newbb_getSinceTime($since));
+		$subquery = ' AND p.post_time >= ' . (time() - cbbx_getSinceTime($since));
 	}
 
 	if($uname_required&&(!$uid||count($uid)<1)) $result = false;
-    else $results =& newbb_search($queries, $andor, $limit, $start, $uid, $forum, $sortby, $searchin, $subquery);
+    else $results =& cbbx_search($queries, $andor, $limit, $start, $uid, $forum, $sortby, $searchin, $subquery);
 
     if ( count($results) < 1 ) {
         $xoopsTpl->assign("lang_nomatch", _SR_NOMATCH);
@@ -167,7 +167,7 @@ if ( !empty($_POST['submit']) || !empty($_GET['submit']) || !empty($uname) || !e
         }
       	$search_url = XOOPS_URL.'/modules/'.$xoopsModule->getVar('dirname')."/search.php?".$paras;
 
-       	$next_results = newbb_search($queries, $andor, 1, $start + $limit, $uid, $forum, $sortby, $searchin, $subquery);
+       	$next_results = cbbx_search($queries, $andor, 1, $start + $limit, $uid, $forum, $sortby, $searchin, $subquery);
         $next_count = count($next_results);
         $has_next = false;
         if (is_array($next_results) && $next_count >0) {
@@ -191,19 +191,19 @@ if ( !empty($_POST['submit']) || !empty($_GET['submit']) || !empty($uname) || !e
 	$search_info = _SR_KEYWORDS.": ".$myts->htmlSpecialChars($term);
     if($uname_required){
 	    if($search_info) $search_info .= "<br />";
-	    $search_info .= _MD_USERNAME.": ".$myts->htmlSpecialChars($search_username);
+	    $search_info .= _MD_CBBX_USERNAME.": ".$myts->htmlSpecialChars($search_username);
 	}
 	$xoopsTpl->assign("search_info", $search_info);
 }
 
-$forumperms =& xoops_getmodulehandler('permission', 'newbb');
+$forumperms =& xoops_getmodulehandler('permission', basename(__DIR__));
 $allowed_forums = $forumperms->getPermissions('forum');
 
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 $forum_array = $forum_handler->getForums();
 
 $select_forum = '<select name="forum[]" size="5" multiple="multiple">';
-$select_forum .= '<option value="all">'._MD_SEARCHALLFORUMS.'</option>';
+$select_forum .= '<option value="all">'._MD_CBBX_SEARCHALLFORUMS.'</option>';
 foreach ($forum_array as $key => $forum) {
     if (in_array($forum->getVar('forum_id'), array_keys($allowed_forums))) {
         $select_forum .= '<option value="'.$forum->getVar('forum_id').'">'.$forum->getVar('forum_name').'</option>';
@@ -211,7 +211,7 @@ foreach ($forum_array as $key => $forum) {
 }
 $select_forum .= '</select>';
 $xoopsTpl->assign_by_ref("forum_selection_box", $select_forum);
-$select_since = newbb_sinceSelectBox($xoopsModuleConfig['since_default']);
+$select_since = cbbx_sinceSelectBox($xoopsModuleConfig['since_default']);
 $xoopsTpl->assign_by_ref("since_selection_box", $select_since);
 
 if ($xoopsConfigSearch['keyword_min'] > 0) {

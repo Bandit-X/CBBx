@@ -33,13 +33,13 @@ if (!defined("XOOPS_ROOT_PATH")) {
 	exit();
 }
 
-defined("NEWBB_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/newbb/include/functions.ini.php';
-newbb_load_object();
+defined("CBBX_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/include/functions.ini.php';
+cbbx_load_object();
 
 class Report extends ArtObject {
-    function Report()
+    function __construct()
     {
-	    $this->ArtObject("bb_report");
+	    parent::__construct("cbbx_report");
         $this->initVar('report_id', XOBJ_DTYPE_INT);
         $this->initVar('post_id', XOBJ_DTYPE_INT);
         $this->initVar('reporter_uid', XOBJ_DTYPE_INT);
@@ -51,10 +51,10 @@ class Report extends ArtObject {
     }
 }
 
-class NewbbReportHandler extends ArtObjectHandler 
+class CbbxReportHandler extends ArtObjectHandler 
 {
-    function NewbbReportHandler(&$db) {
-        $this->ArtObjectHandler($db, 'bb_report', 'Report', 'report_id');
+    function __construct(&$db) {
+        parent::__construct($db, 'cbbx_report', 'Report', 'report_id');
     }
     function &getByPost($posts)
     {
@@ -92,7 +92,7 @@ class NewbbReportHandler extends ArtObjectHandler
             $forums = array($forums);
             $forum_criteria = ' AND p.forum_id IN (' . implode(',', $forums) . ')';
         }
-        $tables_criteria = ' FROM ' . $this->db->prefix('bb_report') . ' r, ' . $this->db->prefix('bb_posts') . ' p WHERE r.post_id= p.post_id';
+        $tables_criteria = ' FROM ' . $this->db->prefix('cbbx_report') . ' r, ' . $this->db->prefix('cbbx_posts') . ' p WHERE r.post_id= p.post_id';
 
         if ($report_id) {
             $result = $this->db->query("SELECT COUNT(*) as report_count" . $tables_criteria . $forum_criteria . $result_criteria . " AND report_id $operator_for_position $report_id" . $order_criteria);
@@ -104,7 +104,7 @@ class NewbbReportHandler extends ArtObjectHandler
         $sql = "SELECT r.*, p.subject, p.topic_id, p.forum_id" . $tables_criteria . $forum_criteria . $result_criteria . $order_criteria;
         $result = $this->db->query($sql, $perpage, $start);
         $ret = array();
-        //$report_handler = &xoops_getmodulehandler('report', 'newbb');
+        //$report_handler = &xoops_getmodulehandler('report', basename(dirname(__DIR__)));
         while ($myrow = $this->db->fetchArray($result)) {
             $ret[] = $myrow; // return as array
         }
@@ -118,8 +118,10 @@ class NewbbReportHandler extends ArtObjectHandler
      */
     function cleanOrphan()
     {
-	    return parent::cleanOrphan($this->db->prefix("bb_posts"), "post_id");
+	    return parent::cleanOrphan($this->db->prefix('cbbx_posts'), "post_id");
     }
 }
+
+class_alias('CbbxReportHandler', basename(dirname(__DIR__)).'ReportHandler');
 
 ?>

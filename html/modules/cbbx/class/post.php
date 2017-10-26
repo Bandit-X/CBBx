@@ -33,13 +33,13 @@ if (!defined("XOOPS_ROOT_PATH")) {
 	exit();
 }
 
-defined("NEWBB_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/newbb/include/functions.ini.php';
-newbb_load_object();
+defined("CBBX_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/include/functions.ini.php';
+cbbx_load_object();
 
 class Post extends ArtObject {
     var $attachment_array = array();
 
-    function Post()
+    function __construct()
     {
         $this->initVar('post_id', XOBJ_DTYPE_INT);
         $this->initVar('topic_id', XOBJ_DTYPE_INT, 0, true);
@@ -89,9 +89,9 @@ class Post extends ArtObject {
             $attachment_save = base64_encode(serialize($this->attachment_array));
         else $attachment_save = '';
         $this->setVar('attachment', $attachment_save);
-        $sql = "UPDATE " . $GLOBALS["xoopsDB"]->prefix("bb_posts") . " SET attachment=" . $GLOBALS["xoopsDB"]->quoteString($attachment_save) . " WHERE post_id = " . $this->getVar('post_id');
+        $sql = "UPDATE " . $GLOBALS["xoopsDB"]->prefix("cbbx_posts") . " SET attachment=" . $GLOBALS["xoopsDB"]->quoteString($attachment_save) . " WHERE post_id = " . $this->getVar('post_id');
         if (!$result = $GLOBALS["xoopsDB"]->queryF($sql)) {
-            newbb_message("save attachment error: ". $sql);
+            cbbx_message("save attachment error: ". $sql);
             return false;
         }
         return true;
@@ -153,7 +153,7 @@ class Post extends ArtObject {
         if (is_array($attachments) && count($attachments) > 0) {
             include_once XOOPS_ROOT_PATH . '/modules/' . $xoopsModule->getVar("dirname") . '/include/functions.image.php';
         	$image_extensions = array("jpg", "jpeg", "gif", "png", "bmp"); // need improve !!!
-	        $post_attachment .= '<br /><strong>' . _MD_ATTACHMENT . '</strong>:';
+	        $post_attachment .= '<br /><strong>' . _MD_CBBX_ATTACHMENT . '</strong>:';
 	        $post_attachment .= '<br /><hr size="1" noshade="noshade" /><br />';
             foreach($attachments as $key => $att) {
                 $file_extension = ltrim(strrchr($att['name_saved'], '.'), '.');
@@ -167,10 +167,10 @@ class Post extends ArtObject {
                 $file_size = number_format ($file_size / 1024, 2)." KB";
                 if (in_array(strtolower($file_extension), $image_extensions) && $xoopsModuleConfig['media_allowed']) {
 	                    $post_attachment .= '<br /><img src="' . $icon_filetype . '" alt="' . $filetype . '" /><strong>&nbsp; ' . $att['name_display'] . '</strong> <small>('.$file_size.')</small>';
-	                    $post_attachment .= '<br />' . newbb_attachmentImage($att['name_saved'], $asSource);
+	                    $post_attachment .= '<br />' . cbbx_attachmentImage($att['name_saved'], $asSource);
                 		$isDisplayed = true;
                 }else{
-                    $post_attachment .= '<a href="' . XOOPS_URL . '/modules/' . $xoopsModule->getVar("dirname") . '/dl_attachment.php?attachid=' . $key . '&amp;post_id=' . $this->getVar('post_id') . '"> <img src="' . $icon_filetype . '" alt="' . $filetype . '" /> ' . $att['name_display'] . '</a> ' . _MD_FILESIZE . ': '. $file_size . '; '._MD_HITS.': ' . $att['num_download'];
+                    $post_attachment .= '<a href="' . XOOPS_URL . '/modules/' . $xoopsModule->getVar("dirname") . '/dl_attachment.php?attachid=' . $key . '&amp;post_id=' . $this->getVar('post_id') . '"> <img src="' . $icon_filetype . '" alt="' . $filetype . '" /> ' . $att['name_display'] . '</a> ' . _MD_CBBX_FILESIZE . ': '. $file_size . '; '._MD_CBBX_HITS.': ' . $att['num_download'];
                 }
             	$post_attachment .= '<br />';
             }
@@ -225,7 +225,7 @@ class Post extends ArtObject {
             foreach($post_edits as $postedit) {
                 $edit_time = intval($postedit['edit_time']);
                 $edit_user = $myts->stripSlashesGPC($postedit['edit_user']);
-                $post_edit .= _MD_EDITEDBY . " " . $edit_user . " " . _MD_ON . " " . formatTimestamp(intval($edit_time)) . "<br/>";
+                $post_edit .= _MD_CBBX_EDITEDBY . " " . $edit_user . " " . _MD_CBBX_ON . " " . formatTimestamp(intval($edit_time)) . "<br/>";
             }
         }
         return $post_edit;
@@ -237,18 +237,18 @@ class Post extends ArtObject {
         global $xoopsConfig, $xoopsModuleConfig, $xoopsUser, $myts;
 
         $uid = is_object($xoopsUser)? $xoopsUser->getVar('uid'):0;
-		$karma_handler =& xoops_getmodulehandler('karma', 'newbb');
+		$karma_handler =& xoops_getmodulehandler('karma', basename(dirname(__DIR__)));
 		$user_karma = $karma_handler->getUserKarma();
 
 		$post=array();
 		$post['attachment'] = false;
-		$post_text = newbb_displayTarea($this->vars['post_text']['value'], $this->getVar('dohtml'), $this->getVar('dosmiley'), $this->getVar('doxcode'), $this->getVar('doimage'), $this->getVar('dobr'));
-        if (newbb_isAdmin($this->getVar('forum_id')) or $this->checkIdentity()) {
+		$post_text = cbbx_displayTarea($this->vars['post_text']['value'], $this->getVar('dohtml'), $this->getVar('dosmiley'), $this->getVar('doxcode'), $this->getVar('doimage'), $this->getVar('dobr'));
+        if (cbbx_isAdmin($this->getVar('forum_id')) or $this->checkIdentity()) {
             $post['text'] = $post_text. '<br />' .$this->displayAttachment($imageAsSource);
         } elseif ($xoopsModuleConfig['enable_karma'] && $this->getVar('post_karma') > $user_karma) {
-            $post['text'] = sprintf(_MD_KARMA_REQUIREMENT, $user_karma, $this->getVar('post_karma'));
+            $post['text'] = sprintf(_MD_CBBX_KARMA_REQUIREMENT, $user_karma, $this->getVar('post_karma'));
         } elseif ($xoopsModuleConfig['allow_require_reply'] && $this->getVar('require_reply') && (!$uid || !isset($viewtopic_users[$uid]))) {
-            $post['text'] = _MD_REPLY_REQUIREMENT;
+            $post['text'] = _MD_CBBX_REPLY_REQUIREMENT;
         } else {
             $post['text'] = $post_text. '<br />' .$this->displayAttachment($imageAsSource);
         }
@@ -265,7 +265,7 @@ class Post extends ArtObject {
            	$post['author'] = $this->getVar('poster_name')?$this->getVar('poster_name'):$xoopsConfig['anonymous'];
         }
 
-        $post['subject'] = newbb_htmlSpecialChars($this->vars['subject']['value']);
+        $post['subject'] = cbbx_htmlSpecialChars($this->vars['subject']['value']);
 
         $post['date'] = $this->getVar('post_time');
 
@@ -279,7 +279,7 @@ class Post extends ArtObject {
 
     function checkTimelimit($action_tag = 'edit_timelimit')
     {
-        return newbb_checkTimelimit($this->getVar('post_time'), $action_tag);
+        return cbbx_checkTimelimit($this->getVar('post_time'), $action_tag);
     }
 
     function checkIdentity($uid = -1)
@@ -292,7 +292,7 @@ class Post extends ArtObject {
         } else {
             static $user_ip;
             if (!isset($user_ip)) {
-                $user_ip = newbb_getIP();
+                $user_ip = cbbx_getIP();
             }
             $user_ok = ($user_ip == $this->getVar('poster_ip'))?true:false;
         }
@@ -324,7 +324,7 @@ class Post extends ArtObject {
             $post_text = $this->getVar('post_text');
             $post_attachment = $this->displayAttachment();
         } elseif ($xoopsModuleConfig['enable_karma'] && $this->getVar('post_karma') > $user_karma) {
-            $post_text = "<div class='karma'>" . sprintf(_MD_KARMA_REQUIREMENT, $user_karma, $this->getVar('post_karma')) . "</div>";
+            $post_text = "<div class='karma'>" . sprintf(_MD_CBBX_KARMA_REQUIREMENT, $user_karma, $this->getVar('post_karma')) . "</div>";
             $post_attachment = '';
         } elseif (
 	        	$xoopsModuleConfig['allow_require_reply']
@@ -334,7 +334,7 @@ class Post extends ArtObject {
 	        		|| !in_array($uid, $viewtopic_posters)
 	        	)
         	) {
-            $post_text = "<div class='karma'>" . _MD_REPLY_REQUIREMENT . "</div>";
+            $post_text = "<div class='karma'>" . _MD_CBBX_REPLY_REQUIREMENT . "</div>";
             $post_attachment = '';
         } else {
             $post_text = $this->getVar('post_text');
@@ -360,7 +360,7 @@ class Post extends ArtObject {
         $thread_buttons = array();
         
 		if($GLOBALS["xoopsModuleConfig"]['enable_permcheck']){
-	        $topic_handler = &xoops_getmodulehandler('topic', 'newbb');
+	        $topic_handler = &xoops_getmodulehandler('topic', basename(dirname(__DIR__)));
 	        if ($topic_handler->getPermission($forum_id, $topic_status, "edit")) {
 	            $edit_ok = false;
 	            if ($isadmin) {
@@ -369,7 +369,7 @@ class Post extends ArtObject {
 	                $edit_ok = true;
 	            }
 	            if ($edit_ok) {
-	                $thread_buttons['edit']['image'] = newbb_displayImage($forumImage['p_edit'], _EDIT);
+	                $thread_buttons['edit']['image'] = cbbx_displayImage($forumImage['p_edit'], _EDIT);
 	                $thread_buttons['edit']['link'] = "edit.php?forum=" . $forum_id . "&amp;topic_id=" . $topic_id . "&amp;viewmode=$viewmode&amp;order=$order";
 	                $thread_buttons['edit']['name'] = _EDIT;
 	            }
@@ -384,71 +384,71 @@ class Post extends ArtObject {
 	            }
 	
 	            if ($delete_ok) {
-	                $thread_buttons['delete']['image'] = newbb_displayImage($forumImage['p_delete'], _DELETE);
+	                $thread_buttons['delete']['image'] = cbbx_displayImage($forumImage['p_delete'], _DELETE);
 	                $thread_buttons['delete']['link'] = "delete.php?forum=" . $forum_id . "&amp;topic_id=" . $topic_id . "&amp;viewmode=$viewmode&amp;order=$order";
 	                $thread_buttons['delete']['name'] = _DELETE;
 	            }
 	        }
 	        if ($topic_handler->getPermission($forum_id, $topic_status, "reply")) {
-	            $thread_buttons['reply']['image'] = newbb_displayImage($forumImage['p_reply'], _MD_REPLY);
+	            $thread_buttons['reply']['image'] = cbbx_displayImage($forumImage['p_reply'], _MD_CBBX_REPLY);
 	            $thread_buttons['reply']['link'] = "reply.php?forum=" . $forum_id . "&amp;topic_id=" . $topic_id . "&amp;viewmode=$viewmode&amp;order=$order&amp;start=$start";
-	            $thread_buttons['reply']['name'] = _MD_REPLY;
+	            $thread_buttons['reply']['name'] = _MD_CBBX_REPLY;
 	            /*
-	            $thread_buttons['quote']['image'] = newbb_displayImage($forumImage['p_quote'], _MD_QUOTE);
+	            $thread_buttons['quote']['image'] = cbbx_displayImage($forumImage['p_quote'], _MD_CBBX_QUOTE);
 	            $thread_buttons['quote']['link'] = "reply.php?forum=" . $forum_id . "&amp;topic_id=" . $topic_id . "&amp;viewmode=$viewmode&amp;order=$order&amp;start=$start&amp;quotedac=1";
-	            $thread_buttons['quote']['name'] = _MD_QUOTE;
+	            $thread_buttons['quote']['name'] = _MD_CBBX_QUOTE;
 	            */
 	        }
         
     	}else{
     	
-			$thread_buttons['edit']['image'] = newbb_displayImage($forumImage['p_edit'], _EDIT);
+			$thread_buttons['edit']['image'] = cbbx_displayImage($forumImage['p_edit'], _EDIT);
 			$thread_buttons['edit']['link'] = "edit.php?forum=" . $forum_id . "&amp;topic_id=" . $topic_id . "&amp;viewmode=$viewmode&amp;order=$order";
 			$thread_buttons['edit']['name'] = _EDIT;
 			
-			$thread_buttons['delete']['image'] = newbb_displayImage($forumImage['p_delete'], _DELETE);
+			$thread_buttons['delete']['image'] = cbbx_displayImage($forumImage['p_delete'], _DELETE);
 			$thread_buttons['delete']['link'] = "delete.php?forum=" . $forum_id . "&amp;topic_id=" . $topic_id . "&amp;viewmode=$viewmode&amp;order=$order";
 			$thread_buttons['delete']['name'] = _DELETE;
 			
-			$thread_buttons['reply']['image'] = newbb_displayImage($forumImage['p_reply'], _MD_REPLY);
+			$thread_buttons['reply']['image'] = cbbx_displayImage($forumImage['p_reply'], _MD_CBBX_REPLY);
 			$thread_buttons['reply']['link'] = "reply.php?forum=" . $forum_id . "&amp;topic_id=" . $topic_id . "&amp;viewmode=$viewmode&amp;order=$order&amp;start=$start";
-			$thread_buttons['reply']['name'] = _MD_REPLY;
+			$thread_buttons['reply']['name'] = _MD_CBBX_REPLY;
     	
 		}
 		
         if (!$isadmin && $xoopsModuleConfig['reportmod_enabled']) {
-            $thread_buttons['report']['image'] = newbb_displayImage($forumImage['p_report'], _MD_REPORT);
+            $thread_buttons['report']['image'] = cbbx_displayImage($forumImage['p_report'], _MD_CBBX_REPORT);
             $thread_buttons['report']['link'] = "report.php?forum=" . $forum_id . "&amp;topic_id=" . $topic_id . "&amp;viewmode=$viewmode&amp;order=$order";
-            $thread_buttons['report']['name'] = _MD_REPORT;
+            $thread_buttons['report']['name'] = _MD_CBBX_REPORT;
         }
                 
         $thread_action = array();
         /*
         if ($isadmin) {
-        	$thread_action['news']['image'] = newbb_displayImage($forumImage['news'], _MD_POSTTONEWS);
+        	$thread_action['news']['image'] = cbbx_displayImage($forumImage['news'], _MD_CBBX_POSTTONEWS);
         	$thread_action['news']['link'] = "posttonews.php?topic_id=" . $topic_id;
-        	$thread_action['news']['name'] = _MD_POSTTONEWS;
+        	$thread_action['news']['name'] = _MD_CBBX_POSTTONEWS;
         }
 
-        $thread_action['pdf']['image'] = newbb_displayImage($forumImage['pdf'], _MD_PDF);
+        $thread_action['pdf']['image'] = cbbx_displayImage($forumImage['pdf'], _MD_CBBX_PDF);
         $thread_action['pdf']['link'] = "makepdf.php?type=post&amp;pageid=0&amp;scale=0.66";
-        $thread_action['pdf']['name'] = _MD_PDF;
+        $thread_action['pdf']['name'] = _MD_CBBX_PDF;
 
-        $thread_action['print']['image'] = newbb_displayImage($forumImage['printer'], _MD_PRINT);
+        $thread_action['print']['image'] = cbbx_displayImage($forumImage['printer'], _MD_CBBX_PRINT);
         $thread_action['print']['link'] = "print.php?form=2&amp;forum=". $forum_id."&amp;topic_id=" . $topic_id;
-        $thread_action['print']['name'] = _MD_PRINT;
+        $thread_action['print']['name'] = _MD_CBBX_PRINT;
 
         if(is_object($xoopsUser) && $this->getVar('uid') > 0 && isset($viewtopic_users[$this->getVar('uid')])){
-	        $thread_action['pm']['image'] = $image_url = "<img src=\"".$forumImage['pm']."\" alt=\""._MD_PM."\" align=\"middle\" />";
+	        $thread_action['pm']['image'] = $image_url = "<img src=\"".$forumImage['pm']."\" alt=\""._MD_CBBX_PM."\" align=\"middle\" />";
 	        $thread_action['pm']['link'] = "posttopm.php?";
-	        $thread_action['pm']['name'] = _MD_PM;
+	        $thread_action['pm']['name'] = _MD_CBBX_PM;
         }
         */
 
         $post = array(
 	    			'post_id' => $post_id,
 	                'post_parent_id' => $this->getVar('pid'),
-	                'post_date' => newbb_formatTimestamp($this->getVar('post_time')),
+	                'post_date' => cbbx_formatTimestamp($this->getVar('post_time')),
 	                'post_image' => $post_image,
 	                'post_title' => $post_title,
 	                'post_text' => $post_text,
@@ -470,17 +470,17 @@ class Post extends ArtObject {
 
 }
 
-class NewbbPostHandler extends ArtObjectHandler
+class CbbxPostHandler extends ArtObjectHandler
 {
-    function NewbbPostHandler(&$db) {
-        $this->ArtObjectHandler($db, 'bb_posts', 'Post', 'post_id', 'subject');
+    function __construct(&$db) {
+        parent::__construct($db, 'cbbx_posts', 'Post', 'post_id', 'subject');
     }
     
     function &get($id)
     {
 	    $id = intval($id);
 	    $post = null;
-        $sql = 'SELECT p.*, t.* FROM ' . $this->db->prefix('bb_posts') . ' p LEFT JOIN ' . $this->db->prefix('bb_posts_text') . ' t ON p.post_id=t.post_id WHERE p.post_id=' . $id;
+        $sql = 'SELECT p.*, t.* FROM ' . $this->db->prefix('cbbx_posts') . ' p LEFT JOIN ' . $this->db->prefix('cbbx_posts_text') . ' t ON p.post_id=t.post_id WHERE p.post_id=' . $id;
         if($array = $this->db->fetchArray($this->db->query($sql))){
 	        $post =& $this->create(false);
 	        $post->assignVars($array);
@@ -491,7 +491,7 @@ class NewbbPostHandler extends ArtObjectHandler
 
     function &getByLimit($topic_id, $limit, $approved = 1)
     {
-        $sql = 'SELECT p.*, t.*, tp.topic_status FROM ' . $this->db->prefix('bb_posts') . ' p LEFT JOIN ' . $this->db->prefix('bb_posts_text') . ' t ON p.post_id=t.post_id LEFT JOIN ' . $this->db->prefix('bb_topics') . ' tp ON tp.topic_id=p.topic_id WHERE p.topic_id=' . $topic_id . ' AND p.approved ='. $approved .' ORDER BY p.post_time DESC';
+        $sql = 'SELECT p.*, t.*, tp.topic_status FROM ' . $this->db->prefix('cbbx_posts') . ' p LEFT JOIN ' . $this->db->prefix('cbb_posts_text') . ' t ON p.post_id=t.post_id LEFT JOIN ' . $this->db->prefix('cbbx_topics') . ' tp ON tp.topic_id=p.topic_id WHERE p.topic_id=' . $topic_id . ' AND p.approved ='. $approved .' ORDER BY p.post_time DESC';
         $result = $this->db->query($sql, $limit, 0);
         $ret = array();
         while ($myrow = $this->db->fetchArray($result)) {
@@ -528,7 +528,7 @@ class NewbbPostHandler extends ArtObjectHandler
         }
         $post->setVar("approved", 1);
         $this->insert($post, true);
-    	$topic_handler =& xoops_getmodulehandler("topic", "newbb");
+    	$topic_handler =& xoops_getmodulehandler("topic", basename(dirname(__DIR__)));
     	$topic_obj =& $topic_handler->get($post->getVar("topic_id"));
     	if($topic_obj->getVar("topic_last_post_id") < $post->getVar("post_id")){
         	$topic_obj->setVar("topic_last_post_id", $post->getVar("post_id"));
@@ -539,7 +539,7 @@ class NewbbPostHandler extends ArtObjectHandler
         	$topic_obj->setVar("topic_replies", $topic_obj->getVar("topic_replies")+1);
         }
         $topic_handler->insert($topic_obj, true);
-    	$forum_handler =& xoops_getmodulehandler("forum", "newbb");
+    	$forum_handler =& xoops_getmodulehandler("forum", basename(dirname(__DIR__)));
     	$forum_obj =& $forum_handler->get($post->getVar("forum_id"));
     	if($forum_obj->getVar("forum_last_post_id") < $post->getVar("post_id")){
         	$forum_obj->setVar("forum_last_post_id", $post->getVar("post_id"));
@@ -566,10 +566,10 @@ class NewbbPostHandler extends ArtObjectHandler
 
     function insertnewsubject($topic_id, $subject)
     {
-        $sql = "UPDATE " . $this->db->prefix("bb_topics") . " SET topic_subject = " . intval($subject) . " WHERE topic_id = $topic_id";
+        $sql = "UPDATE " . $this->db->prefix("cbbx_topics") . " SET topic_subject = " . intval($subject) . " WHERE topic_id = $topic_id";
         $result = $this->db->queryF($sql);
         if (!$result) {
-            newbb_message("update topic subject error:" . $sql);
+            cbbx_message("update topic subject error:" . $sql);
             return false;
         }
         return true;
@@ -579,7 +579,7 @@ class NewbbPostHandler extends ArtObjectHandler
     {
         global $xoopsUser, $xoopsConfig;
 
-        $topic_handler =& xoops_getmodulehandler("topic", "newbb");
+        $topic_handler =& xoops_getmodulehandler("topic", basename(dirname(__DIR__)));
 	    // Verify the topic ID
         if($topic_id = $post->getVar("topic_id")){
 	        $topic_obj =& $topic_handler->get($topic_id);
@@ -596,7 +596,7 @@ class NewbbPostHandler extends ArtObjectHandler
 	        $post->setNew();
 	        $topic_obj =& $topic_handler->create();
         }
-        $text_handler =& xoops_getmodulehandler("text", "newbb");
+        $text_handler =& xoops_getmodulehandler("text", basename(dirname(__DIR__)));
         $post_text_vars = array("post_text", "post_edit");
         if ($post->isNew()) {
             if (!$topic_id = $post->getVar("topic_id")) {
@@ -689,7 +689,7 @@ class NewbbPostHandler extends ArtObjectHandler
         }
         else {
 	        include_once(XOOPS_ROOT_PATH . "/class/xoopstree.php");
-	        $mytree = new XoopsTree($this->db->prefix("bb_posts"), "post_id", "pid");
+	        $mytree = new XoopsTree($this->db->prefix("cbbx_posts"), "post_id", "pid");
             $arr = $mytree->getAllChild($post->getVar('post_id'));
             for ($i = 0; $i < count($arr); $i++) {
                 $childpost =& $this->create(false);
@@ -714,7 +714,7 @@ class NewbbPostHandler extends ArtObjectHandler
         
         /* Set active post as deleted */
         if($post->getVar("approved")>0 && empty($force)) {
-        	$sql = "UPDATE " . $this->db->prefix("bb_posts") . " SET approved = -1 WHERE post_id = ".$post->getVar("post_id");
+        	$sql = "UPDATE " . $this->db->prefix("cbbx_posts") . " SET approved = -1 WHERE post_id = ".$post->getVar("post_id");
 	        if (!$result = $this->db->queryF($sql)) {
 	        }
         /* delete pending post directly */
@@ -734,7 +734,7 @@ class NewbbPostHandler extends ArtObjectHandler
         }
 
         if ($post->isTopic()) {
-			$topic_handler =& xoops_getmodulehandler('topic', 'newbb');			
+			$topic_handler =& xoops_getmodulehandler('topic', basename(dirname(__DIR__)));			
 			$topic_obj =& $topic_handler->get($post->getVar('topic_id'));
         	if(is_object($topic_obj) && $topic_obj->getVar("approved")>0 && empty($force)){
         		$topiccount_toupdate = 1;
@@ -765,21 +765,21 @@ class NewbbPostHandler extends ArtObjectHandler
 				}
 				endif;
 				
-	        	$sql = sprintf("DELETE FROM %s WHERE topic_id = %u", $this->db->prefix("bb_topics"), $post->getVar('topic_id'));
+	        	$sql = sprintf("DELETE FROM %s WHERE topic_id = %u", $this->db->prefix("cbbx_topics"), $post->getVar('topic_id'));
 	            if (!$result = $this->db->queryF($sql)) {
-	                newbb_message("Could not delete topic: ". $sql);
+	                cbbx_message("Could not delete topic: ". $sql);
 	            }
-		        $sql = sprintf("DELETE FROM %s WHERE topic_id = %u", $this->db->prefix("bb_votedata"), $post->getVar('topic_id'));
+		        $sql = sprintf("DELETE FROM %s WHERE topic_id = %u", $this->db->prefix("cbbx_votedata"), $post->getVar('topic_id'));
 		        if (!$result = $this->db->queryF($sql)) {
-	                newbb_message("Could not delete votedata: " .$sql);
+	                cbbx_message("Could not delete votedata: " .$sql);
 		        }
 	        }
         }else{
-            $sql = "UPDATE ".$this->db->prefix("bb_topics")." t
-            				LEFT JOIN ".$this->db->prefix("bb_posts")." p ON p.topic_id = t.topic_id
+            $sql = "UPDATE ".$this->db->prefix("cbbx_topics")." t
+            				LEFT JOIN ".$this->db->prefix("cbbx_posts")." p ON p.topic_id = t.topic_id
             				SET t.topic_last_post_id = p.post_id
             				WHERE t.topic_last_post_id = ".$post->getVar('post_id')."
-            						AND p.post_id = (SELECT MAX(post_id) FROM ".$this->db->prefix("bb_posts")." WHERE topic_id=t.topic_id)";
+            						AND p.post_id = (SELECT MAX(post_id) FROM ".$this->db->prefix("cbbx_posts")." WHERE topic_id=t.topic_id)";
             if (!$result = $this->db->queryF($sql)) {
             }
         }
@@ -797,7 +797,7 @@ class NewbbPostHandler extends ArtObjectHandler
 		        }
 	        }
 	
-	        $sql = "UPDATE " . $this->db->prefix("bb_posts") . " SET pid = " . $post->getVar('pid') . " WHERE pid=" . $post->getVar('post_id');
+	        $sql = "UPDATE " . $this->db->prefix("cbbx_posts") . " SET pid = " . $post->getVar('pid') . " WHERE pid=" . $post->getVar('post_id');
 	        if (!$result = $this->db->queryF($sql)) {
 	            //xoops_error($this->db->error());
 	        }
@@ -818,8 +818,8 @@ class NewbbPostHandler extends ArtObjectHandler
     {
         $ret = array();
         $sql = 'SELECT p.*, t.* '.
-        		' FROM ' . $this->db->prefix('bb_posts') . ' AS p'.
-        		' LEFT JOIN ' . $this->db->prefix('bb_posts_text') . " AS t ON t.post_id = p.post_id";
+        		' FROM ' . $this->db->prefix('cbbx_posts') . ' AS p'.
+        		' LEFT JOIN ' . $this->db->prefix('cbbx_posts_text') . " AS t ON t.post_id = p.post_id";
 		if(!empty($join)){        		
 			$sql .= $join;
 		}
@@ -831,7 +831,7 @@ class NewbbPostHandler extends ArtObjectHandler
         }
         $result = $this->db->query($sql, intval($limit), intval($start));
         if (!$result) {
-            newbb_message( "NewbbPostHandler::getPostsByLimit error:" . $sql);
+            cbbx_message( "CbbxPostHandler::getPostsByLimit error:" . $sql);
             return $ret;
         }
         while ($myrow = $this->db->fetchArray($result)) {
@@ -850,18 +850,18 @@ class NewbbPostHandler extends ArtObjectHandler
      */
     function cleanOrphan()
     {
-	    parent::cleanOrphan($this->db->prefix("bb_topics"), "topic_id");
-	    parent::cleanOrphan($this->db->prefix("bb_posts_text"), "post_id");
+	    parent::cleanOrphan($this->db->prefix("cbbx_topics"), "topic_id");
+	    parent::cleanOrphan($this->db->prefix("cbbx_posts_text"), "post_id");
 	    
     	/* for MySQL 4.1+ */
     	if($this->mysql_major_version() >= 4):
-        $sql = "DELETE FROM ".$this->db->prefix("bb_posts_text").
+        $sql = "DELETE FROM ".$this->db->prefix("cbbx_posts_text").
         		" WHERE (post_id NOT IN ( SELECT DISTINCT post_id FROM ".$this->table.") )";
         else:
         // for 4.0+
         /* */
-        $sql = 	"DELETE ".$this->db->prefix("bb_posts_text")." FROM ".$this->db->prefix("bb_posts_text").
-        		" LEFT JOIN ".$this->table." AS aa ON ".$this->db->prefix("bb_posts_text").".post_id = aa.post_id ".
+        $sql = 	"DELETE ".$this->db->prefix("cbbx_posts_text")." FROM ".$this->db->prefix("cbbx_posts_text").
+        		" LEFT JOIN ".$this->table." AS aa ON ".$this->db->prefix("cbbx_posts_text").".post_id = aa.post_id ".
         		" WHERE (aa.post_id IS NULL)";
         /* */
         // Alternative for 4.1+
@@ -872,7 +872,7 @@ class NewbbPostHandler extends ArtObjectHandler
         */
 		endif;
         if (!$result = $this->db->queryF($sql)) {
-	        newbb_message("cleanOrphan:". $sql);
+	        cbbx_message("cleanOrphan:". $sql);
             return false;
         }
         return true;
@@ -886,12 +886,14 @@ class NewbbPostHandler extends ArtObjectHandler
      */
     function cleanExpires($expire = 0)
     {
-	    $crit_expire =& new CriteriaCompo(new Criteria("approved", 0, "<="));
+	    $crit_expire = new CriteriaCompo(new Criteria("approved", 0, "<="));
 	    if(!empty($expire)){
 	    	$crit_expire->add(new Criteria("post_time", time()-intval($expire), "<"));
     	}
 	    return $this->deleteAll($crit_expire, true/*, true*/);
     }
 }
+
+class_alias('CbbxPostHandler', basename(dirname(__DIR__)).'PostHandler');
 
 ?>

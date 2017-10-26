@@ -34,20 +34,20 @@ foreach (array('forum', 'topic_id', 'post_id', 'order', 'pid', 'start') as $geti
 }
 $viewmode = (isset($_GET['viewmode']) && $_GET['viewmode'] != 'flat') ? 'thread' : 'flat';
 if ( empty($forum) ) {
-    redirect_header("index.php", 2, _MD_ERRORFORUM);
+    redirect_header("index.php", 2, _MD_CBBX_ERRORFORUM);
     exit();
 } elseif ( empty($topic_id) ) {
-    redirect_header("viewforum.php?forum=$forum", 2, _MD_ERRORTOPIC);
+    redirect_header("viewforum.php?forum=$forum", 2, _MD_CBBX_ERRORTOPIC);
     exit();
 } 
 
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
-$post_handler =& xoops_getmodulehandler('post', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
+$post_handler =& xoops_getmodulehandler('post', basename(__DIR__));
 
 if ( !$topic_id && !$post_id ) {
 	$redirect = empty($forum)?"index.php":'viewforum.php?forum='.$forum;
-    redirect_header($redirect, 2, _MD_ERRORTOPIC);
+    redirect_header($redirect, 2, _MD_CBBX_ERRORTOPIC);
 }
 
 if ( empty($post_id) ) {
@@ -59,18 +59,18 @@ $forum = $forumpost->getVar("forum_id");
 
 $forum_obj = $forum_handler->get($forum);
 if (!$forum_handler->getPermission($forum_obj)){
-    redirect_header("index.php", 2, _MD_NORIGHTTOACCESS);
+    redirect_header("index.php", 2, _MD_CBBX_NORIGHTTOACCESS);
     exit();
 }
 
 $topic_status = $topic_handler->get($topic_id,'topic_status');
 if ( !$topic_handler->getPermission($forum_obj, $topic_status, 'reply')){
-	redirect_header("viewtopic.php?topic_id=$topic_id&amp;order=$order&amp;viewmode=$viewmode&amp;pid=$pid&amp;forum=".$forum_obj->getVar('forum_id'), 2, _MD_NORIGHTTOREPLY);
+	redirect_header("viewtopic.php?topic_id=$topic_id&amp;order=$order&amp;viewmode=$viewmode&amp;pid=$pid&amp;forum=".$forum_obj->getVar('forum_id'), 2, _MD_CBBX_NORIGHTTOREPLY);
     exit();
 }
 
 if ($xoopsModuleConfig['wol_enabled']){
-	$online_handler =& xoops_getmodulehandler('online', 'newbb');
+	$online_handler =& xoops_getmodulehandler('online', basename(__DIR__));
 	$online_handler->init($forum_obj);
 }
 
@@ -80,11 +80,11 @@ if ($xoopsModuleConfig['wol_enabled']){
     include XOOPS_ROOT_PATH.'/header.php';
 
 	$myts =& MyTextSanitizer::getInstance();
-	$isadmin = newbb_isAdmin($forum_obj);
+	$isadmin = cbbx_isAdmin($forum_obj);
     $forumpostshow =& $post_handler->getByLimit($topic_id,5);
 
     if($forumpost->getVar('uid')) {
-	    $r_name =newbb_getUnameFromId( $forumpost->getVar('uid'), $xoopsModuleConfig['show_realname'] );
+	    $r_name =cbbx_getUnameFromId( $forumpost->getVar('uid'), $xoopsModuleConfig['show_realname'] );
     }else{
 	    $poster_name = $forumpost->getVar('poster_name');
     	$r_name = (empty($poster_name))?$xoopsConfig['anonymous']:$myts->htmlSpecialChars($poster_name);
@@ -92,8 +92,8 @@ if ($xoopsModuleConfig['wol_enabled']){
 
     $r_subject=$forumpost->getVar('subject', "E");
 
-    if (!preg_match("/^(Re|"._MD_RE."):/i",$r_subject)) {
-        $subject = _MD_RE.': '.$r_subject;
+    if (!preg_match("/^(Re|"._MD_CBBX_RE."):/i",$r_subject)) {
+        $subject = _MD_CBBX_RE.': '.$r_subject;
     } else {
         $subject = $r_subject;
     }
@@ -105,12 +105,12 @@ if ($xoopsModuleConfig['wol_enabled']){
     {
 	    if (isset($_GET['quotedac']) && $_GET['quotedac'] == 1) {
 	        $message = "[quote]\n";
-	        $message .= sprintf(_MD_USERWROTE,$r_name);
+	        $message .= sprintf(_MD_CBBX_USERWROTE,$r_name);
 	        $message .= "\n".$q_message."[/quote]";
         	$hidden = "";
 	    } else {
 	        $hidden = "[quote]\n";
-	        $hidden .= sprintf(_MD_USERWROTE,$r_name);
+	        $hidden .= sprintf(_MD_CBBX_USERWROTE,$r_name);
 	        $hidden .= "\n".$q_message."[/quote]";
 	        $message = "";
 	    }
@@ -142,23 +142,23 @@ if ($xoopsModuleConfig['wol_enabled']){
 
     include 'include/forumform.inc.php';
 
-	$karma_handler =& xoops_getmodulehandler('karma', 'newbb');
+	$karma_handler =& xoops_getmodulehandler('karma', basename(__DIR__));
 	$user_karma = $karma_handler->getUserKarma();
 
     foreach ($forumpostshow as $eachpost) {
     	// Sorry, in order to save queries, we have to hide the non-open post_text even if you have replied or have adequate karma, even an admin.
 	    if( $xoopsModuleConfig['enable_karma'] && $eachpost->getVar('post_karma') > 0 ) {
-	        $p_message = sprintf(_MD_KARMA_REQUIREMENT, "***", $eachpost->getVar('post_karma'))."</div>";
+	        $p_message = sprintf(_MD_CBBX_KARMA_REQUIREMENT, "***", $eachpost->getVar('post_karma'))."</div>";
 	    }elseif( $xoopsModuleConfig['allow_require_reply'] && $eachpost->getVar('require_reply') ) {
-	        $p_message = _MD_REPLY_REQUIREMENT;
+	        $p_message = _MD_CBBX_REPLY_REQUIREMENT;
 	    }else{
 		    $p_message = $eachpost->getVar('post_text');
 	    }
 
     	$isadmin = 0;
     	if($eachpost->getVar('uid')) {
-	    	$p_name =newbb_getUnameFromId( $eachpost->getVar('uid'), $xoopsModuleConfig['show_realname'] );
-			if (newbb_isAdmin($forum_obj, $eachpost->getVar('uid'))) $isadmin = 1;
+	    	$p_name =cbbx_getUnameFromId( $eachpost->getVar('uid'), $xoopsModuleConfig['show_realname'] );
+			if (cbbx_isAdmin($forum_obj, $eachpost->getVar('uid'))) $isadmin = 1;
     	}else{
 	    	$poster_name = $eachpost->getVar('poster_name');
     		$p_name = (empty($poster_name))?$xoopsConfig['anonymous']:$myts->htmlSpecialChars($poster_name);
@@ -172,7 +172,7 @@ if ($xoopsModuleConfig['wol_enabled']){
 		}
 		*/
 	    $p_subject = $eachpost->getVar('subject');
-    	$p_content = _MD_BY." <strong> ".$p_name." </strong> "._MD_ON." <strong> ".$p_date."</strong><br /><br />";
+    	$p_content = _MD_CBBX_BY." <strong> ".$p_name." </strong> "._MD_CBBX_ON." <strong> ".$p_date."</strong><br /><br />";
     	$p_content .= $p_message;
 
 	    echo "<table cellpadding='4' cellspacing='1' width='98%' class='outer'><tr><td class='head'>".$p_subject."</td></tr>";

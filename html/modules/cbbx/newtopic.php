@@ -36,24 +36,24 @@ foreach (array('forum', 'order') as $getint) {
 if (isset($_GET['op'])) $op = $_GET['op'];
 $viewmode = (isset($_GET['viewmode']) && $_GET['viewmode'] != 'flat') ? 'thread' : 'flat';
 if ( empty($forum) ) {
-    redirect_header("index.php", 2, _MD_ERRORFORUM);
+    redirect_header("index.php", 2, _MD_CBBX_ERRORFORUM);
     exit();
 }
-    $forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+    $forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
     $forum_obj = $forum_handler->get($forum);
 	if (!$forum_handler->getPermission($forum_obj)){
-	    redirect_header("index.php", 2, _MD_NORIGHTTOACCESS);
+	    redirect_header("index.php", 2, _MD_CBBX_NORIGHTTOACCESS);
 	    exit();
 	}
 
-	$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+	$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
 	if (!$topic_handler->getPermission($forum_obj, 0, 'post')) {
-        redirect_header("viewforum.php?order=$order&amp;viewmode=$viewmode&amp;forum=".$forum_obj->getVar('forum_id'),2,_MD_NORIGHTTOPOST);
+        redirect_header("viewforum.php?order=$order&amp;viewmode=$viewmode&amp;forum=".$forum_obj->getVar('forum_id'),2,_MD_CBBX_NORIGHTTOPOST);
 	    exit();
 	}
 
 	if ($xoopsModuleConfig['wol_enabled']){
-		$online_handler =& xoops_getmodulehandler('online', 'newbb');
+		$online_handler =& xoops_getmodulehandler('online', basename(__DIR__));
 		$online_handler->init($forum_obj);
 	}
 
@@ -74,7 +74,6 @@ if ( empty($forum) ) {
     $attachsig = (is_object($xoopsUser) && $xoopsUser->getVar('attachsig')) ? 1 : 0;
     unset($post_id);
     unset($topic_id);
-
 
 	// Disable cache
 	$xoopsConfig["module_cache"][$xoopsModule->getVar("mid")] = 0;

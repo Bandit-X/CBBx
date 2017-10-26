@@ -28,6 +28,9 @@
 //  URL: http://xoopsforge.com, http://xoops.org.cn                          //
 //  Project: Article Project                                                 //
 //  ------------------------------------------------------------------------ //
+//TODO: Remove.
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 include "header.php";
 
@@ -35,18 +38,18 @@ include "header.php";
 if (isset($_GET['mark_read'])){
     if(1 == intval($_GET['mark_read'])){ // marked as read
 	    $markvalue = 1;
-	    $markresult = _MD_MARK_READ;
+	    $markresult = _MD_CBBX_MARK_READ;
     }else{ // marked as unread
 	    $markvalue = 0;
-	    $markresult = _MD_MARK_UNREAD;
+	    $markresult = _MD_CBBX_MARK_UNREAD;
     }
-	newbb_setRead_forum($markvalue);
-    $url=XOOPS_URL . '/modules/' . $xoopsModule->getVar("dirname") . '/index.php';
-    redirect_header($url, 2, _MD_ALL_FORUM_MARKED.' '.$markresult);
+	cbbx_setRead_forum($markvalue);
+    $url=XOOPS_URL . '/modules/' . $xoopsModule->getVar('dirname') . '/index.php';
+    redirect_header($url, 2, _MD_CBBX_ALL_FORUM_MARKED.' '.$markresult);
 }
 
 $viewcat = @intval($_GET['cat']);
-$category_handler =& xoops_getmodulehandler('category', 'newbb');
+$category_handler =& xoops_getmodulehandler('category', $xoopsModule->getVar('dirname'));
 
 $categories = array();
 if (!$viewcat) {
@@ -58,11 +61,11 @@ if (!$viewcat) {
 	if($category_handler->getPermission($category_obj)) {
 		$categories[$viewcat] =& $category_obj;
 	}
-    $forum_index_title = sprintf(_MD_FORUMINDEX, htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES));
+    $forum_index_title = sprintf(_MD_CBBX_FORUMINDEX, htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES));
 	$xoops_pagetitle = $category_obj->getVar('cat_title') . " [" .$xoopsModule->getVar('name')."]";
 }
 if(count($categories) == 0){
-    redirect_header(XOOPS_URL, 2, _MD_NORIGHTTOACCESS);
+    redirect_header(XOOPS_URL, 2, _MD_CBBX_NORIGHTTOACCESS);
     exit();
 }
 
@@ -73,7 +76,9 @@ if(!empty($xoopsModuleConfig['rss_enable'])){
 	';
 }
 
-$xoopsOption['template_main']= 'newbb_index.html';
+$xoopsOption['template_main']= 'cbbx_index.tpl';
+//XCL
+$xoopsTpl->assign('system_notification_select','db:system_notification_select.html');
 $xoopsOption['xoops_pagetitle']= $xoops_pagetitle;
 $xoopsOption['xoops_module_header']= $xoops_module_header;
 include XOOPS_ROOT_PATH."/header.php";
@@ -82,20 +87,20 @@ $xoopsTpl->assign('xoops_pagetitle', $xoops_pagetitle);
 $xoopsTpl->assign('xoops_module_header', $xoops_module_header);
 $xoopsTpl->assign('forum_index_title', $forum_index_title);
 if ($xoopsModuleConfig['wol_enabled']){
-	$online_handler =& xoops_getmodulehandler('online', 'newbb');
+	$online_handler =& xoops_getmodulehandler('online', $xoopsModule->getVar('dirname'));
 	$online_handler->init();
     $xoopsTpl->assign('online', $online_handler->show_online());
 }
 
 /* display forum stats */
 $xoopsTpl->assign(array(
-	"lang_welcomemsg" => sprintf(_MD_WELCOME, htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES)), 
+	"lang_welcomemsg" => sprintf(_MD_CBBX_WELCOME, htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES)), 
 	"total_topics" => get_total_topics(), 
 	"total_posts" => get_total_posts(), 
-	"lang_lastvisit" => sprintf(_MD_LASTVISIT,formatTimestamp($last_visit)), 
-	"lang_currenttime" => sprintf(_MD_TIMENOW,formatTimestamp(time(),"m"))));
+	"lang_lastvisit" => sprintf(_MD_CBBX_LASTVISIT,formatTimestamp($last_visit)), 
+	"lang_currenttime" => sprintf(_MD_CBBX_TIMENOW,formatTimestamp(time(),"m"))));
 
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', $xoopsModule->getVar('dirname'));
 $forums_obj = $forum_handler->getForumsByCategory(array_keys($categories), "access");
 $forums_array = $forum_handler->display($forums_obj);
 unset($forums_obj);
@@ -111,7 +116,7 @@ if(count($forums_array)>0){
 
 $category_array = array();
 $cat_order = array();
-$toggles = newbb_getcookie('G', true);
+$toggles = cbbx_getcookie('G', true);
 foreach(array_keys($categories) as $id){
     $forums = array();
 
@@ -135,7 +140,7 @@ foreach(array_keys($categories) as $id){
     $title = $myts->htmlSpecialChars($title);
 	if(!empty($url)) $cat_sponsor = array("title"=>$title, "link"=>formatURL($url));
 	if($onecat->getVar('cat_image') &&	$onecat->getVar('cat_image') != "blank.gif"){
-		$cat_image = XOOPS_URL."/modules/" . $xoopsModule->getVar("dirname") . "/images/category/" . $onecat->getVar('cat_image');
+		$cat_image = XOOPS_URL."/modules/" . $xoopsModule->getVar('dirname') . "/images/category/" . $onecat->getVar('cat_image');
 	}else{
 		$cat_image = "";
 	}
@@ -165,11 +170,11 @@ $xoopsTpl->assign('newpost_link', "viewpost.php?type=new");
 $xoopsTpl->assign('digest_link', "viewall.php?type=digest");
 $xoopsTpl->assign('unreplied_link', "viewall.php?type=unreplied");
 $xoopsTpl->assign('unread_link', "viewall.php?type=unread");
-$xoopsTpl->assign('down',newbb_displayImage($forumImage['doubledown']));
+$xoopsTpl->assign('down',cbbx_displayImage($forumImage['doubledown']));
 $xoopsTpl->assign('menumode',$menumode);
 $xoopsTpl->assign('menumode_other',$menumode_other);
 
-$isadmin = newbb_isAdmin();
+$isadmin = cbbx_isAdmin();
 $xoopsTpl->assign('viewer_level', ($isadmin)?2:(is_object($xoopsUser)?1:0) );
 $mode = (!empty($_GET['mode'])) ? intval($_GET['mode']) : 0;
 $xoopsTpl->assign('mode', $mode );
@@ -179,18 +184,18 @@ $xoopsTpl->assign('version', $xoopsModule->getVar("version"));
 
 /* To be removed */
 if ( $isadmin ) {
-    $xoopsTpl->assign('forum_index_cpanel',array("link"=>"admin/index.php", "name"=>_MD_ADMINCP));
+    $xoopsTpl->assign('forum_index_cpanel',array("link"=>"admin/index.php", "name"=>_MD_CBBX_ADMINCP));
 }
 
 if ($xoopsModuleConfig['rss_enable'] == 1) {
     $xoopsTpl->assign("rss_enable",1);
-    $xoopsTpl->assign("rss_button", newbb_displayImage($forumImage['rss'], 'RSS feed'));
+    $xoopsTpl->assign("rss_button", cbbx_displayImage($forumImage['rss'], 'RSS feed'));
 }
 $xoopsTpl->assign(array(
-	"img_hotfolder" => newbb_displayImage($forumImage['newposts_forum']),
-	"img_folder" => newbb_displayImage($forumImage['folder_forum']),
-	"img_locked_nonewposts" => newbb_displayImage($forumImage['locked_forum']),
-	"img_locked_newposts" => newbb_displayImage($forumImage['locked_forum_newposts']),
-	'img_subforum' => newbb_displayImage($forumImage['subforum'])));
+	"img_hotfolder" => cbbx_displayImage($forumImage['newposts_forum']),
+	"img_folder" => cbbx_displayImage($forumImage['folder_forum']),
+	"img_locked_nonewposts" => cbbx_displayImage($forumImage['locked_forum']),
+	"img_locked_newposts" => cbbx_displayImage($forumImage['locked_forum_newposts']),
+	'img_subforum' => cbbx_displayImage($forumImage['subforum'])));
 include_once XOOPS_ROOT_PATH.'/footer.php';
 ?>

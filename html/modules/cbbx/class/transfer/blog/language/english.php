@@ -25,7 +25,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA //
 //  ------------------------------------------------------------------------ //
 /**
- * Transfer::newbb language
+ * Transfer::cbbx language
  *
  * @author	    phppp, http://xoops.org.cn
  * @copyright	copyright (c) 2005 XOOPSForge.com
@@ -33,5 +33,5 @@
  *
  */
  
-define("_MD_TRANSFER_BLOG","Write blog with this post");
+define("_MD_CBBX_TRANSFER_BLOG","Write blog with this post");
 ?>

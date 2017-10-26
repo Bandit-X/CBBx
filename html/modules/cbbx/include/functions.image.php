@@ -29,10 +29,10 @@
 //  Project: Article Project                                                 //
 //  ------------------------------------------------------------------------ //
 
-if(!defined("NEWBB_FUNCTIONS_IMAGE")):
-define("NEWBB_FUNCTIONS_IMAGE", true);
+if(!defined("CBBX_FUNCTIONS_IMAGE")):
+define("CBBX_FUNCTIONS_IMAGE", true);
 
-function newbb_attachmentImage($source)
+function cbbx_attachmentImage($source)
 {
 	global $xoopsModuleConfig;
 
@@ -67,17 +67,16 @@ function newbb_attachmentImage($source)
 			}
 		}else
 		if(!file_exists($thumb_path.'/'.$source) && $imginfo[0]>$xoopsModuleConfig['max_img_width']){
-			newbb_createThumbnail($source, $xoopsModuleConfig['max_img_width']);
+			cbbx_createThumbnail($source, $xoopsModuleConfig['max_img_width']);
 		}
 	}
 
-
 	if(file_exists($thumb)){
-		$attachmentImage  = '<a href="'.$image_url.'" title="'.$source.' '.$img_info.'" target="newbb_image">';
+		$attachmentImage  = '<a href="'.$image_url.'" title="'.$source.' '.$img_info.'" target="cbbx_image">';
 		$attachmentImage .= '<img src="'.$thumb_url.'" alt="'.$source.' '.$img_info.'" />';
 		$attachmentImage .= '</a>';
 	}elseif(!empty($pseudo_size)){
-		$attachmentImage  = '<a href="'.$image_url.'" title="'.$source.' '.$img_info.'" target="newbb_image">';
+		$attachmentImage  = '<a href="'.$image_url.'" title="'.$source.' '.$img_info.'" target="cbbx_image">';
 		$attachmentImage .= '<img src="'.$image_url.'" '.$pseudo_size.' alt="'.$source.' '.$img_info.'" />';
 		$attachmentImage .= '</a>';
 	}elseif(file_exists($image)){
@@ -88,7 +87,7 @@ function newbb_attachmentImage($source)
 }
 
 
-function newbb_createThumbnail($source, $thumb_width)
+function cbbx_createThumbnail($source, $thumb_width)
 {
 	global $xoopsModuleConfig;
 
@@ -96,7 +95,7 @@ function newbb_createThumbnail($source, $thumb_width)
 	$thumb_path = $img_path.'/thumbs';
 	$src_file = $img_path.'/'.$source;
 	$new_file = $thumb_path.'/'.$source;
-	//$imageLibs = newbb_getImageLibs();
+	//$imageLibs = cbbx_getImageLibs();
 
 	if (!filesize($src_file) || !is_readable($src_file)) {
 		return false;
@@ -196,7 +195,6 @@ function newbb_createThumbnail($source, $thumb_width)
 				break;
 		}
 	}
-
 
 	if (file_exists($new_file))	return true;
 	else return false;

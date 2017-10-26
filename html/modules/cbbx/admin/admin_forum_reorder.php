@@ -37,19 +37,19 @@ if (isset($_POST['forum'])) $forum = $_POST['forum'];
 
 if (!empty($_POST['submit'])) {
     for ($i = 0; $i < count($cat_orders); $i++) {
-        $sql = "update " . $xoopsDB->prefix("bb_categories") . " set cat_order = " . $cat_orders[$i] . " WHERE cat_id=$cat[$i]";
+        $sql = "update " . $xoopsDB->prefix("cbbx_categories") . " set cat_order = " . $cat_orders[$i] . " WHERE cat_id=$cat[$i]";
         if (!$result = $xoopsDB->query($sql)) {
-    		redirect_header("admin_forum_reorder.php", 1, _AM_NEWBB_FORUM_ERROR);
+    		redirect_header("admin_forum_reorder.php", 1, _AM_CBBX_FORUM_ERROR);
         }
     }
 
     for ($i = 0; $i < count($orders); $i++) {
-        $sql = "update " . $xoopsDB->prefix("bb_forums") . " set forum_order = " . $orders[$i] . " WHERE forum_id=".$forum[$i];
+        $sql = "update " . $xoopsDB->prefix("cbbx_forums") . " set forum_order = " . $orders[$i] . " WHERE forum_id=".$forum[$i];
         if (!$result = $xoopsDB->query($sql)) {
-    		redirect_header("admin_forum_reorder.php", 1, _AM_NEWBB_FORUM_ERROR);
+    		redirect_header("admin_forum_reorder.php", 1, _AM_CBBX_FORUM_ERROR);
         }
     }
-    redirect_header("admin_forum_reorder.php", 1, _AM_NEWBB_BOARDREORDER);
+    redirect_header("admin_forum_reorder.php", 1, _AM_CBBX_BOARDREORDER);
 } else {
 	include_once XOOPS_ROOT_PATH."/modules/".$xoopsModule->getVar("dirname")."/class/xoopsformloader.php";
     $orders = array();
@@ -58,22 +58,22 @@ if (!empty($_POST['submit'])) {
     $cat = array();
 
     xoops_cp_header();
-    loadModuleAdminMenu(6, _AM_NEWBB_SETFORUMORDER);
-    echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_NEWBB_SETFORUMORDER . "</legend>";
+    loadModuleAdminMenu(6, _AM_CBBX_SETFORUMORDER);
+    echo "<fieldset><legend style='font-weight: bold; color: #900;'>" . _AM_CBBX_SETFORUMORDER . "</legend>";
     echo"<br /><br /><table width='100%' border='0' cellspacing='1' class='outer'>"
      . "<tr><td class='odd'>";
-    $tform = new XoopsThemeForm(_AM_NEWBB_SETFORUMORDER, "", "");
+    $tform = new XoopsThemeForm(_AM_CBBX_SETFORUMORDER, "", "");
     $tform->display();
     echo "<form name='reorder' method='post'>";
     echo "<table border='0' width='100%' cellpadding='2' cellspacing='1' class='outer'>";
     echo "<tr>";
-    echo "<td class='head' align='center' width='3%' height='16'><strong>" . _AM_NEWBB_REORDERID . "</strong>";
-    echo "</td><td class='head' align='left' width='30%'><strong>" . _AM_NEWBB_REORDERTITLE . "</strong>";
-    echo "</td><td class='head' align='center' width='5%'><strong>" . _AM_NEWBB_REORDERWEIGHT . "</strong>";
+    echo "<td class='head' align='center' width='3%' height='16'><strong>" . _AM_CBBX_REORDERID . "</strong>";
+    echo "</td><td class='head' align='left' width='30%'><strong>" . _AM_CBBX_REORDERTITLE . "</strong>";
+    echo "</td><td class='head' align='center' width='5%'><strong>" . _AM_CBBX_REORDERWEIGHT . "</strong>";
     echo "</td></tr>";
-    $category_handler =& xoops_getmodulehandler('category', 'newbb');
+    $category_handler =& xoops_getmodulehandler('category', basename(dirname(__DIR__)));
     $categories = $category_handler->getAllCats();
-	$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+	$forum_handler =& xoops_getmodulehandler('forum', basename(dirname(__DIR__)));
 	$forums = $forum_handler->getForumsByCategory();
 
 	$forums_array = array();

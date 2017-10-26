@@ -36,12 +36,12 @@ function transfer_email(&$data)
 	require_once(XOOPS_ROOT_PATH . "/class/xoopsformloader.php");
 	$content  = str_replace("<br />", "\n", $data["content"]);
 	$content  = str_replace("<br>", "\n", $content);
-	$content  = newbb_html2text($content);
+	$content  = cbbx_html2text($content);
 	$content = $data["title"]."\n".$content."\n\n"._MORE."\n".$data["url"];
-	$form_email = new XoopsThemeForm(_MD_TRANSFER_EMAIL, "formemail", XOOPS_URL."/modules/".$GLOBALS["xoopsModule"]->getVar("dirname")."/class/transfer/email/action.email.php");
-	$form_email->addElement(new XoopsFormText(_MD_TRANSFER_EMAIL_ADDRESS, "email", 50, 100), true);
-	$form_email->addElement(new XoopsFormText(_MD_TRANSFER_EMAIL_TITLE, "title", 50, 255, $data["title"]), true);
-	$form_email->addElement(new XoopsFormTextArea(_MD_TRANSFER_EMAIL_CONTENT, "content", $content, 10, 60), true);
+	$form_email = new XoopsThemeForm(_MD_CBBX_TRANSFER_EMAIL, "formemail", XOOPS_URL."/modules/".$GLOBALS["xoopsModule"]->getVar("dirname")."/class/transfer/email/action.email.php");
+	$form_email->addElement(new XoopsFormText(_MD_CBBX_TRANSFER_EMAIL_ADDRESS, "email", 50, 100), true);
+	$form_email->addElement(new XoopsFormText(_MD_CBBX_TRANSFER_EMAIL_TITLE, "title", 50, 255, $data["title"]), true);
+	$form_email->addElement(new XoopsFormTextArea(_MD_CBBX_TRANSFER_EMAIL_CONTENT, "content", $content, 10, 60), true);
 	$form_email->addElement(new XoopsFormButton("", "email_submit", _SUBMIT, "submit"));
 	$form_email->display();
 	$GLOBALS["xoopsOption"]['output_type'] = "plain";

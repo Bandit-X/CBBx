@@ -41,10 +41,10 @@ $type = (!empty($_GET['type']) && in_array($_GET['type'], array("active", "pendi
 $mode = !empty($_GET['mode']) ? intval($_GET['mode']) : 0;
 $mode = (!empty($type) && in_array($type, array("active", "pending", "deleted")) )?2:$mode;
 
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
-$post_handler =& xoops_getmodulehandler('post', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
+$post_handler =& xoops_getmodulehandler('post', basename(__DIR__));
 
-$isadmin = newbb_isAdmin($forum_id);
+$isadmin = cbbx_isAdmin($forum_id);
 /* Only admin has access to admin mode */
 if(!$isadmin){
 	$type = in_array($type, array("active", "pending", "deleted"))?"":$type;
@@ -115,12 +115,12 @@ switch($type){
 $criteria_count->add($criteria_type_count);
 $criteria_post->add($criteria_type_post);
 
-$karma_handler =& xoops_getmodulehandler('karma', 'newbb');
+$karma_handler =& xoops_getmodulehandler('karma', basename(__DIR__));
 $user_karma = $karma_handler->getUserKarma();
 
 $valid_modes = array("flat", "compact");
-$viewmode_cookie = newbb_getcookie("V");
-if(isset($_GET['viewmode'])&&$_GET['viewmode']=="compact") newbb_setcookie("V", "compact", $forumCookie['expire']);
+$viewmode_cookie = cbbx_getcookie("V");
+if(isset($_GET['viewmode'])&&$_GET['viewmode']=="compact") cbbx_setcookie("V", "compact", $forumCookie['expire']);
 $viewmode = isset($_GET['viewmode'])?
 			$_GET['viewmode']:
 			(
@@ -144,20 +144,22 @@ if(count($posts)>0) foreach (array_keys($posts) as $id) {
 	$poster_array[$posts[$id]->getVar('uid')] = 1;
 }
 
-$xoops_pagetitle = $xoopsModule->getVar('name'). ' - ' ._MD_VIEWALLPOSTS;
+$xoops_pagetitle = $xoopsModule->getVar('name'). ' - ' ._MD_CBBX_VIEWALLPOSTS;
 $xoopsOption['xoops_pagetitle']= $xoops_pagetitle;
 $xoopsOption['xoops_module_header']= $xoops_module_header;
-$xoopsOption['template_main'] = 'newbb_viewpost.html';
+$xoopsOption['template_main'] = 'cbbx_viewpost.tpl';
 include XOOPS_ROOT_PATH."/header.php";
+//XCL
+$xoopsTpl->assign('system_notification_select','db:system_notification_select.html');
 if($xoopsTpl->xoops_canUpdateFromFile() && is_dir(XOOPS_THEME_PATH."/".$xoopsConfig['theme_set']."/templates/".$xoopsModule->getVar("dirname"))){
-	$xoopsTpl->assign('newbb_template_path', XOOPS_THEME_PATH."/".$xoopsConfig['theme_set']."/templates/".$xoopsModule->getVar("dirname"));
+	$xoopsTpl->assign('cbbx_template_path', XOOPS_THEME_PATH."/".$xoopsConfig['theme_set']."/templates/".$xoopsModule->getVar("dirname"));
 }else{
-	$xoopsTpl->assign('newbb_template_path', XOOPS_ROOT_PATH."/modules/".$xoopsModule->getVar("dirname")."/templates");
+	$xoopsTpl->assign('cbbx_template_path', XOOPS_ROOT_PATH."/modules/".$xoopsModule->getVar("dirname")."/templates");
 }
 
 if(!empty($forum_id)){
 	if (!$forum_handler->getPermission($forum_obj, "view")){
-	    redirect_header("index.php", 2, _MD_NORIGHTTOACCESS);
+	    redirect_header("index.php", 2, _MD_CBBX_NORIGHTTOACCESS);
 	    exit();
 	}
 	if($forum_obj->getVar('parent_forum')){
@@ -169,7 +171,7 @@ if(!empty($forum_id)){
 	$xoopsTpl->assign('forum_name', $forum_obj->getVar('forum_name'));
 	$xoopsTpl->assign('forum_moderators', $forum_obj->disp_forumModerators());
 
-	$xoops_pagetitle = $forum_obj->getVar('forum_name'). ' - ' ._MD_VIEWALLPOSTS. ' [' . $xoopsModule->getVar('name'). ']';
+	$xoops_pagetitle = $forum_obj->getVar('forum_name'). ' - ' ._MD_CBBX_VIEWALLPOSTS. ' [' . $xoopsModule->getVar('name'). ']';
 	$xoopsTpl->assign("forum_id", $forum_obj->getVar('forum_id'));
 
 	if(!empty($xoopsModuleConfig['rss_enable'])){
@@ -195,7 +197,7 @@ if(count($poster_array)>0){
 if ($xoopsModuleConfig['wol_enabled']){
 	$online = array();
 	if(!empty($user_criteria)){
-		$online_handler =& xoops_getmodulehandler('online', 'newbb');
+		$online_handler =& xoops_getmodulehandler('online', basename(__DIR__));
 		$online_handler->init($forum_id);
 		$online_full = $online_handler->getAll(new Criteria('online_uid', $user_criteria, 'IN'));
 		if(is_array($online_full)&&count($online_full)>0){
@@ -219,7 +221,7 @@ if($xoopsModuleConfig['groupbar_enabled']){
 $viewtopic_users = array();
 
 if(count($userid_array)>0){
-	$user_handler =& xoops_getmodulehandler('user', 'newbb');
+	$user_handler =& xoops_getmodulehandler('user', basename(__DIR__));
 	$user_handler->setUsers($users);
 	$user_handler->setGroups($groups_disp);
 	$user_handler->setStatus($online);
@@ -231,7 +233,7 @@ unset($users);
 unset($groups_disp);
 
 $pn =0;
-$topic_handler = &xoops_getmodulehandler('topic', 'newbb');
+$topic_handler = &xoops_getmodulehandler('topic', basename(__DIR__));
 static $suspension = array();
 foreach(array_keys($posts) as $id){
 	$pn++;
@@ -256,13 +258,13 @@ foreach(array_keys($posts) as $id){
         $post_text = $post->getVar('post_text');
         $post_attachment = $post->displayAttachment();
     } elseif ($xoopsModuleConfig['enable_karma'] && $post->getVar('post_karma') > $user_karma) {
-        $post_text = "<div class='karma'>" . sprintf(_MD_KARMA_REQUIREMENT, $user_karma, $post->getVar('post_karma')) . "</div>";
+        $post_text = "<div class='karma'>" . sprintf(_MD_CBBX_KARMA_REQUIREMENT, $user_karma, $post->getVar('post_karma')) . "</div>";
         $post_attachment = '';
     } elseif (
         	$xoopsModuleConfig['allow_require_reply']
         	&& $post->getVar('require_reply')
     	) {
-        $post_text = "<div class='karma'>" . _MD_REPLY_REQUIREMENT . "</div>";
+        $post_text = "<div class='karma'>" . _MD_CBBX_REPLY_REQUIREMENT . "</div>";
         $post_attachment = '';
     } else {
         $post_text = $post->getVar('post_text');
@@ -274,14 +276,14 @@ foreach(array_keys($posts) as $id){
 	if($GLOBALS["xoopsModuleConfig"]['enable_permcheck']){
 	
 		if(!isset($suspension[$post->getVar('forum_id')])){
-			$moderate_handler =& xoops_getmodulehandler('moderate', 'newbb');
+			$moderate_handler =& xoops_getmodulehandler('moderate', basename(__DIR__));
 			$suspension[$post->getVar('forum_id')] = $moderate_handler->verifyUser(-1,"",$post->getVar('forum_id'));
 		}
 		
 	    if (!$suspension[$post->getVar('forum_id')] && $post->checkIdentity() && $post->checkTimelimit('edit_timelimit')
 	    	|| $isadmin) 
 	    {
-	        $thread_buttons['edit']['image'] = newbb_displayImage($forumImage['p_edit'], _EDIT);
+	        $thread_buttons['edit']['image'] = cbbx_displayImage($forumImage['p_edit'], _EDIT);
 	        $thread_buttons['edit']['link'] = "edit.php?forum=" .$post->getVar('forum_id') . "&amp;topic_id=" . $post->getVar('topic_id');
 	        $thread_buttons['edit']['name'] = _EDIT;
 	    }
@@ -289,37 +291,37 @@ foreach(array_keys($posts) as $id){
 	    if ( (!$suspension[$post->getVar('forum_id')] && $post->checkIdentity() && $post->checkTimelimit('delete_timelimit')) 
 	    	|| $isadmin )
 	    {
-	        $thread_buttons['delete']['image'] = newbb_displayImage($forumImage['p_delete'], _DELETE);
+	        $thread_buttons['delete']['image'] = cbbx_displayImage($forumImage['p_delete'], _DELETE);
 	        $thread_buttons['delete']['link'] = "delete.php?forum=" . $post->getVar('forum_id') . "&amp;topic_id=" . $post->getVar('topic_id');
 	        $thread_buttons['delete']['name'] = _DELETE;
 	    }
 	    if (!$suspension[$post->getVar('forum_id')] && is_object($xoopsUser)) {
-	        $thread_buttons['reply']['image'] = newbb_displayImage($forumImage['p_reply'], _MD_REPLY);
+	        $thread_buttons['reply']['image'] = cbbx_displayImage($forumImage['p_reply'], _MD_CBBX_REPLY);
 	        $thread_buttons['reply']['link'] = "reply.php?forum=" . $post->getVar('forum_id') . "&amp;topic_id=" . $post->getVar('topic_id');
-	        $thread_buttons['reply']['name'] = _MD_REPLY;
+	        $thread_buttons['reply']['name'] = _MD_CBBX_REPLY;
 	        /*
-	        $thread_buttons['quote']['image'] = newbb_displayImage($forumImage['p_quote'], _MD_QUOTE);
+	        $thread_buttons['quote']['image'] = cbbx_displayImage($forumImage['p_quote'], _MD_CBBX_QUOTE);
 	        $thread_buttons['quote']['link'] = "reply.php?forum=" . $post->getVar('forum_id') . "&amp;topic_id=" . $post->getVar('topic_id') . "&amp;quotedac=1";
-	        $thread_buttons['quote']['name'] = _MD_QUOTE;
+	        $thread_buttons['quote']['name'] = _MD_CBBX_QUOTE;
 	        */
 	    }
     
 	}else{
-        $thread_buttons['edit']['image'] = newbb_displayImage($forumImage['p_edit'], _EDIT);
+        $thread_buttons['edit']['image'] = cbbx_displayImage($forumImage['p_edit'], _EDIT);
         $thread_buttons['edit']['link'] = "edit.php?forum=" .$post->getVar('forum_id') . "&amp;topic_id=" . $post->getVar('topic_id');
         $thread_buttons['edit']['name'] = _EDIT;
-        $thread_buttons['delete']['image'] = newbb_displayImage($forumImage['p_delete'], _DELETE);
+        $thread_buttons['delete']['image'] = cbbx_displayImage($forumImage['p_delete'], _DELETE);
         $thread_buttons['delete']['link'] = "delete.php?forum=" . $post->getVar('forum_id') . "&amp;topic_id=" . $post->getVar('topic_id');
         $thread_buttons['delete']['name'] = _DELETE;
-        $thread_buttons['reply']['image'] = newbb_displayImage($forumImage['p_reply'], _MD_REPLY);
+        $thread_buttons['reply']['image'] = cbbx_displayImage($forumImage['p_reply'], _MD_CBBX_REPLY);
         $thread_buttons['reply']['link'] = "reply.php?forum=" . $post->getVar('forum_id') . "&amp;topic_id=" . $post->getVar('topic_id');
-        $thread_buttons['reply']['name'] = _MD_REPLY;
+        $thread_buttons['reply']['name'] = _MD_CBBX_REPLY;
 	}
 
     if (!$isadmin && $xoopsModuleConfig['reportmod_enabled']) {
-        $thread_buttons['report']['image'] = newbb_displayImage($forumImage['p_report'], _MD_REPORT);
+        $thread_buttons['report']['image'] = cbbx_displayImage($forumImage['p_report'], _MD_CBBX_REPORT);
         $thread_buttons['report']['link'] = "report.php?forum=" . $post->getVar('forum_id') . "&amp;topic_id=" . $post->getVar('topic_id');
-        $thread_buttons['report']['name'] = _MD_REPORT;
+        $thread_buttons['report']['name'] = _MD_CBBX_REPORT;
     }
     $thread_action = array();
 
@@ -328,7 +330,7 @@ foreach(array_keys($posts) as $id){
     			'post_id' 		=> $post->getVar('post_id'),
     			'topic_id' 		=> $post->getVar('topic_id'),
     			'forum_id' 		=> $post->getVar('forum_id'),
-                'post_date' 	=> newbb_formatTimestamp($post->getVar('post_time')),
+                'post_date' 	=> cbbx_formatTimestamp($post->getVar('post_time')),
                 'post_image' 	=> $post_image,
                 'post_title' 	=> $post_title,
                 'post_text' 	=> $post_text,
@@ -350,7 +352,7 @@ unset($viewtopic_users);
 unset($forums);
 
 if(!empty($xoopsModuleConfig['show_jump'])){
-	$xoopsTpl->assign('forum_jumpbox', newbb_make_jumpbox($forum_id));
+	$xoopsTpl->assign('forum_jumpbox', cbbx_make_jumpbox($forum_id));
 }
 
 if ( $postCount > $post_perpage ) {
@@ -361,39 +363,39 @@ if ( $postCount > $post_perpage ) {
     $xoopsTpl->assign('pagenav', '');
 }
 
-$xoopsTpl->assign('lang_forum_index', sprintf(_MD_FORUMINDEX,htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES)));
-$xoopsTpl->assign('folder_topic', newbb_displayImage($forumImage['folder_topic']));
+$xoopsTpl->assign('lang_forum_index', sprintf(_MD_CBBX_FORUMINDEX,htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES)));
+$xoopsTpl->assign('folder_topic', cbbx_displayImage($forumImage['folder_topic']));
 
 switch($type){
 	case 'active':
-		$lang_title = _MD_VIEWALLPOSTS. ' ['._MD_TYPE_ADMIN.']';
+		$lang_title = _MD_CBBX_VIEWALLPOSTS. ' ['._MD_CBBX_TYPE_ADMIN.']';
 		break;
 	case 'pending':
-		$lang_title = _MD_VIEWALLPOSTS. ' ['._MD_TYPE_PENDING.']';
+		$lang_title = _MD_CBBX_VIEWALLPOSTS. ' ['._MD_CBBX_TYPE_PENDING.']';
 		break;
 	case 'deleted':
-		$lang_title = _MD_VIEWALLPOSTS. ' ['._MD_TYPE_DELETED.']';
+		$lang_title = _MD_CBBX_VIEWALLPOSTS. ' ['._MD_CBBX_TYPE_DELETED.']';
 		break;
 	case 'new':
-		$lang_title = _MD_NEWPOSTS;
+		$lang_title = _MD_CBBX_NEWPOSTS;
 		break;
 	default:
-		$lang_title = _MD_VIEWALLPOSTS;
+		$lang_title = _MD_CBBX_VIEWALLPOSTS;
 		break;
 	}
 if($uid>0){
 	$lang_title .= ' ('.XoopsUser::getUnameFromId($uid).')';
 }	
 $xoopsTpl->assign('lang_title',$lang_title);
-$xoopsTpl->assign('p_up',newbb_displayImage($forumImage['p_up'],_MD_TOP));
+$xoopsTpl->assign('p_up',cbbx_displayImage($forumImage['p_up'],_MD_CBBX_TOP));
 $xoopsTpl->assign('groupbar_enable', $xoopsModuleConfig['groupbar_enabled']);
 $xoopsTpl->assign('anonymous_prefix', $xoopsModuleConfig['anonymous_prefix']);
-$xoopsTpl->assign('down',newbb_displayImage($forumImage['doubledown']));
-$xoopsTpl->assign('down2',newbb_displayImage($forumImage['down']));
-$xoopsTpl->assign('up',newbb_displayImage($forumImage['up']));
-$xoopsTpl->assign('printer',newbb_displayImage($forumImage['printer']));
-$xoopsTpl->assign('personal',newbb_displayImage($forumImage['personal']));
-$xoopsTpl->assign('post_content',newbb_displayImage($forumImage['post_content']));
+$xoopsTpl->assign('down',cbbx_displayImage($forumImage['doubledown']));
+$xoopsTpl->assign('down2',cbbx_displayImage($forumImage['down']));
+$xoopsTpl->assign('up',cbbx_displayImage($forumImage['up']));
+$xoopsTpl->assign('printer',cbbx_displayImage($forumImage['printer']));
+$xoopsTpl->assign('personal',cbbx_displayImage($forumImage['personal']));
+$xoopsTpl->assign('post_content',cbbx_displayImage($forumImage['post_content']));
 
 $all_link = "viewall.php?forum=".$forum_id."&amp;start=$start";
 $post_link = "viewpost.php?forum=".$forum_id;
@@ -418,7 +420,7 @@ if($viewmode=="compact"){
 		$viewmode_options[]= array("link"=>"viewpost.php?viewmode=compact&amp;order=DESC&amp;forum=".$forum_id,"title"=>_NEWESTFIRST);
 	}
 }else{
-	$viewmode_options[]= array("link"=>"viewpost.php?viewmode=compact&amp;order=".$order."&amp;forum=".$forum_id,	"title"=>_MD_COMPACT);
+	$viewmode_options[]= array("link"=>"viewpost.php?viewmode=compact&amp;order=".$order."&amp;forum=".$forum_id,	"title"=>_MD_CBBX_COMPACT);
 	if ($order == 'DESC') {
 		$viewmode_options[]= array("link"=>"viewpost.php?viewmode=flat&amp;order=ASC&amp;forum=".$forum_id,"title"=>_OLDESTFIRST);
 	} else {

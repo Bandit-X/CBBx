@@ -33,13 +33,13 @@ if (!defined("XOOPS_ROOT_PATH")) {
 	exit();
 }
 
-defined("NEWBB_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/newbb/include/functions.ini.php';
-newbb_load_object();
+defined("CBBX_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/include/functions.ini.php';
+cbbx_load_object();
 
 class Nrate extends ArtObject {
-    function Nrate()
+    function __construct()
     {
-	    $this->ArtObject("bb_votedata");
+	    parent::__construct("cbbx_votedata");
         $this->initVar('ratingid', XOBJ_DTYPE_INT);
         $this->initVar('topic_id', XOBJ_DTYPE_INT);
         $this->initVar('ratinguser', XOBJ_DTYPE_INT);
@@ -49,10 +49,10 @@ class Nrate extends ArtObject {
     }
 }
 
-class NewbbRateHandler extends ArtObjectHandler 
+class CbbxRateHandler extends ArtObjectHandler 
 {
-    function NewbbRateHandler(&$db) {
-        $this->ArtObjectHandler($db, 'bb_votedata', 'Nrate', 'ratingid');
+    function __construct(&$db) {
+        parent::__construct($db, 'cbbx_votedata', 'Nrate', 'ratingid');
     }
     
     /**
@@ -62,8 +62,10 @@ class NewbbRateHandler extends ArtObjectHandler
      */
     function cleanOrphan()
     {
-	    return parent::cleanOrphan($this->db->prefix("bb_topics"), "topic_id");
+	    return parent::cleanOrphan($this->db->prefix("cbbx_topics"), "topic_id");
     }
 }
+
+class_alias('CbbxRateHandler', basename(dirname(__DIR__)).'RateHandler');
 
 ?>

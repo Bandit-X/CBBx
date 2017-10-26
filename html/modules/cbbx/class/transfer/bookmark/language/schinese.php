@@ -25,7 +25,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA //
 //  ------------------------------------------------------------------------ //
 /**
- * Transfer::newbb language
+ * Transfer::cbbx language
  *
  * @author	    phppp, http://xoops.org.cn
  * @copyright	copyright (c) 2005 XOOPSForge.com
@@ -33,11 +33,11 @@
  *
  */
  
-define("_MD_TRANSFER_BOOKMARK","Ìí¼Óµ½ÊéÇ©");
-//define("_MD_TRANSFER_BOOKMARK_ITEMS",""); // del.icio.us?
+define("_MD_CBBX_TRANSFER_BOOKMARK","ï¿½ï¿½Óµï¿½ï¿½ï¿½Ç©");
+//define("_MD_CBBX_TRANSFER_BOOKMARK_ITEMS",""); // del.icio.us?
 
 /* Chinese */
-define("_MD_TRANSFER_BOOKMARK_ITEMS","
+define("_MD_CBBX_TRANSFER_BOOKMARK_ITEMS","
 	[<a title=\"Delicious\" href=\"javascript:void(delicious=window.open('http://del.icio.us/post?url='+encodeURIComponent('%2\$s')+'&title='+encodeURIComponent('%1\$s'), 'delicious'));delicious.focus();\">Del.icio.us</a>]
 	[<a title=\"Furl\" href=\"javascript:void(furl=window.open('http://www.furl.net/storeIt.jsp?t='+encodeURIComponent('%1\$s')+'&u='+encodeURIComponent('%2\$s'), 'furl'));furl.focus();\">Furl It</a>]
 	[<a title=\"ViVi Bookmark\" href=\"javascript:t='';void(vivi=window.open('http://vivi.sina.com.cn/collect/icollect.php?pid=2008&title='+escape('%1\$s')+'&url='+escape('%2\$s')+'&desc='+escape(t),'vivi','scrollbars=no,width=480,height=480,left=75,top=20,status=no,resizable=yes'));vivi.focus();\"><font color=\"#ff0000\">Sina VIVI</font></a>]

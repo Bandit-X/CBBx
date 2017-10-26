@@ -29,7 +29,7 @@
 //  Project: Article Project                                                 //
 //  ------------------------------------------------------------------------ //
 
-function xoops_module_update_newbb_v220(&$module) 
+function xoops_module_update_cbbx_v220(&$module) 
 {
     $perms=array('post','view','reply','edit','delete','addpoll','vote','attach','noapprove');
     foreach($perms as $perm){
@@ -52,12 +52,12 @@ function xoops_module_update_newbb_v220(&$module)
 		$module->setErrors("Could not change category_access");
 	}
 	
-    $sql = "SELECT forum_id, forum_moderator FROM ".$GLOBALS['xoopsDB']->prefix('bb_forums');
+    $sql = "SELECT forum_id, forum_moderator FROM ".$GLOBALS['xoopsDB']->prefix('cbbx_forums');
     $result = $GLOBALS['xoopsDB']->query($sql);
     while ($row = $GLOBALS['xoopsDB']->fetchArray($result)) {
         $mods = explode(" ", $row["forum_moderator"]);
         $mods = is_array($mods)?serialize($mods):serialize(array());
-        $sql_sub = "UPDATE ".$GLOBALS['xoopsDB']->prefix('bb_forums')." SET forum_moderator='".$mods."' WHERE forum_id=".$row["forum_id"];
+        $sql_sub = "UPDATE ".$GLOBALS['xoopsDB']->prefix('cbbx_forums')." SET forum_moderator='".$mods."' WHERE forum_id=".$row["forum_id"];
         $result_sub = $GLOBALS['xoopsDB']->queryF($sql_sub);
 		if (!$result) {
 			$module->setErrors("Could not forum_moderator for forum ".$row["forum_id"]);

@@ -48,7 +48,7 @@ if ( empty($post_id) )  {
 			($ref_parser["path"] != $uri_parser["path"])
 		){
 			include XOOPS_ROOT_PATH."/header.php";
-			xoops_confirm(array(), "javascript: window.close();", sprintf(_MD_TRANSFER_DONE,""), _CLOSE, $_SERVER['HTTP_REFERER']);
+			xoops_confirm(array(), "javascript: window.close();", sprintf(_MD_CBBX_TRANSFER_DONE,""), _CLOSE, $_SERVER['HTTP_REFERER']);
 			$xoopsOption['output_type'] = "plain";
 			include XOOPS_ROOT_PATH."/footer.php";
 			exit();
@@ -62,16 +62,16 @@ if ( empty($post_id) )  {
 	}
 }
 
-$post_handler =& xoops_getmodulehandler('post', 'newbb');
+$post_handler =& xoops_getmodulehandler('post', basename(__DIR__));
 $post = & $post_handler->get($post_id);
 if(!$approved = $post->getVar('approved'))    die(_NOPERM);
 
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
 $forumtopic =& $topic_handler->getByPost($post_id);
 $topic_id = $forumtopic->getVar('topic_id');
 if(!$approved = $forumtopic->getVar('approved'))    die(_NOPERM);
 
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 $forum = ($forum)?$forum:$forumtopic->getVar('forum_id');
 $viewtopic_forum =& $forum_handler->get($forum);
 if (!$forum_handler->getPermission($viewtopic_forum))    die(_NOPERM);
@@ -81,13 +81,13 @@ if (!$topic_handler->getPermission($viewtopic_forum, $forumtopic->getVar('topic_
 $op = empty($_POST["op"])?"":$_POST["op"];
 $op = strtolower(trim($op));
 
-$transfer_handler =& xoops_getmodulehandler("transfer", "newbb");
+$transfer_handler =& xoops_getmodulehandler("transfer", basename(dirname(__DIR__)));
 $op_options	=& $transfer_handler->getList();
 
 // Display option form
 if(empty($_POST["op"])){
 	include XOOPS_ROOT_PATH."/header.php";
-	echo "<div class=\"confirmMsg\" style=\"width: 80%; padding:20px;margin:10px auto; text-align:left !important;\"><h2>"._MD_TRANSFER_DESC."</h2><br />";
+	echo "<div class=\"confirmMsg\" style=\"width: 80%; padding:20px;margin:10px auto; text-align:left !important;\"><h2>"._MD_CBBX_TRANSFER_DESC."</h2><br />";
 	echo "<form name=\"opform\" id=\"opform\" action=\"".xoops_getenv("PHP_SELF")."\" method=\"post\"><ul>\n";
 	foreach($op_options as $value=>$title){
 		echo "<li><a href=\"###\" onclick=\"document.forms.opform.op.value='".$value."'; document.forms.opform.submit();\">".$title."</a></li>\n";
@@ -104,7 +104,7 @@ if(empty($_POST["op"])){
 	$data = array();
     $data["id"] = $post_id;
     $data["uid"] = $post->getVar("uid");
-	$data["url"] = XOOPS_URL."/modules/newbb/viewtopic.php?topic_id=".$topic_id."&post_id=".$post_id;
+	$data["url"] = XOOPS_URL."/modules/cbbx/viewtopic.php?topic_id=".$topic_id."&post_id=".$post_id;
 	$post_data =& $post->getPostBody();
 	$data["author"] = $post_data["author"];
 	$data["title"] = $post_data["subject"];
@@ -125,7 +125,7 @@ if(empty($_POST["op"])){
 	
 	include XOOPS_ROOT_PATH."/header.php";
 	$ret = empty($ret)?"javascript: window.close();":$ret;
-	xoops_confirm(array(), "javascript: window.close();", sprintf(_MD_TRANSFER_DONE,$op_options[$op]), _CLOSE, $ret);
+	xoops_confirm(array(), "javascript: window.close();", sprintf(_MD_CBBX_TRANSFER_DONE,$op_options[$op]), _CLOSE, $ret);
 	include XOOPS_ROOT_PATH."/footer.php";
 }
 ?>

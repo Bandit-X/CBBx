@@ -32,7 +32,7 @@ July 22nd, 2006
 3 Removed inherition of view mode and post order from system-wide preference
 4 Added editor parameter control based on plugin'ed configs
 5 Bugfix for xhtml compliance in forum selection box (reported by skalpa)
-6 Bugfix for update scripts for newbb 2.2
+6 Bugfix for update scripts for cbbx 2.2
 7 Bugfix for category name display in permission admin
 8 Bugfix for view_level check in viewforum template (reported by topmuzik.com)
 
@@ -83,8 +83,8 @@ Apr 26th, 2006
 =============
 1 Fixed rss+xml rel link (by CeBepuH)
 2 Fixed typo in "pm" path for "transfer" (by CeBepuH)
-3 Fixed clear property in newbb.css (by CeBepuH)
-4 Fixed undefined method "setMessage" for module which could lead to newbb 2.* upgrade failure 
+3 Fixed clear property in cbbx.css (by CeBepuH)
+4 Fixed undefined method "setMessage" for module which could lead to cbbx 2.* upgrade failure 
 5 Split functions.php
 
 
@@ -145,7 +145,7 @@ Changelog 2.2
 3 permission management separated from forum/category and default permission set and management added
 4 category/forum creation on module installation
 5 send PM with quoted post content
-6 embedded upgrade: any version of newbb/cbb could be updated to up-to-date CBB by updating module
+6 embedded upgrade: any version of cbbx/cbb could be updated to up-to-date CBB by updating module
 7 forum queries in xoops_version.php moved to save db query
 8 change relative path to full path for some images
 9 change forum list in jumpbox and topicmanager to a more clear style
@@ -172,7 +172,7 @@ Changelog 1.13
 3 adding post link (Preliminary solution by ackbarr && Suggested by Peekay @ xoops.org)
 4 further cleaning "Compact mode" (Suggested by Rou4 @ XOOPS CHINA)
 5 adding new block "recent post text"
-6 bugfix for function newbb_admin_mkdir
+6 bugfix for function cbbx_admin_mkdir
 7 bugfix for permission table of locked topic
 8 adding indication for locked topic in view topic (Requested by SuperVoley @ xoops.org)
 9 bugfix for category management (Reported by chia @ xoops.tnc.edu.tw)

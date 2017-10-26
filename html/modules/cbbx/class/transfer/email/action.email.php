@@ -48,7 +48,7 @@ if(is_object($xoopsUser)){
 	$xoopsMailer->setFromEmail($xoopsUser->getVar("email", "E"));
 	$xoopsMailer->setFromName($xoopsUser->getVar("uname", "E"));
 }else{
-	$xoopsMailer->setFromName(newbb_getIP(true));				
+	$xoopsMailer->setFromName(cbbx_getIP(true));				
 }
 $xoopsMailer->setSubject($title);
 $xoopsMailer->setBody($content);

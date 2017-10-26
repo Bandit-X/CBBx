@@ -29,18 +29,18 @@
 //  Project: Article Project                                                 //
 //  ------------------------------------------------------------------------ //
 
-function xoops_module_update_newbb_v100(&$module) 
+function xoops_module_update_cbbx_v100(&$module) 
 {
-	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("bb_archive")."(
+	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_archive")."(
 		`topic_id` tinyint(8) NOT NULL default '0',
 		`post_id` tinyint(8) NOT NULL default '0',
 	  	`post_text` text NOT NULL
 		) ENGINE=MyISAM");
 	if (!$result) {
-		$module->setErrors("Could not create bb_archive");
+		$module->setErrors("Could not create cbbx_archive");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("bb_attachments")."(
+	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_attachments")."(
 		`attach_id` int(8) unsigned NOT NULL auto_increment,
 		`post_id` int(10) default NULL,
 		`name_saved` varchar(255) default NULL,
@@ -53,10 +53,10 @@ function xoops_module_update_newbb_v100(&$module)
 		KEY `post_id` (`post_id`)
 		) ENGINE=MyISAM");
 	if (!$result) {
-		$module->setErrors("Could not create bb_attachments");
+		$module->setErrors("Could not create cbbx_attachments");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("bb_digest")."(
+	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_digest")."(
 		`digest_id` int(8) unsigned NOT NULL auto_increment,
 		`digest_time` int(10) NOT NULL default '0',
 		`digest_content` text,
@@ -64,10 +64,10 @@ function xoops_module_update_newbb_v100(&$module)
 		KEY `digest_time` (`digest_time`)
 		) ENGINE=MyISAM");
 	if (!$result) {
-		$module->setErrors("Could not create bb_digest");
+		$module->setErrors("Could not create cbbx_digest");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("bb_online")."(
+	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_online")."(
 		`online_forum` int(10) NOT NULL default '0',
 		`online_topic` int(10) NOT NULL default '0',
 		`online_uid` int(10) default NULL,
@@ -76,10 +76,10 @@ function xoops_module_update_newbb_v100(&$module)
 		`online_updated` int(14) default NULL
 		) ENGINE=MyISAM");
 	if (!$result) {
-		$module->setErrors("Could not create bb_online");
+		$module->setErrors("Could not create cbbx_online");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("bb_report")."(
+	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_report")."(
 		`report_id` int(8) unsigned NOT NULL auto_increment,
 		`post_id` int(10) default NULL,
 		`reporter_uid` int(10) default NULL,
@@ -92,10 +92,10 @@ function xoops_module_update_newbb_v100(&$module)
 		KEY `post_id` (`post_id`)
 		) ENGINE=MyISAM");
 	if (!$result) {
-		$module->setErrors("Could not create bb_report");
+		$module->setErrors("Could not create cbbx_report");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("bb_votedata")."(
+	$result = $GLOBALS['xoopsDB']->queryF("CREATE TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_votedata")."(
 		`ratingid` int(11) unsigned NOT NULL auto_increment,
 		`topic_id` int(11) unsigned NOT NULL default '0',
 		`ratinguser` int(11) NOT NULL default '0',
@@ -108,216 +108,216 @@ function xoops_module_update_newbb_v100(&$module)
 		KEY topic_id (topic_id)
 		) ENGINE=MyISAM");
 	if (!$result) {
-		$module->setErrors("Could not create bb_votedata");
+		$module->setErrors("Could not create cbbx_votedata");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_categories")." ADD `cat_image` VARCHAR(50) DEFAULT NULL AFTER `cat_id`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_categories")." ADD `cat_image` VARCHAR(50) DEFAULT NULL AFTER `cat_id`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_categories");
+		$module->setErrors("Could not add field in cbbx_categories");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_categories")." ADD `cat_description` TEXT NOT NULL AFTER `cat_title`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_categories")." ADD `cat_description` TEXT NOT NULL AFTER `cat_title`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_categories");
+		$module->setErrors("Could not add field in cbbx_categories");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_categories")." CHANGE `cat_order` `cat_order` SMALLINT(3) UNSIGNED NOT NULL DEFAULT '0'");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_categories")." CHANGE `cat_order` `cat_order` SMALLINT(3) UNSIGNED NOT NULL DEFAULT '0'");
 	if (!$result) {
-		$module->setErrors("Could not change field in bb_categories");
+		$module->setErrors("Could not change field in cbbx_categories");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_categories")." ADD `cat_url` VARCHAR(50) DEFAULT NULL AFTER `cat_state`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_categories")." ADD `cat_url` VARCHAR(50) DEFAULT NULL AFTER `cat_state`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_categories");
+		$module->setErrors("Could not add field in cbbx_categories");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." DROP `forum_access`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." DROP `forum_access`");
 	if (!$result) {
-		$module->setErrors("Could not drop field in bb_forums");
+		$module->setErrors("Could not drop field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." DROP `posts_per_page`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." DROP `posts_per_page`");
 	if (!$result) {
-		$module->setErrors("Could not drop field in bb_forums");
+		$module->setErrors("Could not drop field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." DROP `topics_per_page`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." DROP `topics_per_page`");
 	if (!$result) {
-		$module->setErrors("Could not drop field in bb_forums");
+		$module->setErrors("Could not drop field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." ADD `parent_forum` INT(10) NOT NULL DEFAULT '0' AFTER `forum_desc`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." ADD `parent_forum` INT(10) NOT NULL DEFAULT '0' AFTER `forum_desc`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_forums");
+		$module->setErrors("Could not add field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." CHANGE `forum_moderator` `forum_moderator` TEXT NOT NULL");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." CHANGE `forum_moderator` `forum_moderator` TEXT NOT NULL");
 	if (!$result) {
-		$module->setErrors("Could not change field in bb_forums");
+		$module->setErrors("Could not change field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." CHANGE `forum_type` `forum_type` INT(1) NOT NULL DEFAULT '0'");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." CHANGE `forum_type` `forum_type` INT(1) NOT NULL DEFAULT '0'");
 	if (!$result) {
-		$module->setErrors("Could not change field in bb_forums");
+		$module->setErrors("Could not change field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." CHANGE `allow_html` `allow_html` INT(1) NOT NULL DEFAULT '1'");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." CHANGE `allow_html` `allow_html` INT(1) NOT NULL DEFAULT '1'");
 	if (!$result) {
-		$module->setErrors("Could not change field in bb_forums");
+		$module->setErrors("Could not change field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." CHANGE `allow_sig` `allow_sig` INT(1) NOT NULL DEFAULT '1'");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." CHANGE `allow_sig` `allow_sig` INT(1) NOT NULL DEFAULT '1'");
 	if (!$result) {
-		$module->setErrors("Could not change field in bb_forums");
+		$module->setErrors("Could not change field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." ADD `allow_subject_prefix` INT(1) NOT NULL DEFAULT '0' AFTER `allow_sig`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." ADD `allow_subject_prefix` INT(1) NOT NULL DEFAULT '0' AFTER `allow_sig`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_forums");
+		$module->setErrors("Could not add field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." ADD `forum_order` INT(8) NOT NULL DEFAULT '0' AFTER `hot_threshold`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." ADD `forum_order` INT(8) NOT NULL DEFAULT '0' AFTER `hot_threshold`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_forums");
+		$module->setErrors("Could not add field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." ADD `allow_attachments` INT(1) NOT NULL DEFAULT '1' AFTER `forum_order`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." ADD `allow_attachments` INT(1) NOT NULL DEFAULT '1' AFTER `forum_order`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_forums");
+		$module->setErrors("Could not add field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." ADD `attach_maxkb` INT(10) NOT NULL DEFAULT '1000' AFTER `allow_attachments`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." ADD `attach_maxkb` INT(10) NOT NULL DEFAULT '1000' AFTER `allow_attachments`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_forums");
+		$module->setErrors("Could not add field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." ADD `attach_ext` TEXT NOT NULL AFTER `attach_maxkb`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." ADD `attach_ext` TEXT NOT NULL AFTER `attach_maxkb`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_forums");
+		$module->setErrors("Could not add field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forums")." ADD `allow_polls` INT(1) NOT NULL DEFAULT '0' AFTER `attach_ext`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forums")." ADD `allow_polls` INT(1) NOT NULL DEFAULT '0' AFTER `attach_ext`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_forums");
+		$module->setErrors("Could not add field in cbbx_forums");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." ADD `poster_name` varchar(255) DEFAULT NULL AFTER `uid`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." ADD `poster_name` varchar(255) DEFAULT NULL AFTER `uid`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_posts");
+		$module->setErrors("Could not add field in cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." CHANGE `poster_ip` `poster_ip` INT(11) NOT NULL DEFAULT '0'");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." CHANGE `poster_ip` `poster_ip` INT(11) NOT NULL DEFAULT '0'");
 	if (!$result) {
-		$module->setErrors("Could not change field in bb_posts");
+		$module->setErrors("Could not change field in cbbx_posts");
 	}
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." DROP `nosmiley`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." DROP `nosmiley`");
 	if (!$result) {
-		$module->setErrors("Could not drop nosmiley in bb_posts");
-	}
-	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." CHANGE `nohtml` `dohtml` TINYINT(1) NOT NULL DEFAULT '0'");
-	if (!$result) {
-		$module->setErrors("Could not change field in bb_posts");
+		$module->setErrors("Could not drop nosmiley in cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." ADD `dosmiley` TINYINT(1) NOT NULL DEFAULT '1' AFTER `dohtml`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." CHANGE `nohtml` `dohtml` TINYINT(1) NOT NULL DEFAULT '0'");
 	if (!$result) {
-		$module->setErrors("Could not change field in bb_posts");
+		$module->setErrors("Could not change field in cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." ADD `doxcode` TINYINT(1) NOT NULL DEFAULT '1' AFTER `dosmiley`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." ADD `dosmiley` TINYINT(1) NOT NULL DEFAULT '1' AFTER `dohtml`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_posts");
+		$module->setErrors("Could not change field in cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." ADD `dobr` TINYINT(1) NOT NULL DEFAULT '1' AFTER `doxcode`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." ADD `doxcode` TINYINT(1) NOT NULL DEFAULT '1' AFTER `dosmiley`");
 	if (!$result) {
-		$module->setErrors("OK exist just to be sure bb_posts");
+		$module->setErrors("Could not add field in cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." ADD `doimage` TINYINT(1) NOT NULL DEFAULT '1' AFTER `dobr`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." ADD `dobr` TINYINT(1) NOT NULL DEFAULT '1' AFTER `doxcode`");
 	if (!$result) {
-		$module->setErrors("OK exist just to be sure bb_posts");
+		$module->setErrors("OK exist just to be sure cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." ADD `approved` int(1) NOT NULL default '1' AFTER `attachsig`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." ADD `doimage` TINYINT(1) NOT NULL DEFAULT '1' AFTER `dobr`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_posts");
+		$module->setErrors("OK exist just to be sure cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." ADD  `post_karma` int(10) NOT NULL default '0' AFTER `approved`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." ADD `approved` int(1) NOT NULL default '1' AFTER `attachsig`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_posts");
+		$module->setErrors("Could not add field in cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." ADD `attachment` text AFTER `post_karma`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." ADD  `post_karma` int(10) NOT NULL default '0' AFTER `approved`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_posts");
+		$module->setErrors("Could not add field in cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts")." ADD `require_reply` int(1) NOT NULL default '0' AFTER `attachment`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." ADD `attachment` text AFTER `post_karma`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_posts");
+		$module->setErrors("Could not add field in cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_posts_text")." ADD `post_edit` TEXT NOT NULL AFTER `post_text`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts")." ADD `require_reply` int(1) NOT NULL default '0' AFTER `attachment`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_posts_text");
+		$module->setErrors("Could not add field in cbbx_posts");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_topics")." ADD `topic_subject` INT(3) NOT NULL default '0' AFTER `topic_status`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_posts_text")." ADD `post_edit` TEXT NOT NULL AFTER `post_text`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_topics");
+		$module->setErrors("Could not add field in cbbx_posts_text");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_topics")." ADD `topic_digest` TINYINT(1) NOT NULL default '0' AFTER `topic_sticky`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_topics")." ADD `topic_subject` INT(3) NOT NULL default '0' AFTER `topic_status`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_topics");
+		$module->setErrors("Could not add field in cbbx_topics");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_topics")." ADD  `digest_time` int(10) NOT NULL default '0' AFTER `topic_digest`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_topics")." ADD `topic_digest` TINYINT(1) NOT NULL default '0' AFTER `topic_sticky`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_topics");
+		$module->setErrors("Could not add field in cbbx_topics");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_topics")." ADD `approved` int(1) NOT NULL default '1' AFTER  `digest_time`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_topics")." ADD  `digest_time` int(10) NOT NULL default '0' AFTER `topic_digest`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_topics");
+		$module->setErrors("Could not add field in cbbx_topics");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_topics")." ADD `poster_name` varchar(255) DEFAULT NULL AFTER `approved`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_topics")." ADD `approved` int(1) NOT NULL default '1' AFTER  `digest_time`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_topics");
+		$module->setErrors("Could not add field in cbbx_topics");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_topics")." ADD `rating` double(6,4) NOT NULL default '0.0000' AFTER `poster_name`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_topics")." ADD `poster_name` varchar(255) DEFAULT NULL AFTER `approved`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_topics");
+		$module->setErrors("Could not add field in cbbx_topics");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_topics")." ADD  `votes` int(11) unsigned NOT NULL default '0' AFTER `rating`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_topics")." ADD `rating` double(6,4) NOT NULL default '0.0000' AFTER `poster_name`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_topics");
+		$module->setErrors("Could not add field in cbbx_topics");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_topics")." ADD `topic_haspoll` tinyint(1) NOT NULL default '0' AFTER `votes`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_topics")." ADD  `votes` int(11) unsigned NOT NULL default '0' AFTER `rating`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_topics");
+		$module->setErrors("Could not add field in cbbx_topics");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("bb_topics")." ADD  `poll_id` mediumint(8) unsigned NOT NULL default '0' AFTER `topic_haspoll`");
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_topics")." ADD `topic_haspoll` tinyint(1) NOT NULL default '0' AFTER `votes`");
 	if (!$result) {
-		$module->setErrors("Could not add field in bb_topics");
+		$module->setErrors("Could not add field in cbbx_topics");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("DROP TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forum_access"));
+	$result = $GLOBALS['xoopsDB']->queryF("ALTER TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_topics")." ADD  `poll_id` mediumint(8) unsigned NOT NULL default '0' AFTER `topic_haspoll`");
 	if (!$result) {
-		$module->setErrors("Could not drop bb_forum_access");
+		$module->setErrors("Could not add field in cbbx_topics");
 	}
 	
-	$result = $GLOBALS['xoopsDB']->queryF("DROP TABLE ".$GLOBALS['xoopsDB']->prefix("bb_forum_mods"));
+	$result = $GLOBALS['xoopsDB']->queryF("DROP TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forum_access"));
 	if (!$result) {
-		$module->setErrors("Could not drop bb_forum_mods");
+		$module->setErrors("Could not drop cbbx_forum_access");
+	}
+	
+	$result = $GLOBALS['xoopsDB']->queryF("DROP TABLE ".$GLOBALS['xoopsDB']->prefix("cbbx_forum_mods"));
+	if (!$result) {
+		$module->setErrors("Could not drop cbbx_forum_mods");
 	}        
 	return true;
 }

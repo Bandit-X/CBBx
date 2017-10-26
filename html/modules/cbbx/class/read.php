@@ -33,13 +33,13 @@ if (!defined("XOOPS_ROOT_PATH")) {
 	exit();
 }
 
-defined("NEWBB_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/newbb/include/functions.ini.php';
-newbb_load_object();
+defined("CBBX_FUNCTIONS_INI") || include XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/include/functions.ini.php';
+cbbx_load_object();
 
 /**
  * A handler for read/unread handling
  * 
- * @package     newbb/cbb
+ * @package     cbbx/cbb
  * 
  * @author	    D.J. (phppp, http://xoopsforge.com)
  * @copyright	copyright (c) 2005 XOOPS.org
@@ -47,9 +47,9 @@ newbb_load_object();
 
 class Read extends ArtObject 
 {
-    function Read($type)
+    function __construct($type)
     {
-        $this->ArtObject("bb_reads_".$type);
+        parent::__construct("cbbx_reads_".$type);
         $this->initVar('read_id', XOBJ_DTYPE_INT);
         $this->initVar('uid', XOBJ_DTYPE_INT);
         $this->initVar('read_item', XOBJ_DTYPE_INT);
@@ -58,7 +58,7 @@ class Read extends ArtObject
     }
 }
 
-class NewbbReadHandler extends ArtObjectHandler
+class CbbxReadHandler extends ArtObjectHandler
 {
     /**
      * Object type.
@@ -96,13 +96,13 @@ class NewbbReadHandler extends ArtObjectHandler
      */
 	var $mode;
 	
-    function NewbbReadHandler(&$db, $type) {
+    function __construct(&$db, $type) {
 	    $type = ("forum" == $type) ? "forum" : "topic";
-        $this->ArtObjectHandler($db, 'bb_reads_'.$type, 'Read'.$type, 'read_id', 'post_id');
+        parent::__construct($db, 'cbbx_reads_'.$type, 'Read'.$type, 'read_id', 'post_id');
         $this->type = $type;
-	    $newbbConfig = newbb_load_config();
-        $this->lifetime = !empty($newbbConfig["read_expire"]) ? $newbbConfig["read_expire"] *24*3600 : 30*24*3600;
-        $this->mode = isset($newbbConfig["read_mode"]) ? $newbbConfig["read_mode"] : 2;
+	    $cbbxConfig = cbbx_load_config();
+        $this->lifetime = !empty($cbbxConfig["read_expire"]) ? $cbbxConfig["read_expire"] *24*3600 : 30*24*3600;
+        $this->mode = isset($cbbxConfig["read_mode"]) ? $cbbxConfig["read_mode"] : 2;
     }
 
     /**
@@ -144,7 +144,7 @@ class NewbbReadHandler extends ArtObjectHandler
     {
 	    $cookie_name = ($this->type == "forum")?"LF":"LT";
 	    $cookie_var = $item_id;
-		$lastview = newbb_getcookie($cookie_name);
+		$lastview = cbbx_getcookie($cookie_name);
 		return @$lastview[$cookie_var];
     }
     
@@ -178,9 +178,9 @@ class NewbbReadHandler extends ArtObjectHandler
     function setRead_cookie($read_item, $post_id)
     {
 	    $cookie_name = ($this->type == "forum") ? "LF" : "LT";
-		$lastview = newbb_getcookie($cookie_name, true);
+		$lastview = cbbx_getcookie($cookie_name, true);
 		$lastview[$read_item] = time();
-		newbb_setcookie($cookie_name, $lastview);
+		cbbx_setcookie($cookie_name, $lastview);
     }
     
     function setRead_db($read_item, $post_id, $uid)
@@ -222,7 +222,7 @@ class NewbbReadHandler extends ArtObjectHandler
     function isRead_items_cookie(&$items)
     {
 	    $cookie_name = ($this->type == "forum")?"LF":"LT";
-	    $cookie_vars = newbb_getcookie($cookie_name, true);
+	    $cookie_vars = cbbx_getcookie($cookie_name, true);
 	    
 	    $ret = array();
 	    foreach($items as $key => $last_update){
@@ -261,4 +261,7 @@ class NewbbReadHandler extends ArtObjectHandler
     }
     
 }
+
+class_alias('CbbxReadHandler', basename(dirname(__DIR__)).'ReadHandler');
+
 ?>

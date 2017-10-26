@@ -31,7 +31,8 @@
 if (!defined('XOOPS_ROOT_PATH')) {
 	exit();
 }
-include_once XOOPS_ROOT_PATH.'/modules/newbb/include/functions.ini.php';
+
+include_once XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/include/functions.ini.php';
 
 $ori_error_level = ini_get('error_reporting');
 error_reporting(E_ALL ^ E_NOTICE);
@@ -40,27 +41,28 @@ error_reporting(E_ALL ^ E_NOTICE);
  * NewBB constant
  *
  **/
-define('NEWBB_CONSTANTS',1);
-define('NEWBB_READ', 1);
-define('NEWBB_UNREAD', 2);
-define('NEWBB_UNREPLIED', 3);
-define('NEWBB_DIGEST', 4);
-define('NEWBB_DELETEONE', 1);
-define('NEWBB_DELETEALL', 2);
+define('CBBX_CONSTANTS',1);
+define('CBBX_READ', 1);
+define('CBBX_UNREAD', 2);
+define('CBBX_UNREPLIED', 3);
+define('CBBX_DIGEST', 4);
+define('CBBX_DELETEONE', 1);
+define('CBBX_DELETEALL', 2);
 if (!defined('FORUM_PERM_ITEMS')) define('FORUM_PERM_ITEMS', 'access,view,post,reply,edit,delete,addpoll,vote,attach,noapprove');
-
+define('CBBX_DIRNAME', basename(dirname(__DIR__)));
+define('CBBX_URL', XOOPS_URL.'/modules/'.CBBX_DIRNAME);
 /* some static xoopsModuleConfig */
 $GLOBALS["xoopsModuleConfig"]["require_name"] = true; // "name" field is required for anonymous users in edit form
 
 // MENU handler
 /* You could remove anyone by commenting out in order to disable it */
 $valid_menumodes = array(
-	0 => _MD_MENU_SELECT,	// for selectbox
-	1 => _MD_MENU_CLICK,	// for "click to expand"
-	2 => _MD_MENU_HOVER		// for "mouse hover to expand"
+	0 => _MD_CBBX_MENU_SELECT,	// for selectbox
+	1 => _MD_CBBX_MENU_CLICK,	// for "click to expand"
+	2 => _MD_CBBX_MENU_HOVER		// for "mouse hover to expand"
 	);
 
-include_once XOOPS_ROOT_PATH.'/modules/newbb/include/functions.php';
+include_once XOOPS_ROOT_PATH.'/modules/'.$xoopsModule->dirname().'/include/functions.php';
 
 // You shouldn't have to change any of these
 $forumUrl['root'] = XOOPS_URL."/modules/" . $xoopsModule->dirname();
@@ -186,16 +188,16 @@ if(empty($forumCookie['prefix'])){
 
 // set LastVisitTemp cookie, which only gets the time from the LastVisit cookie if it does not exist yet
 // otherwise, it gets the time from the LastVisitTemp cookie
-//$last_visit = newbb_getcookie("LVT");
-$last_visit = newbb_getsession("LV");
-$last_visit = ($last_visit)?$last_visit:newbb_getcookie("LV");
+//$last_visit = cbbx_getcookie("LVT");
+$last_visit = cbbx_getsession("LV");
+$last_visit = ($last_visit)?$last_visit:cbbx_getcookie("LV");
 $last_visit = ($last_visit)?$last_visit:time();
 
 
 // update LastVisit cookie.
-newbb_setcookie("LV", time(), $forumCookie['expire']); // set cookie life time to one month
-//newbb_setcookie("LVT", $last_visit);
-newbb_setsession("LV", $last_visit);
+cbbx_setcookie("LV", time(), $forumCookie['expire']); // set cookie life time to one month
+//cbbx_setcookie("LVT", $last_visit);
+cbbx_setsession("LV", $last_visit);
 
 /* NewBB cookie storage
 	Long term cookie: (configurable, generally one month)
@@ -212,11 +214,11 @@ newbb_setsession("LV", $last_visit);
 */
 
 // include customized variables
-if( is_object($GLOBALS["xoopsModule"]) && "newbb" == $GLOBALS["xoopsModule"]->getVar("dirname", "n") ) {
-	$GLOBALS["xoopsModuleConfig"] = newbb_load_config();
+if( is_object($GLOBALS["xoopsModule"]) && basename(dirname(__DIR__)) == $GLOBALS["xoopsModule"]->getVar("dirname", "n") ) {
+	$GLOBALS["xoopsModuleConfig"] = cbbx_load_config();
 }
 
-newbb_load_object();
+cbbx_load_object();
 
 error_reporting($ori_error_level);
 ?>

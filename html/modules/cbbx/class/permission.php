@@ -36,7 +36,7 @@ if (!defined("XOOPS_ROOT_PATH")) {
 
 require_once XOOPS_ROOT_PATH."/kernel/groupperm.php";
 
-class NewbbPermissionHandler extends XoopsGroupPermHandler 
+class CbbxPermissionHandler extends XoopsGroupPermHandler 
 {
     /*
 	* Returns permissions for a certain type
@@ -53,19 +53,19 @@ class NewbbPermissionHandler extends XoopsGroupPermHandler
 
         $type = (strtolower($type) !="category")?"forum":"category";
         
-	    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")=="newbb"){
+	    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")==basename(dirname(__DIR__))){
         	$modid = $GLOBALS["xoopsModule"]->getVar("mid");
 	    }else{
     		$module_handler =& xoops_gethandler('module');
-			$xoopsNewBB =& $module_handler->getByDirname('newbb');
+			$xoopsNewBB =& $module_handler->getByDirname(basename(dirname(__DIR__)));
 			$modid = $xoopsNewBB->getVar("mid");
 			unset($xoopsNewBB);
 	    }
         
 	    $uid = is_object($GLOBALS["xoopsUser"])?$GLOBALS["xoopsUser"]->getVar("uid"):0;
-		$ip = newbb_getIP(true);
-		if (($type == "forum") && !newbb_isAdmin($id) && !isset($suspension[$uid][$id]) && !empty($GLOBALS["xoopsModuleConfig"]['enable_usermoderate'])){
-			$moderate_handler =& xoops_getmodulehandler('moderate', 'newbb');
+		$ip = cbbx_getIP(true);
+		if (($type == "forum") && !cbbx_isAdmin($id) && !isset($suspension[$uid][$id]) && !empty($GLOBALS["xoopsModuleConfig"]['enable_usermoderate'])){
+			$moderate_handler =& xoops_getmodulehandler('moderate', basename(dirname(__DIR__)));
 			if($moderate_handler->verifyUser($uid,"",$id)){
 				$suspension[$uid][$ip][$id] = 1;
 			}else{
@@ -140,9 +140,9 @@ class NewbbPermissionHandler extends XoopsGroupPermHandler
             if ($isadmin ||
                 (isset($permission_set[$forumid]['forum_' . $item]) && (!$topic_locked || $item=="view"))
                     ) {
-                $perm[] = constant('_MD_CAN_' . strtoupper($item));
+                $perm[] = constant('_MD_CBBX_CAN_' . strtoupper($item));
             } else {
-                $perm[] = constant('_MD_CANNOT_' . strtoupper($item));
+                $perm[] = constant('_MD_CBBX_CANNOT_' . strtoupper($item));
             }
         }
 
@@ -169,12 +169,12 @@ class NewbbPermissionHandler extends XoopsGroupPermHandler
 
     function setCategoryPermission($category, $groups=null)
     {
-	    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")=="newbb"){
+	    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")==basename(dirname(__DIR__))){
 		    $mid = $GLOBALS["xoopsModule"]->getVar("mid");
 	    }else{
     		$module_handler =& xoops_gethandler('module');
-			$newbb =& $module_handler->getByDirname('newbb');
-			$mid = $newbb->getVar("mid");
+			$cbbx =& $module_handler->getByDirname(basename(dirname(__DIR__)));
+			$mid = $cbbx->getVar("mid");
 	    }
 		//$groupperm_handler =& xoops_gethandler('groupperm');
 		if(!is_array($groups)){
@@ -198,13 +198,13 @@ class NewbbPermissionHandler extends XoopsGroupPermHandler
     function validateRight($perm, $itemid, $groupid, $mid = null)
     {
 	    if(empty($mid)){
-		    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")=="newbb"){
+		    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")==basename(dirname(__DIR__))){
 			    $mid = $GLOBALS["xoopsModule"]->getVar("mid");
 		    }else{
     			$module_handler =& xoops_gethandler('module');
-				$newbb =& $module_handler->getByDirname('newbb');
-				$mid = $newbb->getVar("mid");
-				unset($newbb);
+				$cbbx =& $module_handler->getByDirname(basename(dirname(__DIR__)));
+				$mid = $cbbx->getVar("mid");
+				unset($cbbx);
 		    }
 	    }
 		if($this->_checkRight($perm, $itemid, $groupid, $mid)) return true;
@@ -248,13 +248,13 @@ class NewbbPermissionHandler extends XoopsGroupPermHandler
     function deleteRight($perm, $itemid, $groupid, $mid = null)
     {
 	    if(empty($mid)){
-		    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")=="newbb"){
+		    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")==basename(dirname(__DIR__))){
 			    $mid = $GLOBALS["xoopsModule"]->getVar("mid");
 		    }else{
     			$module_handler =& xoops_gethandler('module');
-				$newbb =& $module_handler->getByDirname('newbb');
-				$mid = $newbb->getVar("mid");
-				unset($newbb);
+				$cbbx =& $module_handler->getByDirname(basename(dirname(__DIR__)));
+				$mid = $cbbx->getVar("mid");
+				unset($cbbx);
 		    }
 	    }
 		if(is_callable(array(&$this->XoopsGroupPermHandler, "deleteRight"))){
@@ -281,13 +281,13 @@ class NewbbPermissionHandler extends XoopsGroupPermHandler
 	    if(empty($perm_template)) return false;
 	    
 	    if(empty($mid)){
-		    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")=="newbb"){
+		    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname")==basename(dirname(__DIR__))){
 			    $mid = $GLOBALS["xoopsModule"]->getVar("mid");
 		    }else{
     			$module_handler =& xoops_gethandler('module');
-				$newbb =& $module_handler->getByDirname('newbb');
-				$mid = $newbb->getVar("mid");
-				unset($newbb);
+				$cbbx =& $module_handler->getByDirname(basename(dirname(__DIR__)));
+				$mid = $cbbx->getVar("mid");
+				unset($cbbx);
 		    }
 	    }
 	    
@@ -310,14 +310,15 @@ class NewbbPermissionHandler extends XoopsGroupPermHandler
     
     function &getTemplate()
     {
-		$perms = mod_loadCacheFile("perm_template", "newbb");
+		$perms = mod_loadCacheFile("perm_template", basename(dirname(__DIR__)));
 		return $perms;
     }
     
     function setTemplate($perms)
     {
-		return mod_createCacheFile($perms, "perm_template", "newbb");
+		return mod_createCacheFile($perms, "perm_template", basename(dirname(__DIR__)));
     }
 }
 
+class_alias('CbbxPermissionHandler', basename(dirname(__DIR__)).'PermissionHandler');
 ?>

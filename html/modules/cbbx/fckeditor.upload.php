@@ -10,9 +10,9 @@
  * @package		xoopseditor
  */
 include "header.php";
-define("NEWBB_DISABLE_UPLOAD", 0);
+define("CBBX_DISABLE_UPLOAD", 0);
 
-if(defined("NEWBB_DISABLE_UPLOAD") && constant("NEWBB_DISABLE_UPLOAD")){
+if(defined("CBBX_DISABLE_UPLOAD") && constant("CBBX_DISABLE_UPLOAD")){
 	define("FCKUPLOAD_DISABLED", 1);
 }
 define("XOOPS_FCK_FOLDER", $xoopsModule->getVar("dirname"));

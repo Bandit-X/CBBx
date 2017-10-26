@@ -33,7 +33,7 @@ include_once dirname(__FILE__).'/read.php';
 /**
  * A handler for read/unread handling
  * 
- * @package     newbb/cbb
+ * @package     cbbx/cbb
  * 
  * @author	    D.J. (phppp, http://xoopsforge.com)
  * @copyright	copyright (c) 2005 XOOPS.org
@@ -41,14 +41,14 @@ include_once dirname(__FILE__).'/read.php';
 
 class Readtopic extends Read 
 {
-    function Readtopic()
+    function __construct()
     {
-        $this->Read("topic");
+        parent::__construct("topic");
         //$this->initVar('forum_id', XOBJ_DTYPE_INT);
     }
 }
 
-class NewbbReadtopicHandler extends NewbbReadHandler
+class CbbxReadtopicHandler extends CbbxReadHandler
 {
     /**
      * maximum records per forum for one user.
@@ -58,10 +58,10 @@ class NewbbReadtopicHandler extends NewbbReadHandler
      */
 	var $items_per_forum;
 	
-    function NewbbReadtopicHandler(&$db) {
-        $this->NewbbReadHandler($db, "topic");
-	    $newbbConfig = newbb_load_config();
-        $this->items_per_forum = isset($newbbConfig["read_items"])?intval($newbbConfig["read_items"]):100;
+    function __construct(&$db) {
+        parent::__construct($db, "topic");
+	    $cbbxConfig = cbbx_load_config();
+        $this->items_per_forum = isset($cbbxConfig["read_items"])?intval($cbbxConfig["read_items"]):100;
     }
     
     /**
@@ -71,8 +71,8 @@ class NewbbReadtopicHandler extends NewbbReadHandler
      */
     function cleanOrphan()
     {
-	    parent::cleanOrphan($this->db->prefix("bb_posts"), "post_id");
-	    return parent::cleanOrphan($this->db->prefix("bb_topics"), "topic_id", "read_item");
+	    parent::cleanOrphan($this->db->prefix("cbbx_posts"), "post_id");
+	    return parent::cleanOrphan($this->db->prefix("cbbx_topics"), "topic_id", "read_item");
     }    
 
     /**
@@ -98,10 +98,10 @@ class NewbbReadtopicHandler extends NewbbReadHandler
     function setRead_items_cookie($status, $forum_id)
     {
 	    $cookie_name = "LT";
-	    $cookie_vars = newbb_getcookie($cookie_name, true);
+	    $cookie_vars = cbbx_getcookie($cookie_name, true);
 	    
-		$item_handler =& xoops_getmodulehandler('topic', 'newbb');
-		$criteria =& new CriteriaCompo(new Criteria("forum_id", $forum_id));
+		$item_handler =& xoops_getmodulehandler('topic', basename(dirname(__DIR__)));
+		$criteria = new CriteriaCompo(new Criteria("forum_id", $forum_id));
 		$criteria->setSort("topic_last_post_id");
 		$criteria->setOrder("DESC");
 		$criteria->setLimit($this->items_per_forum);
@@ -114,7 +114,7 @@ class NewbbReadtopicHandler extends NewbbReadHandler
 			    $cookie_vars[$var] = time() /*$items[$var]*/;
 		    }
 	    }
-		newbb_setcookie($cookie_name, $cookie_vars);
+		cbbx_setcookie($cookie_name, $cookie_vars);
 		return true;
     }
     
@@ -128,19 +128,19 @@ class NewbbReadtopicHandler extends NewbbReadHandler
 		    }
 	    }
 	    
-		$item_handler =& xoops_getmodulehandler('topic', 'newbb');
-		$criteria_topic =& new CriteriaCompo(new Criteria("forum_id", $forum_id));
+		$item_handler =& xoops_getmodulehandler('topic', basename(dirname(__DIR__)));
+		$criteria_topic = new CriteriaCompo(new Criteria("forum_id", $forum_id));
 		$criteria_topic->setSort("topic_last_post_id");
 		$criteria_topic->setOrder("DESC");
 		$criteria_topic->setLimit($this->items_per_forum);
-		$criteria_sticky =& new CriteriaCompo(new Criteria("forum_id", $forum_id));
+		$criteria_sticky = new CriteriaCompo(new Criteria("forum_id", $forum_id));
 		$criteria_sticky->add(new Criteria("topic_sticky", 1));
 	
 	    if(empty($status)){		    
 			$items_id = $item_handler->getIds($criteria_topic);
 			$sticky_id = $item_handler->getIds($criteria_sticky);
 			$items =  $items_id+$sticky_id;
-			$criteria =& new CriteriaCompo(new Criteria("uid", $uid));
+			$criteria = new CriteriaCompo(new Criteria("uid", $uid));
 			$criteria->add(new Criteria("read_item", "(".implode(", ", $items).")", "IN"));
 			$this->deleteAll($criteria, true);
 		    return true;
@@ -160,4 +160,6 @@ class NewbbReadtopicHandler extends NewbbReadHandler
 		return true;
     }
 }
+
+class_alias('CbbxReadtopicHandler', basename(dirname(__DIR__)).'ReadtopicHandler');
 ?>

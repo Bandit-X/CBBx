@@ -42,14 +42,14 @@ if ( isset($_POST['submit']) ) {
 
 if ( !$topic_id ) {
 	$redirect = empty($forum_id)?"index.php":'viewforum.php?forum='.$forum;
-    redirect_header($redirect, 2, _MD_ERRORTOPIC);
+    redirect_header($redirect, 2, _MD_CBBX_ERRORTOPIC);
 }
 
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
 $forum = $topic_handler->get($topic_id, "forum_id");
 $forum_new = !empty($newtopic)?$topic_handler->get($newtopic, "forum_id"):0;
 
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 if (!$forum_handler->getPermission($forum, 'moderate')
 	|| (!empty($forum_new) && !$forum_handler->getPermission($forum_new, 'reply')) // The forum for the topic to be merged to
 	|| (!empty($newforum) && !$forum_handler->getPermission($newforum, 'post')) // The forum to be moved to
@@ -59,7 +59,7 @@ if (!$forum_handler->getPermission($forum, 'moderate')
 }
 
 if ($xoopsModuleConfig['wol_enabled']){
-	$online_handler =& xoops_getmodulehandler('online', 'newbb');
+	$online_handler =& xoops_getmodulehandler('online', basename(__DIR__));
 	$online_handler->init($forum);
 }
 
@@ -67,10 +67,10 @@ $action_array = array('merge', 'delete','move','lock','unlock','sticky','unstick
 foreach($action_array as $_action){
     $action[$_action] = array(
 	    "name" => $_action,
-	    "desc" => constant(strtoupper('_MD_DESC_'.$_action)),
-	    "submit" => constant(strtoupper("_MD_".$_action)),
+	    "desc" => constant(strtoupper('_MD_CBBX_DESC_'.$_action)),
+	    "submit" => constant(strtoupper("_MD_CBBX_".$_action)),
 	    'sql' => 'topic_'.$_action.'=1',
-	    'msg' => constant(strtoupper("_MD_TOPIC".$_action))
+	    'msg' => constant(strtoupper("_MD_CBBX_TOPIC".$_action))
     );
 }
 $action['lock']['sql'] = 'topic_status = 1';
@@ -86,20 +86,20 @@ include XOOPS_ROOT_PATH.'/header.php';
 if ( isset($_POST['submit']) ) {
 	$mode = $_POST['mode'];
 	if('delete'==$mode){
-		//$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+		//$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
         $topic_handler->delete($topic_id);
 		$forum_handler->synchronization($forum);
 	    //sync($topic_id, "topic");
         //xoops_notification_deletebyitem ($xoopsModule->getVar('mid'), 'thread', $topic_id);
-        echo $action[$mode]['msg']."<p><a href='viewforum.php?forum=$forum'>"._MD_RETURNTOTHEFORUM."</a></p><p><a href='index.php'>"._MD_RETURNFORUMINDEX."</a></p>";
+        echo $action[$mode]['msg']."<p><a href='viewforum.php?forum=$forum'>"._MD_CBBX_RETURNTOTHEFORUM."</a></p><p><a href='index.php'>"._MD_CBBX_RETURNFORUMINDEX."</a></p>";
 	}elseif('merge'==$mode){
-		//$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
-		$post_handler =& xoops_getmodulehandler('post', 'newbb');
+		//$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
+		$post_handler =& xoops_getmodulehandler('post', basename(__DIR__));
 		
 		$newtopic_obj =& $topic_handler->get($newtopic);
 		/* return false if destination topic is newer or not existing */
 		if($newtopic>$topic_id || !is_object($newtopic_obj)){
-    		redirect_header("javascript:history.go(-1)", 2, _MD_ERROR);
+    		redirect_header("javascript:history.go(-1)", 2, _MD_CBBX_ERROR);
 			exit();
 		}
 		
@@ -142,9 +142,9 @@ if ( isset($_POST['submit']) ) {
         $result = $xoopsDB->queryF($sql);
 	    
         echo $action[$mode]['msg'].
-        		"<p><a href='viewtopic.php?topic_id=$newtopic'>"._MD_VIEWTHETOPIC."</a></p>".
-        		"<p><a href='viewforum.php?forum=$forum'>"._MD_RETURNTOTHEFORUM."</a></p>".
-        		"<p><a href='index.php'>"._MD_RETURNFORUMINDEX."</a></p>";
+        		"<p><a href='viewtopic.php?topic_id=$newtopic'>"._MD_CBBX_VIEWTHETOPIC."</a></p>".
+        		"<p><a href='viewforum.php?forum=$forum'>"._MD_CBBX_RETURNTOTHEFORUM."</a></p>".
+        		"<p><a href='index.php'>"._MD_CBBX_RETURNFORUMINDEX."</a></p>";
 	}elseif('move'==$mode){
         if ($newforum > 0) {
             $sql = sprintf("UPDATE %s SET forum_id = %u WHERE topic_id = %u", $xoopsDB->prefix("bb_topics"), $newforum, $topic_id);
@@ -157,17 +157,17 @@ if ( isset($_POST['submit']) ) {
             }
 			$forum_handler->synchronization($newforum);
 			$forum_handler->synchronization($forum);
-        	echo $action[$mode]['msg']."<p><a href='viewtopic.php?topic_id=$topic_id&amp;forum=$newforum'>"._MD_GOTONEWFORUM."</a></p><p><a href='index.php'>"._MD_RETURNFORUMINDEX."</a></p>";
+        	echo $action[$mode]['msg']."<p><a href='viewtopic.php?topic_id=$topic_id&amp;forum=$newforum'>"._MD_CBBX_GOTONEWFORUM."</a></p><p><a href='index.php'>"._MD_CBBX_RETURNFORUMINDEX."</a></p>";
         }else{
-    		redirect_header("javascript:history.go(-1)",2,_MD_ERRORFORUM);
+    		redirect_header("javascript:history.go(-1)",2,_MD_CBBX_ERRORFORUM);
         }
     }else{
         $sql = sprintf("UPDATE %s SET ".$action[$mode]['sql']." WHERE topic_id = %u", $xoopsDB->prefix("bb_topics"), $topic_id);
         if ( !$r = $xoopsDB->query($sql) ) {
-    		redirect_header("viewtopic.php?forum=$forum&amp;topic_id=$topic_id&amp;order=$order&amp;viewmode=$viewmode",2,_MD_ERROR_BACK.'<br />sql:'.$sql);
+    		redirect_header("viewtopic.php?forum=$forum&amp;topic_id=$topic_id&amp;order=$order&amp;viewmode=$viewmode",2,_MD_CBBX_ERROR_BACK.'<br />sql:'.$sql);
 	        exit();
         }
-        echo $action[$mode]['msg']."<p><a href='viewtopic.php?topic_id=$topic_id&amp;forum=$forum'>"._MD_VIEWTHETOPIC."</a></p><p><a href='viewforum.php?forum=".$forum."'>"._MD_RETURNFORUMINDEX."</a></p>";
+        echo $action[$mode]['msg']."<p><a href='viewtopic.php?topic_id=$topic_id&amp;forum=$forum'>"._MD_CBBX_VIEWTHETOPIC."</a></p><p><a href='viewforum.php?forum=".$forum."'>"._MD_CBBX_RETURNFORUMINDEX."</a></p>";
     }
 } else {  // No submit
     $mode = $_GET['mode'];
@@ -179,10 +179,10 @@ if ( isset($_POST['submit']) ) {
     echo "<td colspan='2' align='center'>".$action[$mode]['desc']."</td></tr>";
 
     if ( $mode == 'move' ) {
-        echo '<tr><td class="bg3">'._MD_MOVETOPICTO.'</td><td class="bg1">';
+        echo '<tr><td class="bg3">'._MD_CBBX_MOVETOPICTO.'</td><td class="bg1">';
         $box = '<select name="newforum" size="1">';
 
-		$category_handler =& xoops_getmodulehandler('category', 'newbb');
+		$category_handler =& xoops_getmodulehandler('category', basename(__DIR__));
 	    $categories = $category_handler->getAllCats('access', true);
 	    $forums = $forum_handler->getForumsByCategory(array_keys($categories), 'post', false);
 	
@@ -198,7 +198,7 @@ if ( isset($_POST['submit']) ) {
 	            }
 			}
 	    } else {
-	        $box .= "<option value='-1'>"._MD_NOFORUMINDB."</option>";
+	        $box .= "<option value='-1'>"._MD_CBBX_NOFORUMINDB."</option>";
 	    }
     	unset($forums, $categories);
           
@@ -206,8 +206,8 @@ if ( isset($_POST['submit']) ) {
         echo '</select></td></tr>';
     }
     if ( $mode == 'merge' ) {
-        echo '<tr><td class="bg3">'._MD_MERGETOPICTO.'</td><td class="bg1">';
-        echo _MD_TOPIC."ID-$topic_id -> ID: <input name='newtopic' value='' />";
+        echo '<tr><td class="bg3">'._MD_CBBX_MERGETOPICTO.'</td><td class="bg1">';
+        echo _MD_CBBX_TOPIC."ID-$topic_id -> ID: <input name='newtopic' value='' />";
         echo '</td></tr>';
     }
     echo '<tr class="bg3"><td colspan="2" align="center">';

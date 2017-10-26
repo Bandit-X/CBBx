@@ -37,25 +37,25 @@ $op = in_array($op, array("approve", "delete", "restore", "move"))? $op : "";
 
 
 if ( empty($topic_id) || empty($op)) {
-	redirect_header("javascript:history.go(-1);", 2, _MD_NORIGHTTOACCESS);
+	redirect_header("javascript:history.go(-1);", 2, _MD_CBBX_NORIGHTTOACCESS);
     exit();
 }
 
 $topic_id = array_values($topic_id);
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 /*
 $topicid = is_array($topic_id)?$topic_id[0]:$topic_id;
 $forumtopic =& $topic_handler->get($topicid);
 $forum_id = $forumtopic->getVar('forum_id');
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 $viewtopic_forum =& $forum_handler->get($forum_id);
 */
 
-$isadmin = newbb_isAdmin($forum_id);
+$isadmin = cbbx_isAdmin($forum_id);
 
 if(!$isadmin){
-    redirect_header("index.php", 2, _MD_NORIGHTTOACCESS);
+    redirect_header("index.php", 2, _MD_CBBX_NORIGHTTOACCESS);
     exit();
 }
 
@@ -140,14 +140,14 @@ switch($op){
 			&& $forum_handler->getPermission($_POST["newforum"], 'post')
 		){
         	$criteria = new Criteria('topic_id', "(".implode(",", $topic_id).")", "IN");
-			$post_handler =& xoops_getmodulehandler('post', 'newbb');
+			$post_handler =& xoops_getmodulehandler('post', basename(__DIR__));
             $post_handler->updateAll("forum_id", intval($_POST["newforum"]), $criteria, true);
             $topic_handler->updateAll("forum_id", intval($_POST["newforum"]), $criteria, true);
             
 			$forum_handler->synchronization($_POST["newforum"]);
 			$forum_handler->synchronization($forum_id);
 		}else{
-			$category_handler =& xoops_getmodulehandler('category', 'newbb');
+			$category_handler =& xoops_getmodulehandler('category', basename(__DIR__));
 		    $categories = $category_handler->getAllCats('access', true);
 		    $forums = $forum_handler->getForumsByCategory(array_keys($categories), 'post', false);
 		
@@ -164,7 +164,7 @@ switch($op){
 		            }
 				}
 		    } else {
-		        $box .= "<option value='-1'>"._MD_NOFORUMINDB."</option>";
+		        $box .= "<option value='-1'>"._MD_CBBX_NOFORUMINDB."</option>";
 		    }
 		    $box .="</select>";
 	    	unset($forums, $categories);
@@ -173,7 +173,7 @@ switch($op){
 		    echo "<table border='0' cellpadding='1' cellspacing='0' align='center' width='95%'>";
 		    echo "<tr><td class='bg2'>";
 		    echo "<table border='0' cellpadding='1' cellspacing='1' width='100%'>";
-	        echo '<tr><td class="bg3">'._MD_MOVETOPICTO.'</td><td class="bg1">';
+	        echo '<tr><td class="bg3">'._MD_CBBX_MOVETOPICTO.'</td><td class="bg1">';
 	    	echo $box;      
 	        echo '</td></tr>';
 		    echo '<tr class="bg3"><td colspan="2" align="center">';
@@ -191,9 +191,9 @@ switch($op){
 	    break;
 }
 if(empty($forum_id)){
-	redirect_header("viewall.php", 2, _MD_DBUPDATED);
+	redirect_header("viewall.php", 2, _MD_CBBX_DBUPDATED);
 }else{
-	redirect_header("viewforum.php?forum=$forum_id", 2, _MD_DBUPDATED);
+	redirect_header("viewforum.php?forum=$forum_id", 2, _MD_CBBX_DBUPDATED);
 }
 
 include XOOPS_ROOT_PATH.'/footer.php';

@@ -28,7 +28,7 @@
 // URL: http://xoopsforge.com, http://xoops.org.cn                          //
 // Project: Article Project                                                 //
 // ------------------------------------------------------------------------ //
-require NEWBB_FPDF_PATH.'/japanese.php';
+require CBBX_FPDF_PATH.'/japanese.php';
 
 // For end users
 $valid_pfd_charset = '';
@@ -102,15 +102,15 @@ $pdf_config['mail'] = 'mailto:'.$xoopsConfig['adminmail'];
 $pdf_config['slogan']=xoops_substr($myts->htmlspecialchars( $xoopsConfig['sitename'] ),0,30);
 $pdf_config['scale'] = '0.8';
 $pdf_config['dateformat'] = _DATESTRING;
-$pdf_config['footerpage'] = _MD_PDF_PAGE;
+$pdf_config['footerpage'] = _MD_CBBX_PDF_PAGE;
 
 // For local support sites
-define('NEWBB_PDF_FORUM', 'Forum');
-define('NEWBB_PDF_TOPIC', 'Topic');
-define('NEWBB_PDF_SUBJECT', 'Subject');
-define('NEWBB_PDF_AUTHOR', _POSTEDBY);
-define('NEWBB_PDF_DATE', _MD_POSTEDON);
-//define('NEWBB_PDF_PAGE', 'Page %s');
+define('CBBX_PDF_FORUM', 'Forum');
+define('CBBX_PDF_TOPIC', 'Topic');
+define('CBBX_PDF_SUBJECT', 'Subject');
+define('CBBX_PDF_AUTHOR', _POSTEDBY);
+define('CBBX_PDF_DATE', _MD_CBBX_POSTEDON);
+//define('CBBX_PDF_PAGE', 'Page %s');
 
 // For more details, refer to: http://fpdf.org
 class PDF_language extends PDF_Japanese

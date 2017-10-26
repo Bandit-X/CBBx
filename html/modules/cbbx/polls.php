@@ -52,27 +52,27 @@ if (isset($_POST['topic_id'])) $topic_id = intval($_POST['topic_id']);
 if(!isset($module_handler)) $module_handler =& xoops_gethandler('module');
 $xoopspoll =& $module_handler->getByDirname('xoopspoll');
 if(!is_object($xoopspoll) || !$xoopspoll->getVar('isactive')){
-	redirect_header("javascript:history.go(-1);", 2, _MD_POLLMODULE_ERROR);
+	redirect_header("javascript:history.go(-1);", 2, _MD_CBBX_POLLMODULE_ERROR);
 	exit();
 }
 
 include XOOPS_ROOT_PATH."/header.php";
 
-$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
 $forumtopic =& $topic_handler->get($topic_id);
 $forum = $forumtopic->getVar('forum_id');
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 $viewtopic_forum =& $forum_handler->get($forum);
 if (!$forum_handler->getPermission($viewtopic_forum)){
-    redirect_header("index.php", 2, _MD_NORIGHTTOACCESS);
+    redirect_header("index.php", 2, _MD_CBBX_NORIGHTTOACCESS);
     exit();
 }
 if (!$topic_handler->getPermission($viewtopic_forum, $forumtopic->getVar('topic_status'), "view")){
-    redirect_header("viewforum.php?forum=".$viewtopic_forum->getVar('forum_id'),2,_MD_NORIGHTTOVIEW);
+    redirect_header("viewforum.php?forum=".$viewtopic_forum->getVar('forum_id'),2,_MD_CBBX_NORIGHTTOVIEW);
     exit();
 }
 
-$isadmin = newbb_isAdmin($viewtopic_forum);
+$isadmin = cbbx_isAdmin($viewtopic_forum);
 $perm = false;
 if($isadmin){
 	$perm = true;
@@ -91,33 +91,33 @@ if($isadmin){
 	}
 }
 if(!$perm){
-    redirect_header("viewtopic.php?topic_id=".$topic_id,2,_MD_NORIGHTTOACCESS);
+    redirect_header("viewtopic.php?topic_id=".$topic_id,2,_MD_CBBX_NORIGHTTOACCESS);
 }
 
 if ( $op == "add" ) {
-	$poll_form = new XoopsThemeForm(_MD_POLL_CREATNEWPOLL, "poll_form", "polls.php");
+	$poll_form = new XoopsThemeForm(_MD_CBBX_POLL_CREATNEWPOLL, "poll_form", "polls.php");
 
-	$question_text = new XoopsFormText(_MD_POLL_POLLQUESTION, "question", 50, 255);
+	$question_text = new XoopsFormText(_MD_CBBX_POLL_POLLQUESTION, "question", 50, 255);
 	$poll_form->addElement($question_text, true);
 
-	$desc_tarea = new XoopsFormTextarea(_MD_POLL_POLLDESC, "description");
+	$desc_tarea = new XoopsFormTextarea(_MD_CBBX_POLL_POLLDESC, "description");
 	$poll_form->addElement($desc_tarea);
 
 	$currenttime = formatTimestamp(time(), "Y-m-d H:i:s");
 	$endtime = formatTimestamp(time()+604800, "Y-m-d H:i:s");
-	$expire_text = new XoopsFormText(_MD_POLL_EXPIRATION."<br /><small>"._MD_POLL_FORMAT."<br />".sprintf(_MD_POLL_CURRENTTIME, $currenttime)."</small>", "end_time", 30, 19, $endtime);
+	$expire_text = new XoopsFormText(_MD_CBBX_POLL_EXPIRATION."<br /><small>"._MD_CBBX_POLL_FORMAT."<br />".sprintf(_MD_CBBX_POLL_CURRENTTIME, $currenttime)."</small>", "end_time", 30, 19, $endtime);
 	$poll_form->addElement($expire_text);
 
-	$weight_text = new XoopsFormText(_MD_POLL_DISPLAYORDER, "weight", 6, 5, 0);
+	$weight_text = new XoopsFormText(_MD_CBBX_POLL_DISPLAYORDER, "weight", 6, 5, 0);
 	$poll_form->addElement($weight_text);
 
-	$multi_yn = new XoopsFormRadioYN(_MD_POLL_ALLOWMULTI, "multiple", 0);
+	$multi_yn = new XoopsFormRadioYN(_MD_CBBX_POLL_ALLOWMULTI, "multiple", 0);
 	$poll_form->addElement($multi_yn);
 
-	$notify_yn = new XoopsFormRadioYN(_MD_POLL_NOTIFY, "notify", 1);
+	$notify_yn = new XoopsFormRadioYN(_MD_CBBX_POLL_NOTIFY, "notify", 1);
 	$poll_form->addElement($notify_yn);
 
-	$option_tray = new XoopsFormElementTray(_MD_POLL_POLLOPTIONS, "");
+	$option_tray = new XoopsFormElementTray(_MD_CBBX_POLL_POLLOPTIONS, "");
 	$barcolor_array = XoopsLists::getImgListAsArray(XOOPS_ROOT_PATH."/modules/xoopspoll/images/colorbars/");
 	for($i = 0; $i < 10; $i++){
 		$current_bar = (current($barcolor_array) != "blank.gif") ? current($barcolor_array) : next($barcolor_array);
@@ -143,7 +143,7 @@ if ( $op == "add" ) {
 	$poll_topic_id_hidden = new XoopsFormHidden("topic_id", $topic_id);
 	$poll_form->addElement($poll_topic_id_hidden);
 	//include XOOPS_ROOT_PATH."/header.php";
-	echo "<h4>"._MD_POLL_POLLCONF."</h4>";
+	echo "<h4>"._MD_CBBX_POLL_POLLCONF."</h4>";
 	$poll_form->display();
 	//include XOOPS_ROOT_PATH."/footer.php";
 	//exit();
@@ -155,7 +155,7 @@ if ( $op == "save" ) {
 	 */
 	$option_empty = true;
 	if(empty($_POST['option_text'])){
-		redirect_header("javascript:history.go(-1);", 2, _MD_ERROROCCURED.': '._MD_POLL_POLLOPTIONS.' !');
+		redirect_header("javascript:history.go(-1);", 2, _MD_CBBX_ERROROCCURED.': '._MD_CBBX_POLL_POLLOPTIONS.' !');
 	}
 	$option_text = $_POST['option_text'];
 	foreach ( $option_text as $optxt ) {
@@ -164,7 +164,7 @@ if ( $op == "save" ) {
 			break;
 		}
 	}
-	if($option_empty) redirect_header("javascript:history.go(-1);", 2, _MD_ERROROCCURED.': '._MD_POLL_POLLOPTIONS.' !');
+	if($option_empty) redirect_header("javascript:history.go(-1);", 2, _MD_CBBX_ERROROCCURED.': '._MD_CBBX_POLL_POLLOPTIONS.' !');
 
 	$poll = new XoopsPoll();
 	//$question = (empty($_POST['question']))?"":$_POST['question'];
@@ -209,47 +209,47 @@ if ( $op == "save" ) {
 		}
 		$sql = "UPDATE ".$xoopsDB->prefix("bb_topics")." SET topic_haspoll = 1, poll_id = $new_poll_id WHERE topic_id = $topic_id";
         if ( !$result = $xoopsDB->query($sql) ) {
-        	newbb_message("poll adding to topic error: ".$sql);
+        	cbbx_message("poll adding to topic error: ".$sql);
         }
 		include_once XOOPS_ROOT_PATH.'/class/template.php';
 		xoops_template_clear_module_cache($xoopsModule->getVar('mid'));
 	} else {
-		newbb_message($poll->getHtmlErrors());
+		cbbx_message($poll->getHtmlErrors());
 		//exit();
 	}
-	redirect_header("viewtopic.php?topic_id=$topic_id",1,_MD_POLL_DBUPDATED);
+	redirect_header("viewtopic.php?topic_id=$topic_id",1,_MD_CBBX_POLL_DBUPDATED);
 	//exit();
 }
 
 if ( $op == "edit" ) {
 	$poll = new XoopsPoll($_GET['poll_id']);
-	$poll_form = new XoopsThemeForm(_MD_POLL_EDITPOLL, "poll_form", "polls.php");
-	$author_label = new XoopsFormLabel(_MD_POLL_AUTHOR, "<a href='".XOOPS_URL."/userinfo.php?uid=".$poll->getVar("user_id")."'>".newbb_getUnameFromId($poll->getVar("user_id"), $xoopsModuleConfig['show_realname'])."</a>");
+	$poll_form = new XoopsThemeForm(_MD_CBBX_POLL_EDITPOLL, "poll_form", "polls.php");
+	$author_label = new XoopsFormLabel(_MD_CBBX_POLL_AUTHOR, "<a href='".XOOPS_URL."/userinfo.php?uid=".$poll->getVar("user_id")."'>".cbbx_getUnameFromId($poll->getVar("user_id"), $xoopsModuleConfig['show_realname'])."</a>");
 	$poll_form->addElement($author_label);
-	$question_text = new XoopsFormText(_MD_POLL_POLLQUESTION, "question", 50, 255, $poll->getVar("question", "E"));
+	$question_text = new XoopsFormText(_MD_CBBX_POLL_POLLQUESTION, "question", 50, 255, $poll->getVar("question", "E"));
 	$poll_form->addElement($question_text);
-	$desc_tarea = new XoopsFormTextarea(_MD_POLL_POLLDESC, "description", $poll->getVar("description", "E"));
+	$desc_tarea = new XoopsFormTextarea(_MD_CBBX_POLL_POLLDESC, "description", $poll->getVar("description", "E"));
 	$poll_form->addElement($desc_tarea);
 	$date = formatTimestamp($poll->getVar("end_time"), "Y-m-d H:i:s");
 	if ( !$poll->hasExpired() ) {
-		$expire_text = new XoopsFormText(_MD_POLL_EXPIRATION."<br /><small>"._MD_POLL_FORMAT."<br />".sprintf(_MD_POLL_CURRENTTIME, formatTimestamp(time(), "Y-m-d H:i:s"))."</small>", "end_time", 20, 19, $date);
+		$expire_text = new XoopsFormText(_MD_CBBX_POLL_EXPIRATION."<br /><small>"._MD_CBBX_POLL_FORMAT."<br />".sprintf(_MD_CBBX_POLL_CURRENTTIME, formatTimestamp(time(), "Y-m-d H:i:s"))."</small>", "end_time", 20, 19, $date);
 		$poll_form->addElement($expire_text);
 	} else {
-		$restart_label = new XoopsFormLabel(_MD_POLL_EXPIRATION, sprintf(_MD_POLL_EXPIREDAT, $date)."<br /><a href='polls.php?op=restart&amp;poll_id=".$poll->getVar("poll_id")."'>"._MD_POLL_RESTART."</a>");
+		$restart_label = new XoopsFormLabel(_MD_CBBX_POLL_EXPIRATION, sprintf(_MD_CBBX_POLL_EXPIREDAT, $date)."<br /><a href='polls.php?op=restart&amp;poll_id=".$poll->getVar("poll_id")."'>"._MD_CBBX_POLL_RESTART."</a>");
 		$poll_form->addElement($restart_label);
 	}
-	$weight_text = new XoopsFormText(_MD_POLL_DISPLAYORDER, "weight", 6, 5, $poll->getVar("weight"));
+	$weight_text = new XoopsFormText(_MD_CBBX_POLL_DISPLAYORDER, "weight", 6, 5, $poll->getVar("weight"));
 	$poll_form->addElement($weight_text);
-	$multi_yn = new XoopsFormRadioYN(_MD_POLL_ALLOWMULTI, "multiple", $poll->getVar("multiple"));
+	$multi_yn = new XoopsFormRadioYN(_MD_CBBX_POLL_ALLOWMULTI, "multiple", $poll->getVar("multiple"));
 	$poll_form->addElement($multi_yn);
 	$options_arr =& XoopsPollOption::getAllByPollId($poll->getVar("poll_id"));
 	$notify_value = 1;
 	if ( $poll->getVar("mail_status") != 0 ) {
 		$notify_value = 0;
 	}
-	$notify_yn = new XoopsFormRadioYN(_MD_POLL_NOTIFY, "notify", $notify_value);
+	$notify_yn = new XoopsFormRadioYN(_MD_CBBX_POLL_NOTIFY, "notify", $notify_value);
 	$poll_form->addElement($notify_yn);
-	$option_tray = new XoopsFormElementTray(_MD_POLL_POLLOPTIONS, "");
+	$option_tray = new XoopsFormElementTray(_MD_CBBX_POLL_POLLOPTIONS, "");
 	$barcolor_array =& XoopsLists::getImgListAsArray(XOOPS_ROOT_PATH."/modules/xoopspoll/images/colorbars/");
 	$i = 0;
 	foreach($options_arr as $option){
@@ -266,7 +266,7 @@ if ( $op == "edit" ) {
 		unset($color_select, $color_label, $option_id_hidden, $option_text);
 		$i++;
 	}
-	$more_label = new XoopsFormLabel("", "<br /><a href='polls.php?op=addmore&amp;poll_id=".$poll->getVar("poll_id")."&amp;topic_id=".$topic_id."'>"._MD_POLL_ADDMORE."</a>");
+	$more_label = new XoopsFormLabel("", "<br /><a href='polls.php?op=addmore&amp;poll_id=".$poll->getVar("poll_id")."&amp;topic_id=".$topic_id."'>"._MD_CBBX_POLL_ADDMORE."</a>");
 	$option_tray->addElement($more_label);
 	$poll_form->addElement($option_tray);
 	$op_hidden = new XoopsFormHidden("op", "update");
@@ -278,7 +278,7 @@ if ( $op == "edit" ) {
 	$submit_button = new XoopsFormButton("", "poll_submit", _SUBMIT, "submit");
 	$poll_form->addElement($submit_button);
 	//include XOOPS_ROOT_PATH."/header.php";
-	echo "<h4>"._MD_POLL_POLLCONF."</h4>";
+	echo "<h4>"._MD_CBBX_POLL_POLLCONF."</h4>";
 	$poll_form->display();
 	//include XOOPS_ROOT_PATH."/footer.php";
 	//exit();
@@ -287,7 +287,7 @@ if ( $op == "edit" ) {
 if ( $op == "update" ) {
 	$option_empty = true;
 	if(empty($_POST['option_text'])){
-		redirect_header("javascript:history.go(-1);", 2, _MD_ERROROCCURED.': '._MD_POLL_POLLOPTIONS.' !');
+		redirect_header("javascript:history.go(-1);", 2, _MD_CBBX_ERROROCCURED.': '._MD_CBBX_POLL_POLLOPTIONS.' !');
 	}
 	$option_text = $_POST['option_text'];
 	foreach ( $option_text as $optxt ) {
@@ -296,7 +296,7 @@ if ( $op == "update" ) {
 			break;
 		}
 	}
-	if($option_empty) redirect_header("javascript:history.go(-1);", 2, _MD_ERROROCCURED.': '._MD_POLL_POLLOPTIONS.' !');
+	if($option_empty) redirect_header("javascript:history.go(-1);", 2, _MD_CBBX_ERROROCCURED.': '._MD_CBBX_POLL_POLLOPTIONS.' !');
 
 	$poll = new XoopsPoll($poll_id);
 	//$question = (empty($_POST['question']))?"":$_POST['question'];
@@ -321,7 +321,7 @@ if ( $op == "update" ) {
 		$poll->setVar("mail_status", POLL_MAILED);
 	}
 	if ( !$poll->store() ) {
-		newbb_message($poll->getHtmlErrors());
+		cbbx_message($poll->getHtmlErrors());
 		exit();
 	}
 	$i = 0;
@@ -344,16 +344,16 @@ if ( $op == "update" ) {
 	$poll->updateCount();
 	include_once XOOPS_ROOT_PATH.'/class/template.php';
 	xoops_template_clear_module_cache($xoopsModule->getVar('mid'));
-	redirect_header("viewtopic.php?topic_id=$topic_id",1,_MD_POLL_DBUPDATED);
+	redirect_header("viewtopic.php?topic_id=$topic_id",1,_MD_CBBX_POLL_DBUPDATED);
 	//exit();
 }
 
 if ( $op == "addmore" ) {
 	$poll = new XoopsPoll($_GET['poll_id']);
-	$poll_form = new XoopsThemeForm(_MD_POLL_ADDMORE, "poll_form", "polls.php");
-	$question_label = new XoopsFormLabel(_MD_POLL_POLLQUESTION, $poll->getVar("question"));
+	$poll_form = new XoopsThemeForm(_MD_CBBX_POLL_ADDMORE, "poll_form", "polls.php");
+	$question_label = new XoopsFormLabel(_MD_CBBX_POLL_POLLQUESTION, $poll->getVar("question"));
 	$poll_form->addElement($question_label);
-	$option_tray = new XoopsFormElementTray(_MD_POLL_POLLOPTIONS, "");
+	$option_tray = new XoopsFormElementTray(_MD_CBBX_POLL_POLLOPTIONS, "");
 	$barcolor_array =& XoopsLists::getImgListAsArray(XOOPS_ROOT_PATH."/modules/xoopspoll/images/colorbars/");
 	for($i = 0; $i < 10; $i++){
 		$current_bar = (current($barcolor_array) != "blank.gif") ? current($barcolor_array) : next($barcolor_array);
@@ -380,7 +380,7 @@ if ( $op == "addmore" ) {
 	$poll_id_hidden = new XoopsFormHidden("poll_id", $poll->getVar("poll_id"));
 	$poll_form->addElement($poll_id_hidden);
 	//include XOOPS_ROOT_PATH."/header.php";
-	echo "<h4>"._MD_POLL_POLLCONF."</h4>";
+	echo "<h4>"._MD_CBBX_POLL_POLLCONF."</h4>";
 	$poll_form->display();
 	//include XOOPS_ROOT_PATH."/footer.php";
 	//exit();
@@ -389,7 +389,7 @@ if ( $op == "addmore" ) {
 if ( $op == "savemore" ) {
 	$option_empty = true;
 	if(empty($_POST['option_text'])){
-		redirect_header("javascript:history.go(-1);", 2, _MD_ERROROCCURED.': '._MD_POLL_POLLOPTIONS.' !');
+		redirect_header("javascript:history.go(-1);", 2, _MD_CBBX_ERROROCCURED.': '._MD_CBBX_POLL_POLLOPTIONS.' !');
 	}
 	$option_text = $_POST['option_text'];
 	foreach ( $option_text as $optxt ) {
@@ -398,7 +398,7 @@ if ( $op == "savemore" ) {
 			break;
 		}
 	}
-	if($option_empty) redirect_header("javascript:history.go(-1);", 2, _MD_ERROROCCURED.': '._MD_POLL_POLLOPTIONS.' !');
+	if($option_empty) redirect_header("javascript:history.go(-1);", 2, _MD_CBBX_ERROROCCURED.': '._MD_CBBX_POLL_POLLOPTIONS.' !');
 
 	$poll = new XoopsPoll($poll_id);
 	$i = 0;
@@ -416,15 +416,15 @@ if ( $op == "savemore" ) {
 	}
 	include_once XOOPS_ROOT_PATH.'/class/template.php';
 	xoops_template_clear_module_cache($xoopsModule->getVar('mid'));
-	redirect_header("polls.php?op=edit&amp;poll_id=".$poll->getVar("poll_id")."&amp;topic_id=".$topic_id,1,_MD_POLL_DBUPDATED);
+	redirect_header("polls.php?op=edit&amp;poll_id=".$poll->getVar("poll_id")."&amp;topic_id=".$topic_id,1,_MD_CBBX_POLL_DBUPDATED);
 	//exit();
 }
 
 if ( $op == "delete" ) {
 	//include XOOPS_ROOT_PATH."/header.php";
-	echo "<h4>"._MD_POLL_POLLCONF."</h4>";
+	echo "<h4>"._MD_CBBX_POLL_POLLCONF."</h4>";
 	$poll = new XoopsPoll($_GET['poll_id']);
-	xoops_confirm(array('op' => 'delete_ok', 'topic_id' => $topic_id, 'poll_id' => $poll->getVar('poll_id')), 'polls.php', sprintf(_MD_POLL_RUSUREDEL,$poll->getVar("question")));
+	xoops_confirm(array('op' => 'delete_ok', 'topic_id' => $topic_id, 'poll_id' => $poll->getVar('poll_id')), 'polls.php', sprintf(_MD_CBBX_POLL_RUSUREDEL,$poll->getVar("question")));
 	//include XOOPS_ROOT_PATH."/footer.php";
 	//exit();
 }
@@ -440,21 +440,21 @@ if ( $op == "delete_ok" ) {
 		xoops_comment_delete($xoopsModule->getVar('mid'), $poll->getVar('poll_id'));
 		$sql = "UPDATE ".$xoopsDB->prefix("bb_topics")." SET votes = 0, topic_haspoll = 0, poll_id = 0 WHERE topic_id = $topic_id";
         if ( !$result = $xoopsDB->query($sql) ) {
-        	newbb_message("poll removal from topic error: ".$sql);
+        	cbbx_message("poll removal from topic error: ".$sql);
         }
 	}
-	redirect_header("viewtopic.php?topic_id=$topic_id",1,_MD_POLL_DBUPDATED);
+	redirect_header("viewtopic.php?topic_id=$topic_id",1,_MD_CBBX_POLL_DBUPDATED);
 	//exit();
 }
 
 if ( $op == "restart" ) {
 	$poll = new XoopsPoll($_GET['poll_id']);
-	$poll_form = new XoopsThemeForm(_MD_POLL_RESTARTPOLL, "poll_form", "polls.php");
-	$expire_text = new XoopsFormText(_MD_POLL_EXPIRATION."<br /><small>"._MD_POLL_FORMAT."<br />".sprintf(_MD_POLL_CURRENTTIME, formatTimestamp(time(), "Y-m-d H:i:s"))."</small>", "end_time", 20, 19, formatTimestamp(time()+604800, "Y-m-d H:i:s"));
+	$poll_form = new XoopsThemeForm(_MD_CBBX_POLL_RESTARTPOLL, "poll_form", "polls.php");
+	$expire_text = new XoopsFormText(_MD_CBBX_POLL_EXPIRATION."<br /><small>"._MD_CBBX_POLL_FORMAT."<br />".sprintf(_MD_CBBX_POLL_CURRENTTIME, formatTimestamp(time(), "Y-m-d H:i:s"))."</small>", "end_time", 20, 19, formatTimestamp(time()+604800, "Y-m-d H:i:s"));
 	$poll_form->addElement($expire_text);
-	$notify_yn = new XoopsFormRadioYN(_MD_POLL_NOTIFY, "notify", 1);
+	$notify_yn = new XoopsFormRadioYN(_MD_CBBX_POLL_NOTIFY, "notify", 1);
 	$poll_form->addElement($notify_yn);
-	$reset_yn = new XoopsFormRadioYN(_MD_POLL_RESET, "reset", 0);
+	$reset_yn = new XoopsFormRadioYN(_MD_CBBX_POLL_RESET, "reset", 0);
 	$poll_form->addElement($reset_yn);
 	$op_hidden = new XoopsFormHidden("op", "restart_ok");
 	$poll_form->addElement($op_hidden);
@@ -462,10 +462,10 @@ if ( $op == "restart" ) {
 	$poll_form->addElement($poll_topic_id_hidden);
 	$poll_id_hidden = new XoopsFormHidden("poll_id", $poll->getVar("poll_id"));
 	$poll_form->addElement($poll_id_hidden);
-	$submit_button = new XoopsFormButton("", "poll_submit", _MD_POLL_RESTART, "submit");
+	$submit_button = new XoopsFormButton("", "poll_submit", _MD_CBBX_POLL_RESTART, "submit");
 	$poll_form->addElement($submit_button);
 	//include XOOPS_ROOT_PATH."/header.php";
-	echo "<h4>"._MD_POLL_POLLCONF."</h4>";
+	echo "<h4>"._MD_CBBX_POLL_POLLCONF."</h4>";
 	$poll_form->display();
 	//include XOOPS_ROOT_PATH."/footer.php";
 	//exit();
@@ -493,19 +493,19 @@ if ( $op == "restart_ok" ) {
 		XoopsPollOption::resetCountByPollId($poll->getVar("poll_id"));
 	}
 	if (!$poll->store()) {
-		newbb_message($poll->getHtmlErrors());
+		cbbx_message($poll->getHtmlErrors());
 		exit();
 	}
 	$poll->updateCount();
 	include_once XOOPS_ROOT_PATH.'/class/template.php';
 	xoops_template_clear_module_cache($xoopsModule->getVar('mid'));
-	redirect_header("viewtopic.php?topic_id=$topic_id",1,_MD_POLL_DBUPDATED);
+	redirect_header("viewtopic.php?topic_id=$topic_id",1,_MD_CBBX_POLL_DBUPDATED);
 	//exit();
 }
 
 if ( $op == "log" ) {
 	//include XOOPS_ROOT_PATH."/header.php";
-	echo "<h4>"._MD_POLL_POLLCONF."</h4>";
+	echo "<h4>"._MD_CBBX_POLL_POLLCONF."</h4>";
 	echo "<br />View Log<br /> Sorry, not yet. ;-)";
 	//include XOOPS_ROOT_PATH."/footer.php";
 	//exit();

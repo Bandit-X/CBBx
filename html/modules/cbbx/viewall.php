@@ -35,7 +35,7 @@ $type = (!empty($_GET['type']) && in_array($_GET['type'], array("active", "pendi
 $mode = !empty($_GET['mode']) ? intval($_GET['mode']) : 0;
 $mode = (!empty($type) && in_array($type, array("active", "pending", "deleted")))?2:$mode;
 
-$isadmin = newbb_isAdmin();
+$isadmin = cbbx_isAdmin();
 /* Only admin has access to admin mode */
 if(!$isadmin){
 	$type = (!empty($type) && in_array($type, array("active", "pending", "deleted")))?"":$type;
@@ -46,22 +46,23 @@ if(!empty($xoopsModuleConfig['rss_enable'])){
 	$xoops_module_header .= '<link rel="alternate" type="application/rss+xml" title="'.$xoopsModule->getVar('name').'" href="'.XOOPS_URL.'/modules/'.$xoopsModule->getVar('dirname').'/rss.php" />';
 }
 $xoopsOption['xoops_module_header']= $xoops_module_header;
-$xoopsOption['template_main'] = 'newbb_viewall.html';
+$xoopsOption['template_main'] = 'cbbx_viewall.tpl';
 include XOOPS_ROOT_PATH."/header.php";
 $xoopsTpl->assign('xoops_module_header', $xoops_module_header);
-
-$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
+//XCL
+$xoopsTpl->assign('system_notification_select','db:system_notification_select.html');
+$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
 $viewall_forums = $forum_handler->getForums(0,'access', array("forum_id", "cat_id", "forum_name")); // get all accessible forums
 
 if ($xoopsModuleConfig['wol_enabled']){
-	$online_handler =& xoops_getmodulehandler('online', 'newbb');
+	$online_handler =& xoops_getmodulehandler('online', basename(__DIR__));
 	$online_handler->init();
     $xoopsTpl->assign('online', $online_handler->show_online());
 }
-$xoopsTpl->assign('forum_index_title', sprintf(_MD_FORUMINDEX,htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES)));
-$xoopsTpl->assign('folder_topic', newbb_displayImage($forumImage['folder_topic']));
+$xoopsTpl->assign('forum_index_title', sprintf(_MD_CBBX_FORUMINDEX,htmlspecialchars($xoopsConfig['sitename'], ENT_QUOTES)));
+$xoopsTpl->assign('folder_topic', cbbx_displayImage($forumImage['folder_topic']));
 
-$sel_sort_array = array("t.topic_title"=>_MD_TOPICTITLE, "u.uname"=>_MD_TOPICPOSTER, "t.topic_time"=>_MD_TOPICTIME, "t.topic_replies"=>_MD_NUMBERREPLIES, "t.topic_views"=>_MD_VIEWS, "p.post_time"=>_MD_LASTPOSTTIME);
+$sel_sort_array = array("t.topic_title"=>_MD_CBBX_TOPICTITLE, "u.uname"=>_MD_CBBX_TOPICPOSTER, "t.topic_time"=>_MD_CBBX_TOPICTIME, "t.topic_replies"=>_MD_CBBX_NUMBERREPLIES, "t.topic_views"=>_MD_CBBX_VIEWS, "p.post_time"=>_MD_CBBX_LASTPOSTTIME);
 if ( !isset($_GET['sortname']) || !in_array($_GET['sortname'], array_keys($sel_sort_array)) ) {
 	$sortname = "p.post_time";
 } else {
@@ -77,15 +78,15 @@ $xoopsTpl->assign_by_ref('forum_selection_sort', $forum_selection_sort);
 
 $sortorder = (!isset($_GET['sortorder']) || $_GET['sortorder'] != "ASC") ? "DESC" : "ASC";
 $forum_selection_order = '<select name="sortorder">';
-$forum_selection_order .= '<option value="ASC"'.(($sortorder == "ASC") ? ' selected="selected"' : '').'>'._MD_ASCENDING.'</option>';
-$forum_selection_order .= '<option value="DESC"'.(($sortorder == "DESC") ? ' selected="selected"' : '').'>'._MD_DESCENDING.'</option>';
+$forum_selection_order .= '<option value="ASC"'.(($sortorder == "ASC") ? ' selected="selected"' : '').'>'._MD_CBBX_ASCENDING.'</option>';
+$forum_selection_order .= '<option value="DESC"'.(($sortorder == "DESC") ? ' selected="selected"' : '').'>'._MD_CBBX_DESCENDING.'</option>';
 $forum_selection_order .= '</select>';
 
 // assign to template
 $xoopsTpl->assign_by_ref('forum_selection_order', $forum_selection_order);
 
 $since = isset($_GET['since']) ? intval($_GET['since']) : $xoopsModuleConfig["since_default"];
-$forum_selection_since = newbb_sinceSelectBox($since);
+$forum_selection_since = cbbx_sinceSelectBox($since);
 
 // assign to template
 $xoopsTpl->assign('forum_selection_since', $forum_selection_since);
@@ -98,7 +99,7 @@ $xoopsTpl->assign('h_ratings_link', "viewall.php?sortname=t.topic_ratings&amp;si
 $xoopsTpl->assign('h_date_link', "viewall.php?sortname=p.post_time&amp;since=$since&amp;sortorder=". (($sortname == "p.post_time" && $sortorder == "DESC") ? "ASC" : "DESC"))."&amp;type=$type";
 $xoopsTpl->assign('forum_since', $since); // For $since in search.php
 
-$startdate = empty($since)?0:(time() - newbb_getSinceTime($since));
+$startdate = empty($since)?0:(time() - cbbx_getSinceTime($since));
 $start = !empty($_GET['start']) ? intval($_GET['start']) : 0;
 
 $all_link = "viewall.php?start=$start&amp;sortname=$sortname&amp;sortorder=$sortorder&amp;since=$since";
@@ -109,32 +110,32 @@ $unreplied_link = "viewall.php?start=$start&amp;sortname=$sortname&amp;sortorder
 $unread_link = "viewall.php?start=$start&amp;sortname=$sortname&amp;sortorder=$sortorder&amp;since=$since&amp;type=unread";
 switch($type){
 	case 'digest':
-		$current_type = _MD_DIGEST;
+		$current_type = _MD_CBBX_DIGEST;
 		$current_link = $digest_link;
 		break;
 	case 'unreplied':
-		$current_type = _MD_UNREPLIED;
+		$current_type = _MD_CBBX_UNREPLIED;
 		$current_link = $unreplied_link;
 		break;
 	case 'unread':
-		$current_type = _MD_UNREAD;
+		$current_type = _MD_CBBX_UNREAD;
 		$current_link = $unread_link;
 		break;
 	case 'active':
-		$current_type = _MD_ALL. ' ['._MD_TYPE_ADMIN.']';
+		$current_type = _MD_CBBX_ALL. ' ['._MD_CBBX_TYPE_ADMIN.']';
 		$current_link = $all_link.'&amp;type='.$type;
 		break;
 	case 'pending':
-		$current_type = _MD_ALL. ' ['._MD_TYPE_PENDING.']';
+		$current_type = _MD_CBBX_ALL. ' ['._MD_CBBX_TYPE_PENDING.']';
 		$current_link = $all_link.'&amp;type='.$type;
 		break;
 	case 'deleted':
-		$current_type = _MD_ALL. ' ['._MD_TYPE_DELETED.']';
+		$current_type = _MD_CBBX_ALL. ' ['._MD_CBBX_TYPE_DELETED.']';
 		$current_link = $all_link.'&amp;type='.$type;
 		break;
 	default:
 		$type = 'all';
-		$current_type = _MD_ALL;
+		$current_type = _MD_CBBX_ALL;
 		$current_link = $all_link;
 		break;
 	}
@@ -144,15 +145,15 @@ $xoopsTpl->assign_by_ref('topics', $allTopics);
 unset($allTopics);
 $xoopsTpl->assign('sticky', $sticky);
 $xoopsTpl->assign('rating_enable', $xoopsModuleConfig['rating_enabled']);
-$xoopsTpl->assign('img_newposts', newbb_displayImage($forumImage['newposts_topic']));
-$xoopsTpl->assign('img_hotnewposts', newbb_displayImage($forumImage['hot_newposts_topic']));
-$xoopsTpl->assign('img_folder', newbb_displayImage($forumImage['folder_topic']));
-$xoopsTpl->assign('img_hotfolder', newbb_displayImage($forumImage['hot_folder_topic']));
-$xoopsTpl->assign('img_locked', newbb_displayImage($forumImage['locked_topic']));
+$xoopsTpl->assign('img_newposts', cbbx_displayImage($forumImage['newposts_topic']));
+$xoopsTpl->assign('img_hotnewposts', cbbx_displayImage($forumImage['hot_newposts_topic']));
+$xoopsTpl->assign('img_folder', cbbx_displayImage($forumImage['folder_topic']));
+$xoopsTpl->assign('img_hotfolder', cbbx_displayImage($forumImage['hot_folder_topic']));
+$xoopsTpl->assign('img_locked', cbbx_displayImage($forumImage['locked_topic']));
 
-$xoopsTpl->assign('img_sticky', newbb_displayImage($forumImage['folder_sticky'],_MD_TOPICSTICKY));
-$xoopsTpl->assign('img_digest', newbb_displayImage($forumImage['folder_digest'],_MD_TOPICDIGEST));
-$xoopsTpl->assign('img_poll', newbb_displayImage($forumImage['poll'],_MD_TOPICHASPOLL));
+$xoopsTpl->assign('img_sticky', cbbx_displayImage($forumImage['folder_sticky'],_MD_CBBX_TOPICSTICKY));
+$xoopsTpl->assign('img_digest', cbbx_displayImage($forumImage['folder_digest'],_MD_CBBX_TOPICDIGEST));
+$xoopsTpl->assign('img_poll', cbbx_displayImage($forumImage['poll'],_MD_CBBX_TOPICHASPOLL));
 $xoopsTpl->assign('all_link', $all_link);
 $xoopsTpl->assign('post_link', $post_link);
 $xoopsTpl->assign('newpost_link', $newpost_link);
@@ -172,9 +173,9 @@ if ( $all_topics > $xoopsModuleConfig['topics_per_page']) {
 	$xoopsTpl->assign('forum_pagenav', '');
 }
 if(!empty($xoopsModuleConfig['show_jump'])){
-	$xoopsTpl->assign('forum_jumpbox', newbb_make_jumpbox());
+	$xoopsTpl->assign('forum_jumpbox', cbbx_make_jumpbox());
 }
-$xoopsTpl->assign('down',newbb_displayImage($forumImage['doubledown']));
+$xoopsTpl->assign('down',cbbx_displayImage($forumImage['doubledown']));
 $xoopsTpl->assign('menumode',$menumode);
 $xoopsTpl->assign('menumode_other',$menumode_other);
 

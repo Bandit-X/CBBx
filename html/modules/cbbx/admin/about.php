@@ -1,5 +1,4 @@
 <?php
-// $Id: about.php,v 1.3 2005/10/19 17:20:32 phppp Exp $
 //  ------------------------------------------------------------------------ //
 //                XOOPS - PHP Content Management System                      //
 //                    Copyright (c) 2000 XOOPS.org                           //
@@ -37,7 +36,7 @@ xoops_cp_header();
 $module_handler =& xoops_gethandler('module');
 $versioninfo =& $module_handler->get($xoopsModule->getVar('mid'));
 
-loadModuleAdminMenu(-1, _AM_NEWBB_ABOUT . " " . $versioninfo->getInfo('name'));
+loadModuleAdminMenu(-1, _AM_CBBX_ABOUT . " " . $versioninfo->getInfo('name'));
 
 // Left headings...
 echo "<img src='" . XOOPS_URL . "/modules/".$xoopsModule->dirname()."/" . $versioninfo->getInfo('image') . "' alt='' hspace='0' vspace='0' align='left' style='margin-right: 10px;' /></a>";
@@ -51,7 +50,7 @@ if  ( $versioninfo->getInfo('author_realname') != '')
 	$author_name = $versioninfo->getInfo('author');
 }
 
-echo "<div style = 'line-height: 16px; font-weight: bold; display: block;'>" . _AM_NEWBB_BY . " " .$author_name;
+echo "<div style = 'line-height: 16px; font-weight: bold; display: block;'>" . _AM_CBBX_BY . " " .$author_name;
 echo "</div>";
 echo "<div style = 'line-height: 16px; display: block;'>" . $versioninfo->getInfo('license') . "</div><br /><br /></>\n";
 
@@ -59,34 +58,34 @@ echo "<div style = 'line-height: 16px; display: block;'>" . $versioninfo->getInf
 // Author Information
 echo "<table width='100%' cellspacing='1' cellpadding='3' border='0' class='outer'>";
 echo "<tr>";
-echo "<td colspan='2' class='bg3' align='left'><strong>" . _AM_NEWBB_AUTHOR_INFO . "</strong></td>";
+echo "<td colspan='2' class='bg3' align='left'><strong>" . _AM_CBBX_AUTHOR_INFO . "</strong></td>";
 echo "</tr>";
 
 If ( $versioninfo->getInfo('$author_name') != '' )
 {
 	echo "<tr>";
-	echo "<td class='head' width='150px' align='left'>" ._AM_NEWBB_AUTHOR_NAME . "</td>";
+	echo "<td class='head' width='150px' align='left'>" ._AM_CBBX_AUTHOR_NAME . "</td>";
 	echo "<td class='even' align='left'>" . $author_name . "</td>";
 	echo "</tr>";
 }
 If ( $versioninfo->getInfo('author_website_url') != '' )
 {
 	echo "<tr>";
-	echo "<td class='head' width='150px' align='left'>" . _AM_NEWBB_AUTHOR_WEBSITE . "</td>";
+	echo "<td class='head' width='150px' align='left'>" . _AM_CBBX_AUTHOR_WEBSITE . "</td>";
 	echo "<td class='even' align='left'><a href='" . $versioninfo->getInfo('author_website_url') . "' target='_blank'>" . $versioninfo->getInfo('author_website_name') . "</a></td>";
 	echo "</tr>";
 }
 If ( $versioninfo->getInfo('author_email') != '' )
 {
 	echo "<tr>";
-	echo "<td class='head' width='150px' align='left'>" . _AM_NEWBB_AUTHOR_EMAIL . "</td>";
+	echo "<td class='head' width='150px' align='left'>" . _AM_CBBX_AUTHOR_EMAIL . "</td>";
 	echo "<td class='even' align='left'><a href='mailto:" . $versioninfo->getInfo('author_email') . "'>" . $versioninfo->getInfo('author_email') . "</a></td>";
 	echo "</tr>";
 }
 If ( $versioninfo->getInfo('credits') != '' )
 {
 	echo "<tr>";
-	echo "<td class='head' width='150px' align='left'>" . _AM_NEWBB_AUTHOR_CREDITS . "</td>";
+	echo "<td class='head' width='150px' align='left'>" . _AM_CBBX_AUTHOR_CREDITS . "</td>";
 	echo "<td class='even' align='left'>" . $versioninfo->getInfo('credits') . "</td>";
 	echo "</tr>";
 }
@@ -97,13 +96,13 @@ echo "<br />\n";
 // Module Developpment information
 echo "<table width='100%' cellspacing='1' cellpadding='3' border='0' class='outer'>";
 echo "<tr>";
-echo "<td colspan='2' class='bg3' align='left'><strong>" . _AM_NEWBB_MODULE_INFO . "</strong></td>";
+echo "<td colspan='2' class='bg3' align='left'><strong>" . _AM_CBBX_MODULE_INFO . "</strong></td>";
 echo "</tr>";
 
 If ( $versioninfo->getInfo('status') != '' )
 {
 	echo "<tr>";
-	echo "<td class='head' width='200' align='left'>" . _AM_NEWBB_MODULE_STATUS . "</td>";
+	echo "<td class='head' width='200' align='left'>" . _AM_CBBX_MODULE_STATUS . "</td>";
 	echo "<td class='even' align='left'>" . $versioninfo->getInfo('status') . "</td>";
 	echo "</tr>";
 }
@@ -111,7 +110,7 @@ If ( $versioninfo->getInfo('status') != '' )
 If ( $versioninfo->getInfo('demo_site_url') != '' )
 {
 	echo "<tr>";
-	echo "<td class='head' align='left'>" . _AM_NEWBB_MODULE_DEMO . "</td>";
+	echo "<td class='head' align='left'>" . _AM_CBBX_MODULE_DEMO . "</td>";
 	echo "<td class='even' align='left'><a href='" . $versioninfo->getInfo('demo_site_url') . "' target='blank'>" . $versioninfo->getInfo('demo_site_name') . "</a></td>";
 	echo "</tr>";
 }
@@ -119,7 +118,7 @@ If ( $versioninfo->getInfo('demo_site_url') != '' )
 If ( $versioninfo->getInfo('support_site_url') != '' )
 {
 	echo "<tr>";
-	echo "<td class='head' align='left'>" . _AM_NEWBB_MODULE_SUPPORT . "</td>";
+	echo "<td class='head' align='left'>" . _AM_CBBX_MODULE_SUPPORT . "</td>";
 	echo "<td class='even' align='left'><a href='" . $versioninfo->getInfo('support_site_url') . "' target='blank'>" . $versioninfo->getInfo('support_site_name') . "</a></td>";
 	echo "</tr>";
 }
@@ -127,14 +126,14 @@ If ( $versioninfo->getInfo('support_site_url') != '' )
 If ( $versioninfo->getInfo('submit_bug') != '' )
 {
 	echo "<tr>";
-	echo "<td class='head' align='left'>" . _AM_NEWBB_MODULE_BUG . "</td>";
+	echo "<td class='head' align='left'>" . _AM_CBBX_MODULE_BUG . "</td>";
 	echo "<td class='even' align='left'><a href='" . $versioninfo->getInfo('submit_bug') . "' target='blank'>" . "Submit a Bug in newBB Bug Tracker" . "</a></td>";
 	echo "</tr>";
 }
 If ( $versioninfo->getInfo('submit_feature') != '' )
 {
 	echo "<tr>";
-	echo "<td class='head' align='left'>" . _AM_NEWBB_MODULE_FEATURE . "</td>";
+	echo "<td class='head' align='left'>" . _AM_CBBX_MODULE_FEATURE . "</td>";
 	echo "<td class='even' align='left'><a href='" . $versioninfo->getInfo('submit_feature') . "' target='_blank'>" . "Request a feature in the newBB Feature Tracker" . "</a></td>";
 	echo "</tr>";
 }
@@ -147,7 +146,7 @@ If ( $versioninfo->getInfo('warning') != '' )
 	echo "<br />\n";
 	echo "<table width='100%' cellspacing='1' cellpadding='3' border='0' class='outer'>";
 	echo "<tr>";
-	echo "<td class='bg3' align='left'><strong>" . _AM_NEWBB_MODULE_DISCLAIMER . "</strong></td>";
+	echo "<td class='bg3' align='left'><strong>" . _AM_CBBX_MODULE_DISCLAIMER . "</strong></td>";
 	echo "</tr>";
 	
 	echo "<tr>";
@@ -164,10 +163,10 @@ If ( $versioninfo->getInfo('author_word') != '' )
 	echo "<br />\n";
 	echo "<table width='100%' cellspacing='1' cellpadding='3' border='0' class='outer'>";
 	echo "<tr>";
-	echo "<td class='bg3' align='left'><strong>" . _AM_NEWBB_AUTHOR_WORD . "</strong></td>";
+	echo "<td class='bg3' align='left'><strong>" . _AM_CBBX_AUTHOR_WORD . "</strong></td>";
 	echo "</tr>";
 	
-	$extra = (defined('_AM_NEWBB_AUTHOR_WORD_EXTRA'))?_AM_NEWBB_AUTHOR_WORD_EXTRA:'';
+	$extra = (defined('_AM_CBBX_AUTHOR_WORD_EXTRA'))?_AM_CBBX_AUTHOR_WORD_EXTRA:'';
 	echo "<tr>";
 	echo "<td class='even' align='left'>" . $versioninfo->getInfo('author_word') . "</td>";
 	echo "</tr>";

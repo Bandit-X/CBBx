@@ -32,7 +32,7 @@
 //  URL: http://xoopsforge.com, http://xoops.org.cn                          //
 //  Project: Article Project                                                 //
 //  ------------------------------------------------------------------------ //
-class NewbbOnlineHandler
+class CbbxOnlineHandler
 {
     var $forum;
     var $forum_object;
@@ -80,7 +80,7 @@ class NewbbOnlineHandler
         $xoops_online_handler =& xoops_gethandler('online');
 		$xoopsupdate = $xoops_online_handler->write($uid, $uname, time(), $xoopsModule->getVar('mid'), $_SERVER['REMOTE_ADDR']);
 		if(!$xoopsupdate){
-			newbb_message("newbb online upate error");
+			cbbx_message("cbbx online upate error");
 		}
 
 		$uname = (empty($xoopsModuleConfig['show_realname'])||empty($name))?$uname:$name;
@@ -115,16 +115,16 @@ class NewbbOnlineHandler
         }
         $num_anonymous = $num_total - $num_user;
         $online = array();
-        $online['image'] = newbb_displayImage($forumImage['whosonline']);
+        $online['image'] = cbbx_displayImage($forumImage['whosonline']);
 		$online['num_total'] = $num_total;
 		$online['num_user'] = $num_user;
 		$online['num_anonymous'] = $num_anonymous;
-        $administrator_list = newbb_isModuleAdministrators($users_id, $GLOBALS["xoopsModule"]->getVar("mid"));
+        $administrator_list = cbbx_isModuleAdministrators($users_id, $GLOBALS["xoopsModule"]->getVar("mid"));
         foreach ($users_online as $uid=>$user) {
             if(!empty($administrator_list[$uid])){
                 $user['level']= 2;
             }
-            elseif(newbb_isModerator($this->forum_object, $uid)){
+            elseif(cbbx_isModerator($this->forum_object, $uid)){
                 $user['level']= 1;
             }
             else{
@@ -152,29 +152,29 @@ class NewbbOnlineHandler
 
     	$uid = intval($uid);
         if ($uid > 0) {
-            $sql = "SELECT COUNT(*) FROM " . $GLOBALS["xoopsDB"]->prefix('bb_online') . " WHERE online_uid=" . $uid;
+            $sql = "SELECT COUNT(*) FROM " . $GLOBALS["xoopsDB"]->prefix('cbbx_online') . " WHERE online_uid=" . $uid;
         } else {
-            $sql = "SELECT COUNT(*) FROM " . $GLOBALS["xoopsDB"]->prefix('bb_online') . " WHERE online_uid=" . $uid . " AND online_ip='" . $ip . "'";
+            $sql = "SELECT COUNT(*) FROM " . $GLOBALS["xoopsDB"]->prefix('cbbx_online') . " WHERE online_uid=" . $uid . " AND online_ip='" . $ip . "'";
         }
 		list($count) = $GLOBALS["xoopsDB"]->fetchRow($GLOBALS["xoopsDB"]->queryF($sql));
         if ($count > 0) {
-            $sql = "UPDATE " . $GLOBALS["xoopsDB"]->prefix('bb_online') . " SET online_updated= '" . $time . "', online_forum = '" . $forum . "', online_topic = '" . $forumtopic . "' WHERE online_uid = " . $uid;
+            $sql = "UPDATE " . $GLOBALS["xoopsDB"]->prefix('cbbx_online') . " SET online_updated= '" . $time . "', online_forum = '" . $forum . "', online_topic = '" . $forumtopic . "' WHERE online_uid = " . $uid;
             if ($uid == 0) {
                 $sql .= " AND online_ip='" . $ip . "'";
             }
         } else {
-            $sql = sprintf("INSERT INTO %s (online_uid, online_uname, online_updated, online_ip, online_forum, online_topic) VALUES (%u, %s, %u, %s, %u, %u)", $GLOBALS["xoopsDB"]->prefix('bb_online'), $uid, $GLOBALS["xoopsDB"]->quoteString($uname), $time, $GLOBALS["xoopsDB"]->quoteString($ip), $forum, $forumtopic);
+            $sql = sprintf("INSERT INTO %s (online_uid, online_uname, online_updated, online_ip, online_forum, online_topic) VALUES (%u, %s, %u, %s, %u, %u)", $GLOBALS["xoopsDB"]->prefix('cbbx_online'), $uid, $GLOBALS["xoopsDB"]->quoteString($uname), $time, $GLOBALS["xoopsDB"]->quoteString($ip), $forum, $forumtopic);
         }
         if (!$GLOBALS["xoopsDB"]->queryF($sql)) {
-	        newbb_message("can not update online info: ".$sql);
+	        cbbx_message("can not update online info: ".$sql);
             return false;
         }
-        
-    	$mysql_version = substr(trim(mysql_get_server_info()), 0, 3);
+        $mysql_version = substr(trim(mysqli_get_server_info($GLOBALS["xoopsDB"]->conn)), 0, 3);
+
     	/* for MySQL 4.1+ */
     	if($mysql_version >= "4.1"):
 
-		$sql = 	"DELETE FROM ".$GLOBALS["xoopsDB"]->prefix('bb_online').
+		$sql = 	"DELETE FROM ".$GLOBALS["xoopsDB"]->prefix('cbbx_online').
 				" WHERE".
 				" ( online_uid > 0 AND online_uid NOT IN ( SELECT online_uid FROM ".$GLOBALS["xoopsDB"]->prefix('online')." WHERE online_module =".$xoopsModule->getVar('mid')." ) )".
 				" OR ( online_uid = 0 AND online_ip NOT IN ( SELECT online_ip FROM ".$GLOBALS["xoopsDB"]->prefix('online')." WHERE online_module =".$xoopsModule->getVar('mid')." AND online_uid = 0 ) )";
@@ -182,19 +182,19 @@ class NewbbOnlineHandler
 		if($result = $GLOBALS["xoopsDB"]->queryF($sql)){
 	        return true;
         }else{
-	        newbb_message("clean xoops online error: ".$sql);
+	        cbbx_message("clean xoops online error: ".$sql);
 	        return false;
         }
 
         
         else: 
-        $sql = 	"DELETE ".$GLOBALS["xoopsDB"]->prefix('bb_online')." FROM ".$GLOBALS["xoopsDB"]->prefix('bb_online').
+        $sql = 	"DELETE ".$GLOBALS["xoopsDB"]->prefix('cbbx_online')." FROM ".$GLOBALS["xoopsDB"]->prefix('cbbx_online').
         		" LEFT JOIN ".$GLOBALS["xoopsDB"]->prefix('online')." AS aa ".
-        		" ON ".$GLOBALS["xoopsDB"]->prefix('bb_online').".online_uid = aa.online_uid WHERE ".$GLOBALS["xoopsDB"]->prefix('bb_online').".online_uid > 0 AND aa.online_uid IS NULL";
+        		" ON ".$GLOBALS["xoopsDB"]->prefix('cbbx_online').".online_uid = aa.online_uid WHERE ".$GLOBALS["xoopsDB"]->prefix('cbbx_online').".online_uid > 0 AND aa.online_uid IS NULL";
         $result = $GLOBALS["xoopsDB"]->queryF($sql);
-        $sql = 	"DELETE ".$GLOBALS["xoopsDB"]->prefix('bb_online')." FROM ".$GLOBALS["xoopsDB"]->prefix('bb_online').
+        $sql = 	"DELETE ".$GLOBALS["xoopsDB"]->prefix('cbbx_online')." FROM ".$GLOBALS["xoopsDB"]->prefix('cbbx_online').
         		" LEFT JOIN ".$GLOBALS["xoopsDB"]->prefix('online')." AS aa ".
-        		" ON ".$GLOBALS["xoopsDB"]->prefix('bb_online').".online_ip = aa.online_ip WHERE ".$GLOBALS["xoopsDB"]->prefix('bb_online').".online_uid = 0 AND aa.online_ip IS NULL";
+        		" ON ".$GLOBALS["xoopsDB"]->prefix('cbbx_online').".online_ip = aa.online_ip WHERE ".$GLOBALS["xoopsDB"]->prefix('cbbx_online').".online_uid = 0 AND aa.online_ip IS NULL";
         $result = $GLOBALS["xoopsDB"]->queryF($sql);
         return true;
         endif;
@@ -210,7 +210,7 @@ class NewbbOnlineHandler
     function gc($expire)
     {
 	    global $xoopsModule;
-        $sql = "DELETE FROM ".$GLOBALS["xoopsDB"]->prefix('bb_online')." WHERE online_updated < ".(time() - intval($expire));
+        $sql = "DELETE FROM ".$GLOBALS["xoopsDB"]->prefix('cbbx_online')." WHERE online_updated < ".(time() - intval($expire));
         $GLOBALS["xoopsDB"]->queryF($sql);
 
         $xoops_online_handler =& xoops_gethandler('online');
@@ -227,7 +227,7 @@ class NewbbOnlineHandler
     {
         $ret = array();
         $limit = $start = 0;
-        $sql = 'SELECT * FROM ' . $GLOBALS["xoopsDB"]->prefix('bb_online');
+        $sql = 'SELECT * FROM ' . $GLOBALS["xoopsDB"]->prefix('cbbx_online');
         if (is_object($criteria) && is_subclass_of($criteria, 'criteriaelement')) {
             $sql .= ' ' . $criteria->renderWhere();
             $limit = $criteria->getLimit();
@@ -256,7 +256,7 @@ class NewbbOnlineHandler
 	        $online_users =& $this->user_ids;
         }
         else{
-        	$sql = 'SELECT online_uid FROM ' . $GLOBALS["xoopsDB"]->prefix('bb_online');
+        	$sql = 'SELECT online_uid FROM ' . $GLOBALS["xoopsDB"]->prefix('cbbx_online');
         	if(!empty($uids)) {
         		$sql .= ' WHERE online_uid IN ('.implode(", ",array_map("intval", $uids)).')';
     		}
@@ -284,7 +284,7 @@ class NewbbOnlineHandler
      */
     function getCount($criteria = null)
     {
-        $sql = 'SELECT COUNT(*) FROM ' . $GLOBALS["xoopsDB"]->prefix('bb_online');
+        $sql = 'SELECT COUNT(*) FROM ' . $GLOBALS["xoopsDB"]->prefix('cbbx_online');
         if (is_object($criteria) && is_subclass_of($criteria, 'criteriaelement')) {
             $sql .= ' ' . $criteria->renderWhere();
         }
@@ -296,4 +296,5 @@ class NewbbOnlineHandler
     }
 }
 
+class_alias('CbbxOnlineHandler', basename(dirname(__DIR__)).'OnlineHandler');
 ?>

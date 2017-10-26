@@ -28,7 +28,7 @@
 // URL: http://xoopsforge.com, http://xoops.org.cn                          //
 // Project: Article Project                                                 //
 // ------------------------------------------------------------------------ //
-require NEWBB_FPDF_PATH.'/chinese.php';
+require CBBX_FPDF_PATH.'/chinese.php';
 
 // For end users
 $valid_pfd_charset = "GB2312";
@@ -102,15 +102,15 @@ $pdf_config['mail'] = 'mailto:'.$xoopsConfig['adminmail'];
 $pdf_config['slogan']=xoops_substr($myts->htmlspecialchars( $xoopsConfig['sitename'] ),0,30);
 $pdf_config['scale'] = '0.8';
 $pdf_config['dateformat'] = _DATESTRING;
-$pdf_config['footerpage'] = _MD_PDF_PAGE;
+$pdf_config['footerpage'] = _MD_CBBX_PDF_PAGE;
 
 // For local support sites
-define('NEWBB_PDF_FORUM', 'ÂÛÌ³');
-define('NEWBB_PDF_TOPIC', 'Ö÷Ìâ');
-define('NEWBB_PDF_SUBJECT', '±êÌâ');
-define('NEWBB_PDF_AUTHOR', _POSTEDBY);
-define('NEWBB_PDF_DATE', 'Ê±¼ä');
-//define('NEWBB_PDF_PAGE', 'µÚ%sÒ³');
+define('CBBX_PDF_FORUM', 'ï¿½ï¿½Ì³');
+define('CBBX_PDF_TOPIC', 'ï¿½ï¿½ï¿½ï¿½');
+define('CBBX_PDF_SUBJECT', 'ï¿½ï¿½ï¿½ï¿½');
+define('CBBX_PDF_AUTHOR', _POSTEDBY);
+define('CBBX_PDF_DATE', 'Ê±ï¿½ï¿½');
+//define('CBBX_PDF_PAGE', 'ï¿½ï¿½%sÒ³');
 
 // For more details, refer to: http://fpdf.org
 class PDF_language extends PDF_Chinese
@@ -120,10 +120,10 @@ class PDF_language extends PDF_Chinese
 	    //Call parent constructor
 	    $this->FPDF($orientation,$unit,$format);
 	    //Initialization
-		$this->AddGBhwFont('simsun','ËÎÌå');
-		$this->AddGBhwFont('simhei','ºÚÌå');
-		$this->AddGBhwFont('simkai','¿¬Ìå_GB2312');
-		$this->AddGBhwFont('sinfang','·ÂËÎ_GB2312');
+		$this->AddGBhwFont('simsun','ï¿½ï¿½ï¿½ï¿½');
+		$this->AddGBhwFont('simhei','ï¿½ï¿½ï¿½ï¿½');
+		$this->AddGBhwFont('simkai','ï¿½ï¿½ï¿½ï¿½_GB2312');
+		$this->AddGBhwFont('sinfang','ï¿½ï¿½ï¿½ï¿½_GB2312');
 	}
 
 	function Error($msg)
@@ -131,7 +131,7 @@ class PDF_language extends PDF_Chinese
 		global $pdf_config;
 		if($pdf_config['action_on_error']){
 			//Fatal error
-			die('<B>FPDF ´íÎó: </B>'.$msg);
+			die('<B>FPDF ï¿½ï¿½ï¿½ï¿½: </B>'.$msg);
 		}
 	}
 

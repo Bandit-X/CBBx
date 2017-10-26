@@ -1,5 +1,4 @@
 <?php 
-// $Id: menu.php,v 1.3 2005/10/19 17:20:32 phppp Exp $
 // ------------------------------------------------------------------------ //
 // XOOPS - PHP Content Management System                      //
 // Copyright (c) 2000 XOOPS.org                           //
@@ -29,27 +28,25 @@
 // Project: The XOOPS Project                                                //
 // ------------------------------------------------------------------------- //
 $i=0;
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_INDEX;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_INDEX;
 $adminmenu[$i++]['link'] = "admin/index.php";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_CATEGORY;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_CATEGORY;
 $adminmenu[$i++]['link'] = "admin/admin_cat_manager.php?op=manage";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_FORUM;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_FORUM;
 $adminmenu[$i++]['link'] = "admin/admin_forum_manager.php?op=manage";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_PERMISSION;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_PERMISSION;
 $adminmenu[$i++]['link'] = "admin/admin_permissions.php";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_BLOCK;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_BLOCK;
 $adminmenu[$i++]['link'] = "admin/admin_blocks.php";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_SYNC;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_SYNC;
 $adminmenu[$i++]['link'] = "admin/admin_forum_manager.php?op=sync";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_ORDER;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_ORDER;
 $adminmenu[$i++]['link'] = "admin/admin_forum_reorder.php";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_PRUNE;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_PRUNE;
 $adminmenu[$i++]['link'] = "admin/admin_forum_prune.php";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_REPORT;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_REPORT;
 $adminmenu[$i++]['link'] = "admin/admin_report.php";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_DIGEST;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_DIGEST;
 $adminmenu[$i++]['link'] = "admin/admin_digest.php";
-$adminmenu[$i]['title'] = _MI_NEWBB_ADMENU_VOTE;
+$adminmenu[$i]['title'] = _MI_CBBX_ADMENU_VOTE;
 $adminmenu[$i++]['link'] = "admin/admin_votedata.php";
-
-?>

@@ -30,16 +30,16 @@
 //  ------------------------------------------------------------------------ //
 if (!defined('XOOPS_ROOT_PATH')){ exit(); }
 
-if(defined("NEWBB_FUNCTIONS_INI")) return; define("NEWBB_FUNCTIONS_INI",1);
+if(defined("CBBX_FUNCTIONS_INI")) return; define("CBBX_FUNCTIONS_INI",1);
 
-include_once(XOOPS_ROOT_PATH."/Frameworks/art/functions.php");
+include_once(FRAMEWORKS_ROOT_PATH . '/art/functions.php');//ADD
 
-function newbb_load_object()
+function cbbx_load_object()
 {
 	return load_object();
 }
 
-function newbb_message( $message )
+function cbbx_message( $message )
 {
 	global $xoopsModuleConfig;
 	if(!empty($xoopsModuleConfig["do_debug"])){
@@ -52,14 +52,14 @@ function newbb_message( $message )
 	return;
 }
 
-function &newbb_load_config()
+function &cbbx_load_config()
 {
 	static $moduleConfig;
 	if(isset($moduleConfig)){
 		return $moduleConfig;
 	}
 	
-    if(isset($GLOBALS["xoopsModule"]) && is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname", "n") == "newbb"){
+    if(isset($GLOBALS["xoopsModule"]) && is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname", "n") == basename(dirname(__DIR__))){
 	    if(!empty($GLOBALS["xoopsModuleConfig"])) {
 		    $moduleConfig =& $GLOBALS["xoopsModuleConfig"];
 	    }else{
@@ -67,7 +67,7 @@ function &newbb_load_config()
 	    }
     }else{
 		$module_handler = &xoops_gethandler('module');
-		$module = $module_handler->getByDirname("newbb");
+		$module = $module_handler->getByDirname(basename(dirname(__DIR__)));
 	
 	    $config_handler = &xoops_gethandler('config');
 	    $criteria = new CriteriaCompo(new Criteria('conf_modid', $module->getVar('mid')));
@@ -77,7 +77,7 @@ function &newbb_load_config()
 	    }
 	    unset($configs);
     }
-	if($customConfig = @include(XOOPS_ROOT_PATH."/modules/newbb/include/plugin.php")){
+	if($customConfig = @include(XOOPS_ROOT_PATH.'/modules/'.basename(dirname(__DIR__)).'/include/plugin.php')){
 		$moduleConfig = array_merge($moduleConfig, $customConfig);
 	}
     return $moduleConfig;
@@ -85,34 +85,33 @@ function &newbb_load_config()
 
 function getConfigForBlock()
 {
-	return newbb_load_config();
+	return cbbx_load_config();
 	
-	static $newbbConfig;
-	if(isset($newbbConfig)){
-		return $newbbConfig;
+	static $cbbxConfig;
+	if(isset($cbbxConfig)){
+		return $cbbxConfig;
 	}
 	
-    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname") == "newbb"){
-	    $newbbConfig =& $GLOBALS["xoopsModuleConfig"];
+    if(is_object($GLOBALS["xoopsModule"]) && $GLOBALS["xoopsModule"]->getVar("dirname") == basename(dirname(__DIR__))){
+	    $cbbxConfig =& $GLOBALS["xoopsModuleConfig"];
     }else{
 		$module_handler =& xoops_gethandler('module');
-		$newbb = $module_handler->getByDirname('newbb');
+		$cbbx = $module_handler->getByDirname(basename(dirname(__DIR__)));
 	
 	    $config_handler =& xoops_gethandler('config');
-	    $criteria = new CriteriaCompo(new Criteria('conf_modid', $newbb->getVar('mid')));
+	    $criteria = new CriteriaCompo(new Criteria('conf_modid', $cbbx->getVar('mid')));
 	    $criteria->add(new Criteria('conf_name', "('show_realname', 'subject_prefix', 'allow_require_reply')", "IN"));
 	    $configs =& $config_handler->getConfigs($criteria);
 	    foreach(array_keys($configs) as $i){
-		    $newbbConfig[$configs[$i]->getVar('conf_name')] = $configs[$i]->getConfValueForOutput();
+		    $cbbxConfig[$configs[$i]->getVar('conf_name')] = $configs[$i]->getConfValueForOutput();
 	    }
-	    unset($newbb, $configs);
+	    unset($cbbx, $configs);
     }
-    return $newbbConfig;
+    return $cbbxConfig;
 }
 
-
 // Backword compatible
-function newbb_load_lang_file( $filename, $module = '', $default = 'english' )
+function cbbx_load_lang_file( $filename, $module = '', $default = 'english' )
 {
 	if(function_exists("xoops_load_lang_file")){
 		return xoops_load_lang_file($filename, $module, $default);
@@ -127,12 +126,12 @@ function newbb_load_lang_file( $filename, $module = '', $default = 'english' )
 }
 
 // Adapted from PMA_getIp() [phpmyadmin project]
-function newbb_getIP($asString = false)
+function cbbx_getIP($asString = false)
 {
 	return mod_getIP($asString);
 }
 
-function newbb_formatTimestamp($time, $format = "c", $timeoffset = "")
+function cbbx_formatTimestamp($time, $format = "c", $timeoffset = "")
 {
 	if(strtolower($format) == "reg" || strtolower($format) == "") {
 		$format = "c";
@@ -180,16 +179,16 @@ function newbb_formatTimestamp($time, $format = "c", $timeoffset = "")
     case 'c':
     case 'custom':
     default:
-    	newbb_load_lang_file("main", "newbb");
+    	cbbx_load_lang_file("main", basename(dirname(__DIR__)));
         $current_timestamp = xoops_getUserTimestamp(time(), $timeoffset);
         if(date("Ymd", $usertimestamp) == date("Ymd", $current_timestamp)){
-			$datestring = _MD_TODAY;
+			$datestring = _MD_CBBX_TODAY;
 		}elseif(date("Ymd", $usertimestamp+24*60*60) == date("Ymd", $current_timestamp)){
-			$datestring = _MD_YESTERDAY;
+			$datestring = _MD_CBBX_YESTERDAY;
 		}elseif(date("Y", $usertimestamp) == date("Y", $current_timestamp)){
-			$datestring = _MD_MONTHDAY;
+			$datestring = _MD_CBBX_MONTHDAY;
 		}else{
-			$datestring = _MD_YEARMONTHDAY;
+			$datestring = _MD_CBBX_YEARMONTHDAY;
 		}
         break;
     }

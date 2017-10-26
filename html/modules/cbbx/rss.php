@@ -39,8 +39,8 @@ $xoopsLogger->activated = false;
 	if(isset($_GET["f"])){
 		$forums = array_map("intval", array_map("trim", explode("|",$_GET["f"])));
 	}
-		$forum_handler =& xoops_getmodulehandler('forum', 'newbb');
-		$topic_handler =& xoops_getmodulehandler('topic', 'newbb');
+		$forum_handler =& xoops_getmodulehandler('forum', basename(__DIR__));
+		$topic_handler =& xoops_getmodulehandler('topic', basename(__DIR__));
 		$access_forums = $forum_handler->getForums(0,'access'); // get all accessible forums
 
 		$available_forums = array();
@@ -56,7 +56,7 @@ $xoopsLogger->activated = false;
 			    $valid_forums[] = $forum;
 		    }
 	    }elseif($category>0){
-			//$category_handler =& xoops_getmodulehandler('category', 'newbb');
+			//$category_handler =& xoops_getmodulehandler('category', basename(__DIR__));
 			$_forums = $forum_handler->getForumsByCategory($category);
 			$forums = array_keys($_forums);
 			unset($_forums);
@@ -82,18 +82,18 @@ $tpl->xoops_setCacheTime($xoopsModuleConfig['rss_cachetime']*60);
 
 $compile_id = implode(",",$valid_forums);
 $xoopsCachedTemplateId = 'mod_'.$xoopsModule->getVar('dirname').'|'.md5(str_replace(XOOPS_URL, '', $GLOBALS['xoopsRequestUri']));
-if (!$tpl->is_cached('db:newbb_rss.html', $xoopsCachedTemplateId, $compile_id)) {
+if (!$tpl->is_cached('db:cbbx_rss.tpl', $xoopsCachedTemplateId, $compile_id)) {
 
-	$xmlrss_handler =& xoops_getmodulehandler('xmlrss', 'newbb');
+	$xmlrss_handler =& xoops_getmodulehandler('xmlrss', basename(__DIR__));
 	$rss = $xmlrss_handler->create();
 
-	$rss->setVarRss('channel_title', $xoopsConfig['sitename'].' :: '._MD_FORUM);
+	$rss->setVarRss('channel_title', $xoopsConfig['sitename'].' :: '._MD_CBBX_FORUM);
 	$rss->channel_link = XOOPS_URL.'/';
 	$rss->setVarRss('channel_desc', $xoopsConfig['slogan'].' :: '.$xoopsModule->getInfo('description'));
 	// There is a "bug" with xoops function formatTimestamp(time(), 'rss')
 	// We have to make a customized function
 	//$rss->channel_lastbuild = formatTimestamp(time(), 'rss');
-	$rss->setVarRss('channel_lastbuild', newbb_formatTimestamp(time(), 'rss'));
+	$rss->setVarRss('channel_lastbuild', cbbx_formatTimestamp(time(), 'rss'));
 	$rss->channel_webmaster = $xoopsConfig['adminmail'];
 	$rss->channel_editor = $xoopsConfig['adminmail'];
 	$rss->setVarRss('channel_category', $xoopsModule->getVar('name'));
@@ -129,10 +129,10 @@ if (!$tpl->is_cached('db:newbb_rss.html', $xoopsCachedTemplateId, $compile_id)) 
 	    		'	t.topic_id, t.topic_title, t.topic_subject,'.
 	    		'	p.post_id, p.post_time, p.subject, p.uid, p.poster_name, p.post_karma, p.require_reply, p.dohtml, p.dosmiley, p.doxcode,'.
 	    		'	pt.post_text'.
-	    		'	FROM ' . $xoopsDB->prefix('bb_posts') . ' AS p'.
-	    		'	LEFT JOIN ' . $xoopsDB->prefix('bb_topics') . ' AS t ON t.topic_last_post_id=p.post_id'.
-	    		'	LEFT JOIN ' . $xoopsDB->prefix('bb_posts_text') . ' AS pt ON pt.post_id=p.post_id'.
-	    		'	LEFT JOIN ' . $xoopsDB->prefix('bb_forums') . ' AS f ON f.forum_id=p.forum_id'.
+	    		'	FROM ' . $xoopsDB->prefix('cbbx_posts') . ' AS p'.
+	    		'	LEFT JOIN ' . $xoopsDB->prefix('cbbx_topics') . ' AS t ON t.topic_last_post_id=p.post_id'.
+	    		'	LEFT JOIN ' . $xoopsDB->prefix('cbbx_posts_text') . ' AS pt ON pt.post_id=p.post_id'.
+	    		'	LEFT JOIN ' . $xoopsDB->prefix('cbbx_forums') . ' AS f ON f.forum_id=p.forum_id'.
 	    		'	WHERE 1=1 ' .
 	    			$forum_criteria .
 	    			$approve_criteria .
@@ -141,7 +141,7 @@ if (!$tpl->is_cached('db:newbb_rss.html', $xoopsCachedTemplateId, $compile_id)) 
 	    $limit = intval($xoopsModuleConfig['rss_maxitems'] * 1.5);
 
 	    if (!$result = $xoopsDB->query($query,$limit)) {
-		    newbb_message("query for rss builder error: ".$query);
+		    cbbx_message("query for rss builder error: ".$query);
 			return $xmlrss_handler->get($rss);
 	    }
 	    $rows = array();
@@ -152,7 +152,7 @@ if (!$tpl->is_cached('db:newbb_rss.html', $xoopsCachedTemplateId, $compile_id)) 
 		if(count($rows)<1) {
 			return $xmlrss_handler->get($rss);
 		}
-		$users =& newbb_getUnameFromIds(array_keys($users), $xoopsModuleConfig['show_realname']);
+		$users =& cbbx_getUnameFromIds(array_keys($users), $xoopsModuleConfig['show_realname']);
 
 		foreach($rows as $topic){
 	        if( $xoopsModuleConfig['enable_karma'] && $topic['post_karma'] > 0 ) continue;
@@ -177,8 +177,8 @@ if (!$tpl->is_cached('db:newbb_rss.html', $xoopsCachedTemplateId, $compile_id)) 
 	        }
 			$description  .= $topic['topic_subject']." ".$topic['topic_title']."<br />\n";
 			$description  .= $myts->displayTarea($topic['post_text'], $topic['dohtml'], $topic['dosmiley'], $topic['doxcode']);
-			$label = _MD_BY." ".$topic['uname'];
-			$time = newbb_formatTimestamp($topic['post_time'], "rss");
+			$label = _MD_CBBX_BY." ".$topic['uname'];
+			$time = cbbx_formatTimestamp($topic['post_time'], "rss");
 	        $link = XOOPS_URL . "/modules/" . $xoopsModule->dirname() . '/viewtopic.php?topic_id=' . $topic['topic_id'] . '&amp;forum=' . $topic['forum_id'];
 			$title = $topic['subject'];
 	     	if(!$rss->addItem($title, $link, $description, $label, $time)) break;
@@ -188,5 +188,5 @@ if (!$tpl->is_cached('db:newbb_rss.html', $xoopsCachedTemplateId, $compile_id)) 
 	$tpl->assign('rss', $rss_feed);
 	unset($rss);
 }
-$tpl->display('db:newbb_rss.html', $xoopsCachedTemplateId, $compile_id);
+$tpl->display('db:cbbx_rss.tpl', $xoopsCachedTemplateId, $compile_id);
 ?>

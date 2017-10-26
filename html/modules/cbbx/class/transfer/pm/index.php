@@ -36,7 +36,7 @@ function transfer_pm(&$data)
 	$hiddens["subject"] = $data["title"];
 	$content  = str_replace("<br />", "\n\r", $data["content"]);
 	$content  = str_replace("<br>", "\n\r", $content);
-	$content  = "[quote]\n".newbb_html2text($content)."\n[/quote]";
+	$content  = "[quote]\n".cbbx_html2text($content)."\n[/quote]";
 	$content = $data["title"]."\n\r".$content."\n\r\n\r"._MORE."\n\r".$data["url"];
 	$hiddens["message"] = $content;
 	

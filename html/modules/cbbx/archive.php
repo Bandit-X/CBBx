@@ -51,7 +51,7 @@ if ($forum > 0 && $topic_id == 0)
 	/*$permissions = get_forum_auth($forum);
 	if ($permissions['can_view'] == 0)
 	{
-		redirect_header('archive.php',2,_MD_NORIGHTTOACCESS);
+		redirect_header('archive.php',2,_MD_CBBX_NORIGHTTOACCESS);
 		die();
 	}*/
 
@@ -64,7 +64,7 @@ if ($forum > 0 && $topic_id > 0)
 	$permissions = get_forum_auth($forum);
 	if ($permissions['can_view'] == 0)
 	{
-		redirect_header('archive.php',2,_MD_NORIGHTTOACCESS);
+		redirect_header('archive.php',2,_MD_CBBX_NORIGHTTOACCESS);
 		die();
 	}
 	*/
@@ -80,8 +80,8 @@ function display_archive()
 	include_once(XOOPS_ROOT_PATH."/header.php");
 
 	echo "<table border='0' width='100%' cellpadding='5'>";
-	echo "<tr><td align='left'>".newbb_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php'>";
-	echo _MD_FORUM_ARCHIVE."</a>";
+	echo "<tr><td align='left'>".cbbx_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php'>";
+	echo _MD_CBBX_FORUM_ARCHIVE."</a>";
 	echo "</td></tr></table><br />";
 
 	echo "<table border='0' width='90%' cellpadding='5' align=center>";
@@ -136,18 +136,18 @@ function display_forum_topics($forum)
 
 	$forumdata = $db->fetch_array($result);
 	echo "<table border='0' width='100%' cellpadding='5'>";
-	echo "<tr><td align='left'>".newbb_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php'>";
-	echo _MD_FORUM_ARCHIVE."</a>";
+	echo "<tr><td align='left'>".cbbx_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php'>";
+	echo _MD_CBBX_FORUM_ARCHIVE."</a>";
 	if($forumdata['parent_forum'] == 0)
 	{
-		echo "<br />&nbsp;&nbsp;&nbsp;".newbb_displayImage($forumImage['f_close'])."&nbsp;&nbsp;<strong>".$myts->htmlSpecialChars($forumdata['forum_name'])."</strong><br />";
+		echo "<br />&nbsp;&nbsp;&nbsp;".cbbx_displayImage($forumImage['f_close'])."&nbsp;&nbsp;<strong>".$myts->htmlSpecialChars($forumdata['forum_name'])."</strong><br />";
 	}
 	else
 	{
 		$q = "select forum_name from ".$forumTable['forums']." WHERE forum_id=".$forumdata['parent_forum'];
 		$row = $db->fetch_array($db->query($q));
-		echo "<br />&nbsp;&nbsp;&nbsp;".newbb_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php?forum=".$forumdata['parent_forum']."'>".$myts->htmlSpecialChars($row['forum_name'])."</a>";
-		echo "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".newbb_displayImage($forumImage['f_close'])."&nbsp;&nbsp;<strong>".$myts->htmlSpecialChars($forumdata['forum_name'])."</strong><br />";
+		echo "<br />&nbsp;&nbsp;&nbsp;".cbbx_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php?forum=".$forumdata['parent_forum']."'>".$myts->htmlSpecialChars($row['forum_name'])."</a>";
+		echo "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".cbbx_displayImage($forumImage['f_close'])."&nbsp;&nbsp;<strong>".$myts->htmlSpecialChars($forumdata['forum_name'])."</strong><br />";
 	}
 	echo "</td></tr></table><br />";
 
@@ -160,7 +160,7 @@ function display_forum_topics($forum)
 	{
 		echo "$counter.&nbsp;";
 		echo "<a href='archive.php?forum=$forum&amp;topic_id=".$row->topic_id."'>".$row->topic_title."</a>";
-		echo "&nbsp;&nbsp;&nbsp;<a href='archive.php?forum=$forum&amp;topic_id=".$row->topic_id."&amp;content_only=1' target='_blank'>"._MD_ARCHIVE_POPUP."</a>";
+		echo "&nbsp;&nbsp;&nbsp;<a href='archive.php?forum=$forum&amp;topic_id=".$row->topic_id."&amp;content_only=1' target='_blank'>"._MD_CBBX_ARCHIVE_POPUP."</a>";
 		echo "<br />";
 
 		$counter++;
@@ -188,30 +188,30 @@ function display_topic($forum, $topic_id, $content_only = 1)
 	$topicdata = $db->fetch_array($result);
 
 	echo "<table border='0' width='100%' cellpadding='5'>";
-	echo "<tr><td align='left'>".newbb_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php'>";
-	echo _MD_FORUM_ARCHIVE."</a>";
+	echo "<tr><td align='left'>".cbbx_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php'>";
+	echo _MD_CBBX_FORUM_ARCHIVE."</a>";
 	if($forumdata['parent_forum'] == 0)
 	{
-		echo "<br />&nbsp;&nbsp;&nbsp;".newbb_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='archive.php?forum=$forum'>".$myts->htmlSpecialChars($forumdata['forum_name'])."</a>";
-		echo "<br />".newbb_displayImage($forumImage['f_content'])."&nbsp;&nbsp;<strong>".$myts->htmlSpecialChars($topicdata['topic_title'])."</strong><br />";
+		echo "<br />&nbsp;&nbsp;&nbsp;".cbbx_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='archive.php?forum=$forum'>".$myts->htmlSpecialChars($forumdata['forum_name'])."</a>";
+		echo "<br />".cbbx_displayImage($forumImage['f_content'])."&nbsp;&nbsp;<strong>".$myts->htmlSpecialChars($topicdata['topic_title'])."</strong><br />";
 	}
 	else
 	{
 		$q = "select forum_name from ".$forumTable['forums']." WHERE forum_id=".$forumdata['parent_forum'];
 		$row = $db->fetch_array($db->query($q));
-		echo "<br />&nbsp;&nbsp;&nbsp;".newbb_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php?forum=".$forumdata['parent_forum']."'>".$myts->htmlSpecialChars($row['forum_name'])."</a>";
-		echo "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".newbb_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='archive.php?forum=$forum'>".$myts->htmlSpecialChars($forumdata['forum_name'])."</a>";
-		echo "<br />&nbsp;&nbsp;&nbsp;".newbb_displayImage($forumImage['f_content'])."&nbsp;&nbsp;<strong>".$myts->htmlSpecialChars($topicdata['topic_title'])."</strong><br />";
+		echo "<br />&nbsp;&nbsp;&nbsp;".cbbx_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='".$forumPath['url']."archive.php?forum=".$forumdata['parent_forum']."'>".$myts->htmlSpecialChars($row['forum_name'])."</a>";
+		echo "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".cbbx_displayImage($forumImage['f_open'])."&nbsp;&nbsp;<a href='archive.php?forum=$forum'>".$myts->htmlSpecialChars($forumdata['forum_name'])."</a>";
+		echo "<br />&nbsp;&nbsp;&nbsp;".cbbx_displayImage($forumImage['f_content'])."&nbsp;&nbsp;<strong>".$myts->htmlSpecialChars($topicdata['topic_title'])."</strong><br />";
 	}
 
 	echo "</td></tr></table><br />";
 
 // =============== LINK HEADER ===============
 echo "<table border='0' width='640' cellpadding='5' cellspacing='0' bgcolor='#FFFFFF' align=center><tr><td>";
-echo "<h3>"._MD_FORUM." : ".$forumdata['forum_name']."</h3>";
-echo "<h3>"._MD_SUBJECT." : ".$topicdata['topic_title']."</h3>";
+echo "<h3>"._MD_CBBX_FORUM." : ".$forumdata['forum_name']."</h3>";
+echo "<h3>"._MD_CBBX_SUBJECT." : ".$topicdata['topic_title']."</h3>";
 echo "<i><strong>".$meta['copyright']."<br /><a href=".XOOPS_URL.">".XOOPS_URL."</a>
-<br /><br />"._MD_PRINT_TOPIC_LINK."<br />
+<br /><br />"._MD_CBBX_PRINT_TOPIC_LINK."<br />
 <a href='".XOOPS_URL."/modules/".$xoopsModule->dirname()."/viewtopic.php?topic_id=$topic_id&amp;forum=$forum'>".XOOPS_URL."/modules/".$xoopsModule->dirname()."/viewtopic.php?topic_id=$topic_id&amp;forum=$forum</a>
 </strong></i><br /><br />";
 // ============= END LINK HEADER =============

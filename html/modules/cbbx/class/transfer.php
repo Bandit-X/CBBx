@@ -1,5 +1,4 @@
 <?php
-// $Id: transfer.php,v 1.1.1.1 2005/10/19 16:23:34 phppp Exp $
 // ------------------------------------------------------------------------ //
 // This program is free software; you can redistribute it and/or modify     //
 // it under the terms of the GNU General Public License as published by     //
@@ -33,11 +32,11 @@ if (!defined("XOOPS_ROOT_PATH")) {
 	exit();
 }
 
-class NewbbTransferHandler
+class CbbxTransferHandler
 {
 	var $root_path;
 	
-    function NewbbTransferHandler()
+    function __construct()
     {
 		$current_path = __FILE__;
 		if ( DIRECTORY_SEPARATOR != "/" ) $current_path = str_replace( strpos( $current_path, "\\\\", 2 ) ? "\\\\" : DIRECTORY_SEPARATOR, "/", $current_path);
@@ -83,4 +82,6 @@ class NewbbTransferHandler
 	    return $ret;
     }
 }
+
+class_alias('CbbxTransferHandler', basename(dirname(__DIR__)).'TransferHandler');
 ?>
